@@ -1,0 +1,111 @@
+;; ─────────────────────────────────────────────
+;; TONIX CHAIN — Lottery Smart Contract MVP
+;; Language: FunC
+;; Version: 1.0
+;; ─────────────────────────────────────────────
+;; Author: Tonix Chain
+;; Description:
+;;  • принимает ставки (buy_ticket)
+;;  • хранит участников
+;;  • выбирает победителя
+;;  • сбрасывает список после розыгрыша
+;; ─────────────────────────────────────────────
+
+const int OP_BUY = 0x01;
+const int OP_DRAW = 0x02;
+
+() main() impure {
+    ;; входящее сообщение
+    var msg = get_in_msg_full();
+    var cs = msg.body.begin_parse();
+
+    ;; загружаем opcode
+    var op = cs~load_uint(8);
+
+    if (op == OP_BUY) {
+        ;; игрок покупает билет
+        handle_buy(msg);
+    } else if (op == OP_DRAW) {
+        ;; владелец запускает розыгрыш
+        handle_draw();
+    } else {
+        ;; неизвестная операция — игнор
+        ()
+    }
+}
+
+() handle_buy(slice msg) impure {
+    var sender = msg.info.src;
+    var value = msg.info.value;
+    var ds = get_data().begin_parse();
+
+    ;; storage layout:
+    ;; [0] owner address
+    ;; [1] ticket price
+    ;; [2] participants dict
+    ;; [3] count
+
+    var owner = ds~load_msg_addr();
+    var price = ds~load_coins();
+    var participants = ds~load_dict();
+    var count = ds~load_uint(16);
+
+    ;; проверяем оплату
+    if (value < price) {
+        throw(100); ;; недостаточно средств
+    }
+
+    ;; добавляем участника
+    participants~udict_set_builder(16, count, begin_cell().store_slice(sender));
+
+    ;; увеличиваем счётчик
+    count += 1;
+
+    ;; сохраняем
+    set_data(begin_cell()
+        .store_slice(owner)
+        .store_coins(price)
+        .store_dict(participants)
+        .store_uint(count, 16)
+        .end_cell());
+}
+
+() handle_draw() impure {
+    var ds = get_data().begin_parse();
+    var owner = ds~load_msg_addr();
+    var price = ds~load_coins();
+    var participants = ds~load_dict();
+    var count = ds~load_uint(16);
+
+    ;; должен быть хотя бы 1 участник
+    if (count == 0) {
+        throw(101);
+    }
+
+    ;; выбираем случайного победителя на основе блока
+    var rand = (now() + get_balance()) % count;
+    var winner_opt = participants.udict_get(16, rand);
+    if (winner_opt.null()) {
+        throw(102);
+    }
+
+    var winner = winner_opt~load_ref().begin_parse()~load_msg_addr();
+
+    ;; отправляем весь баланс победителю
+    var msg = begin_cell()
+        .store_uint(0x18, 6)
+        .store_slice(winner)
+        .store_coins(get_balance())
+        .store_uint(0, 1)
+        .end_cell();
+    send_raw_message(msg, 0);
+
+    ;; сбрасываем участников
+    set_data(begin_cell()
+        .store_slice(owner)
+        .store_coins(price)
+        .store_dict(new_dict())
+        .store_uint(0, 16)
+        .end_cell());
+}
+
