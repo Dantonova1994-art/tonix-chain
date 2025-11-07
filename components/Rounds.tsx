@@ -27,6 +27,7 @@ export default function Rounds({
 }) {
   const [roundsData, setRoundsData] = useState<RoundsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const lastErrorToastRef = useRef<number>(0);
 
   const showErrorToast = (message: string) => {
@@ -40,16 +41,23 @@ export default function Rounds({
   const fetchRounds = async () => {
     try {
       setLoading(true);
+      setError(null);
       console.log("📊 Fetching rounds...");
-      const response = await fetch("/api/lottery/rounds");
+      
+      const response = await fetch("/api/lottery/rounds", {
+        signal: AbortSignal.timeout(15000),
+      });
+      
       if (!response.ok) {
         throw new Error("Failed to fetch rounds");
       }
+      
       const data = await response.json();
       setRoundsData(data);
       console.log("✅ Rounds loaded:", data.rounds?.length || 0, "rounds");
     } catch (err: any) {
       console.error("❌ Error fetching rounds:", err);
+      setError(err.message || "Ошибка при загрузке раундов");
       showErrorToast("Ошибка при загрузке раундов");
     } finally {
       setLoading(false);
@@ -91,6 +99,27 @@ export default function Rounds({
     );
   }
 
+  if (error && !roundsData) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.6 }}
+        className="w-full max-w-md mx-auto mt-6"
+      >
+        <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-red-500/30 p-6 text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button
+            onClick={fetchRounds}
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:shadow-[0_0_20px_rgba(0,255,255,0.5)] transition-all duration-300"
+          >
+            🔄 Повторить
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
   if (!roundsData || roundsData.rounds.length === 0) {
     return null;
   }
@@ -117,6 +146,12 @@ export default function Rounds({
             {loading ? "⏳" : "🔄"}
           </button>
         </div>
+
+        {error && roundsData && (
+          <div className="mb-4 p-3 rounded-lg border border-yellow-500/50 bg-yellow-500/10 text-yellow-300 text-sm">
+            ⚠️ {error}
+          </div>
+        )}
 
         {currentRound && (
           <div className="mb-4 p-3 rounded-lg border border-green-500/50 bg-green-500/10">
@@ -169,4 +204,3 @@ export default function Rounds({
     </motion.div>
   );
 }
-

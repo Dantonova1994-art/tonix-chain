@@ -24,6 +24,7 @@ interface Round {
 export default function RoundHistory({ roundId }: { roundId: number }) {
   const [round, setRound] = useState<Round | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const lastErrorToastRef = useRef<number>(0);
 
   const showErrorToast = (message: string) => {
@@ -37,16 +38,23 @@ export default function RoundHistory({ roundId }: { roundId: number }) {
   const fetchRoundHistory = async () => {
     try {
       setLoading(true);
+      setError(null);
       console.log("📜 Fetching round history for round:", roundId);
-      const response = await fetch(`/api/lottery/round/${roundId}`);
+      
+      const response = await fetch(`/api/lottery/round/${roundId}`, {
+        signal: AbortSignal.timeout(15000),
+      });
+      
       if (!response.ok) {
         throw new Error("Failed to fetch round history");
       }
+      
       const data = await response.json();
       setRound(data.round);
       console.log("✅ Round history loaded:", data.round?.events?.length || 0, "events");
     } catch (err: any) {
       console.error("❌ Error fetching round history:", err);
+      setError(err.message || "Ошибка при загрузке истории раунда");
       showErrorToast("Ошибка при загрузке истории раунда");
     } finally {
       setLoading(false);
@@ -123,6 +131,27 @@ export default function RoundHistory({ roundId }: { roundId: number }) {
     );
   }
 
+  if (error && !round) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.6 }}
+        className="w-full max-w-md mx-auto mt-6"
+      >
+        <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-red-500/30 p-6 text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button
+            onClick={fetchRoundHistory}
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:shadow-[0_0_20px_rgba(0,255,255,0.5)] transition-all duration-300"
+          >
+            🔄 Повторить
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
   if (!round) {
     return null;
   }
@@ -147,6 +176,12 @@ export default function RoundHistory({ roundId }: { roundId: number }) {
             {loading ? "⏳" : "🔄"}
           </button>
         </div>
+
+        {error && round && (
+          <div className="mb-4 p-3 rounded-lg border border-yellow-500/50 bg-yellow-500/10 text-yellow-300 text-sm">
+            ⚠️ {error}
+          </div>
+        )}
 
         {round.events.length === 0 ? (
           <p className="text-center text-gray-400 py-8">Событий в этом раунде пока нет</p>
@@ -205,4 +240,3 @@ export default function RoundHistory({ roundId }: { roundId: number }) {
     </motion.div>
   );
 }
-

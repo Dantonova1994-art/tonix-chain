@@ -97,6 +97,7 @@ export default function NFTTicketModal({ isOpen, onClose, roundId }: NFTTicketMo
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors"
+              title="Закрыть (Esc)"
             >
               ✕
             </button>
@@ -128,10 +129,13 @@ export default function NFTTicketModal({ isOpen, onClose, roundId }: NFTTicketMo
             <p className="text-xs text-gray-500 text-center">
               Функционал NFT-билетов находится в разработке
             </p>
+            
+            <p className="text-xs text-gray-600 text-center">
+              Нажмите Esc для закрытия
+            </p>
           </div>
         </motion.div>
       </div>
     </AnimatePresence>
   );
 }
-

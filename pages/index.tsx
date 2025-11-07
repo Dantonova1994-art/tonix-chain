@@ -168,9 +168,15 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.6 }}
           transition={{ delay: 1.2 }}
-          className="mt-12 text-gray-500 text-xs text-center"
+          className="mt-12 text-gray-500 text-xs text-center space-y-2"
         >
-          © TONIX Chain — The Future of Web3 Games 💎
+          <p>© TONIX Chain — The Future of Web3 Games 💎</p>
+          <a
+            href="/status"
+            className="text-cyan-400 hover:text-cyan-300 transition-colors"
+          >
+            Статус системы
+          </a>
         </motion.footer>
       </div>
     </main>
