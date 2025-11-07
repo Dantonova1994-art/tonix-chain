@@ -33,7 +33,9 @@ export default function Home() {
           url: "https://t.me/tonixchain_lottery_bot/app?startapp=lottery"
         });
       } else {
-        alert("🔗 Ссылка: https://t.me/tonixchain_lottery_bot/app?startapp=lottery");
+        // Fallback - копирование в буфер обмена
+        navigator.clipboard.writeText("https://t.me/tonixchain_lottery_bot/app?startapp=lottery");
+        console.log("🔗 Link copied to clipboard");
       }
     }
   };
@@ -65,13 +67,13 @@ export default function Home() {
         >
           <button
             onClick={handleShare}
-            className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-cyan-500/30 text-cyan-300 hover:bg-white/20 transition-all duration-300 text-sm font-semibold"
+            className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-cyan-500/30 text-cyan-300 hover:bg-white/20 transition-all duration-300 text-sm font-semibold shadow-[0_0_10px_rgba(0,255,255,0.2)]"
           >
             🔗 Поделиться
           </button>
           <button
             onClick={handleClose}
-            className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-red-500/30 text-red-300 hover:bg-white/20 transition-all duration-300 text-sm font-semibold"
+            className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-red-500/30 text-red-300 hover:bg-white/20 transition-all duration-300 text-sm font-semibold shadow-[0_0_10px_rgba(255,0,0,0.2)]"
           >
             Закрыть
           </button>
@@ -83,7 +85,7 @@ export default function Home() {
           transition={{ delay: 1.2 }}
           className="mt-12 text-gray-500 text-xs text-center"
         >
-          © TONIX Chain — The Future of Web3 Games
+          © TONIX Chain — The Future of Web3 Games 💎
         </motion.footer>
       </div>
     </main>

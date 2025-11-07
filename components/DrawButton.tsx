@@ -3,6 +3,7 @@
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 // Временный адрес владельца (заменить на реальный из контракта)
 const OWNER_ADDRESS = process.env.NEXT_PUBLIC_OWNER_ADDRESS || "";
@@ -11,7 +12,6 @@ export default function DrawButton() {
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -27,18 +27,21 @@ export default function DrawButton() {
   const handleDraw = async () => {
     if (!isOwner) {
       console.warn("⚠️ Only owner can draw");
-      alert("⚠️ Только владелец контракта может провести розыгрыш");
+      toast.error("Только владелец может запустить розыгрыш");
       return;
     }
 
     if (!tonConnectUI || !isConnected) {
-      alert("⚠️ Пожалуйста, подключите кошелек сначала");
+      toast.error("⚠️ Пожалуйста, подключите кошелек сначала");
       return;
     }
 
     console.log("🎲 Проведение розыгрыша началось");
     setLoading(true);
-    setStatus("⏳ Отправка транзакции розыгрыша...");
+    
+    const loadingToast = toast.loading("⏳ Отправка транзакции розыгрыша...", {
+      duration: 10000,
+    });
 
     try {
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -58,21 +61,13 @@ export default function DrawButton() {
 
       console.log("📤 Sending draw transaction...", tx);
       await tonConnectUI.sendTransaction(tx);
+      toast.dismiss(loadingToast);
+      toast.success("🎲 Розыгрыш запущен!");
       console.log("✅ Розыгрыш успешно проведён!");
-      setStatus("✅ Розыгрыш успешно проведён!");
-      alert("✅ Розыгрыш успешно проведён!");
-
-      setTimeout(() => {
-        setStatus(null);
-      }, 3000);
     } catch (err) {
+      toast.dismiss(loadingToast);
+      toast.error("❌ Ошибка при проведении розыгрыша");
       console.error("❌ Ошибка при проведении розыгрыша:", err);
-      setStatus("❌ Ошибка при проведении розыгрыша.");
-      alert("❌ Ошибка при проведении розыгрыша.");
-
-      setTimeout(() => {
-        setStatus(null);
-      }, 3000);
     } finally {
       setLoading(false);
     }
@@ -110,16 +105,6 @@ export default function DrawButton() {
           <span>🎲 Провести розыгрыш</span>
         )}
       </motion.button>
-
-      {status && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-purple-500/30 text-sm text-center"
-        >
-          {status}
-        </motion.div>
-      )}
     </motion.div>
   );
 }

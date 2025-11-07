@@ -4,11 +4,11 @@ import { useTonConnectUI } from "@tonconnect/ui-react";
 import { buyTicket } from "../lib/tonClient";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 export default function BuyTicket({ onSuccess }: { onSuccess?: () => void }) {
   const [tonConnectUI] = useTonConnectUI();
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -19,30 +19,32 @@ export default function BuyTicket({ onSuccess }: { onSuccess?: () => void }) {
 
   const handleBuyTicket = async () => {
     if (!tonConnectUI) {
-      alert("⚠️ TonConnect не инициализирован");
+      toast.error("⚠️ TonConnect не инициализирован");
+      return;
+    }
+
+    if (!isConnected) {
+      toast.error("⚠️ Сначала подключите кошелёк");
       return;
     }
 
     console.log("🎫 Покупка билета началась");
     setLoading(true);
-    setStatus("⏳ Отправка транзакции...");
+    
+    const loadingToast = toast.loading("⏳ Отправка транзакции...", {
+      duration: 10000,
+    });
     
     try {
       await buyTicket(tonConnectUI);
-      setStatus("✅ Билет успешно куплен!");
+      toast.dismiss(loadingToast);
+      toast.success("🎟 Билет куплен успешно!");
       console.log("✅ Транзакция успешна");
       onSuccess?.();
-      
-      setTimeout(() => {
-        setStatus(null);
-      }, 3000);
     } catch (err) {
+      toast.dismiss(loadingToast);
+      toast.error("❌ Ошибка при транзакции");
       console.error("❌ Ошибка при покупке билета:", err);
-      setStatus("❌ Ошибка при покупке билета.");
-      
-      setTimeout(() => {
-        setStatus(null);
-      }, 3000);
     } finally {
       setLoading(false);
     }
@@ -77,22 +79,12 @@ export default function BuyTicket({ onSuccess }: { onSuccess?: () => void }) {
           <span>🎟 Купить билет — 0.5 TON</span>
         )}
         
-        {!isConnected && (
+        {!isConnected && !loading && (
           <span className="block text-xs mt-1 text-cyan-200/80">
             Сначала подключите кошелёк
           </span>
         )}
       </motion.button>
-
-      {status && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-cyan-500/30 text-sm text-center"
-        >
-          {status}
-        </motion.div>
-      )}
     </motion.div>
   );
 }
