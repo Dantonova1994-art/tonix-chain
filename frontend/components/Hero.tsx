@@ -1,27 +1,39 @@
-"use client";
-
-import WalletConnect from "./WalletConnect";
-import ContractStatus from "./ContractStatus";
-import BuyTicket from "./BuyTicket";
-import { useState } from "react";
+import React from "react";
+import { motion } from "framer-motion";
 
 export default function Hero() {
-  const [refreshKey, setRefreshKey] = useState(0);
-
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen text-center bg-gradient-to-b from-[#0b0c10] to-[#121826] pb-10">
-      <div className="flex flex-col items-center">
-        <div className="w-20 h-20 mb-6 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl shadow-[0_0_30px_rgba(0,255,255,0.6)]" />
-        <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          Tonix Chain
+    <section className="text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="flex items-center gap-3"
+      >
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 shadow-[0_0_20px_rgba(0,255,255,0.6)]" />
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]">
+          TONIX CHAIN
         </h1>
-        <p className="text-gray-400 mb-8 text-lg md:text-xl max-w-lg">
-          Bridging TON to the future of Web3
-        </p>
-        <WalletConnect />
-        <BuyTicket onSuccess={() => setRefreshKey((k) => k + 1)} />
-        <ContractStatus refreshKey={refreshKey} />
-      </div>
+      </motion.div>
+
+      <motion.p
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+        className="text-lg md:text-xl text-gray-300 max-w-xl"
+      >
+        Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
+      </motion.p>
+
+      <motion.a
+        href="#play"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 0.7 }}
+        className="px-8 py-3 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_rgba(0,255,255,0.5)] hover:shadow-[0_0_40px_rgba(0,255,255,0.8)] transition-all duration-300"
+      >
+        🚀 НАЧАТЬ ИГРУ
+      </motion.a>
     </section>
   );
 }
