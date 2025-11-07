@@ -1,0 +1,641 @@
+#pragma version =0.4.6;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+;; TonixLottery_TonixLottery.headers.fc
+;;
+;; Header files for TonixLottery
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_store_address_opt
+builder __tact_store_address_opt(builder b, slice address) inline;
+
+;; __tact_context_get
+(int, slice, int, slice) __tact_context_get() inline;
+
+;; __tact_context_get_sender
+slice __tact_context_get_sender() inline;
+
+;; __tact_prepare_random
+() __tact_prepare_random() impure inline;
+
+;; __tact_slice_eq_bits_nullable_left
+int __tact_slice_eq_bits_nullable_left(slice a, slice b) inline;
+
+;; __tact_dict_get_int_slice
+slice __tact_dict_get_int_slice(cell d, int kl, int k) inline;
+
+;; __tact_dict_set_int_slice
+(cell, ()) __tact_dict_set_int_slice(cell d, int kl, int k, slice v) inline;
+
+;; $DeployOk$_store
+builder $DeployOk$_store(builder build_0, (int) v) inline;
+
+;; $DeployOk$_store_cell
+cell $DeployOk$_store_cell((int) v, builder b) inline;
+
+;; $TonixLottery$_store
+builder $TonixLottery$_store(builder build_0, (slice, int, cell, int, int, int, slice, int) v) inline;
+
+;; $TonixLottery$_load
+(slice, ((slice, int, cell, int, int, int, slice, int))) $TonixLottery$_load(slice sc_0) inline;
+
+;; $Context$_get_value
+_ $Context$_get_value((int, slice, int, slice) v) inline;
+
+;; $TonixLottery$init$_load
+(slice, ((slice, int))) $TonixLottery$init$_load(slice sc_0) inline;
+
+;; $TonixLottery$_contract_init
+(slice, int, cell, int, int, int, slice, int) $TonixLottery$_contract_init(slice $owner, int $ticketPrice) impure inline;
+
+;; $TonixLottery$_contract_load
+(slice, int, cell, int, int, int, slice, int) $TonixLottery$_contract_load() impure inline;
+
+;; $TonixLottery$_contract_store
+() $TonixLottery$_contract_store((slice, int, cell, int, int, int, slice, int) v) impure inline;
+
+;; $global_random
+int $global_random(int $min, int $max) impure inline;
+
+;; $TonixLottery$_fun_ticketPrice
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_ticketPrice((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $TonixLottery$_fun_participantCount
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_participantCount((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $TonixLottery$_fun_pool
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_pool((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $TonixLottery$_fun_roundActive
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_roundActive((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $TonixLottery$_fun_winner
+((slice, int, cell, int, int, int, slice, int), slice) $TonixLottery$_fun_winner((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $TonixLottery$_fun_winnerCanClaim
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_winnerCanClaim((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $MessageParameters$_constructor_bounce_to_value_mode_body
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline;
+
+;; $TonixLottery$_fun_notify
+((slice, int, cell, int, int, int, slice, int), ()) $TonixLottery$_fun_notify((slice, int, cell, int, int, int, slice, int) $self, cell $body) impure inline;
+
+;; $TonixLottery$_fun_requireOwner
+((slice, int, cell, int, int, int, slice, int), ()) $TonixLottery$_fun_requireOwner((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $TonixLottery$_fun_owner
+((slice, int, cell, int, int, int, slice, int), slice) $TonixLottery$_fun_owner((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref;
+
+;; $SendParameters$_constructor_to_value_mode_bounce
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce(slice $to, int $value, int $mode, int $bounce) inline;
+
+;; $DeployOk$_constructor_queryId
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline;
+
+
+;; TonixLottery_TonixLottery.stdlib.fc
+global (int, slice, int, slice) __tact_context;
+global slice __tact_context_sender;
+global cell __tact_child_contract_codes;
+global int __tact_randomized;
+
+(slice, slice) __tact_load_address_opt(slice cs) asm """
+
+            b{00} SDBEGINSQ
+            IF:<{
+              PUSHNULL
+            }>ELSE<{
+              LDMSGADDR
+              SWAP
+            }>
+
+""";
+
+builder __tact_store_addr_none(builder b) asm "b{00} STSLICECONST";
+
+builder __tact_store_address_opt(builder b, slice address) inline {
+    if (null?(address)) {
+        return __tact_store_addr_none(b);
+    } else {
+        return b.store_slice(address);
+    }
+}
+
+(int, slice, int, slice) __tact_context_get() inline {
+    return __tact_context;
+}
+
+slice __tact_context_get_sender() inline {
+    return __tact_context_sender;
+}
+
+() __tact_prepare_random() impure inline {
+    if (null?(__tact_randomized)) {
+        randomize_lt();
+        __tact_randomized = true;
+    }
+}
+
+int __tact_slice_eq_bits_nullable_left(slice a, slice b) inline {
+    return (null?(a)) ? (false) : (equal_slices_bits(a, b));
+}
+
+slice __tact_dict_get_int_slice(cell d, int kl, int k) inline {
+    var (r, ok) = idict_get?(d, kl, k);
+    if (ok) {
+        return r;
+    } else {
+        return null();
+    }
+}
+
+(cell, ()) __tact_dict_set_int_slice(cell d, int kl, int k, slice v) inline {
+    if (null?(v)) {
+        var (r, ok) = idict_delete?(d, kl, k);
+        return (r, ());
+    } else {
+        return (idict_set(d, kl, k, v), ());
+    }
+}
+
+int $global_nativeRandomInterval(int $max) impure asm """
+    RAND
+""";
+
+int $global_random(int $min, int $max) impure inline {
+    __tact_prepare_random();
+    return ($min + $global_nativeRandomInterval(($max - $min)));
+}
+
+int $global_myBalance() impure asm """
+    BALANCE FIRST
+""";
+
+() $global_nativeReserve(int $amount, int $mode) impure asm """
+    RAWRESERVE
+""";
+
+() $global_message((int, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    106 PUSHINT         // 1 + 4 + 4 + 64 + 32 + 1
+    STZEROES
+    // → Stack state
+    // s0: Builder
+    // s1: `body`
+    // s2: `mode`
+    STDICT
+    ENDC
+    SWAP
+    SENDRAWMSG
+""";
+
+() $global_send((int, cell, cell, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+    STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+    // → Stack state
+    // s0: Builder
+    // s1: `data`
+    // s2: `code`
+    // s3: `body`
+    // s4: `mode`
+
+    // Group 2: Placing the Builder after code and data, then checking those for nullability
+    s2 XCHG0
+    DUP2
+    ISNULL
+    SWAP
+    ISNULL
+    AND
+    // → Stack state
+    // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+    // s1: `code`
+    // s2: `data`
+    // s3: Builder
+    // s4: `body`
+    // s5: `mode`
+
+    // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+    <{
+        DROP2 // drop `data` and `code`, since either of those is null
+        b{0} STSLICECONST
+    }> PUSHCONT
+
+    // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+    <{
+        // _ split_depth:(Maybe (## 5))
+        //   special:(Maybe TickTock)
+        //   code:(Maybe ^Cell)
+        //   data:(Maybe ^Cell)
+        //   library:(Maybe ^Cell)
+        // = StateInit;
+        ROT                // place message Builder on top
+        b{10} STSLICECONST // store Maybe = true, Either = false
+        // Start composing inlined StateInit
+        b{00} STSLICECONST // store split_depth and special first
+        STDICT             // store code
+        STDICT             // store data
+        b{0} STSLICECONST  // store library
+    }> PUSHCONT
+
+    // Group 3: IFELSE that does the branching shown above
+    IFELSE
+    // → Stack state
+    // s0: Builder
+    // s1: null or StateInit
+    // s2: `body`
+    // s3: `mode`
+
+    // Group 4: Finalizing the message
+    STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+    ENDC
+    // → Stack state
+    // s0: Cell
+    // s1: `mode`
+
+    // Group 5: Sending the message, with `mode` on top
+    SWAP
+    SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+""";
+
+((slice, int, cell, int, int, int, slice, int), ()) $TonixLottery$_fun_notify((slice, int, cell, int, int, int, slice, int) $self, cell $body) impure inline {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    slice $to = __tact_context_get_sender();
+    int $bounce = false;
+    if (false) {
+        int $balance = $global_myBalance();
+        int $balanceBeforeMessage = ($balance - $Context$_get_value(__tact_context_get()));
+        if (($balanceBeforeMessage < 0)) {
+            $global_nativeReserve(0, 0);
+            $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 130, $body));
+            return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), ());
+        }
+    }
+    $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 66, $body));
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), ());
+}
+
+((slice, int, cell, int, int, int, slice, int), ()) $TonixLottery$_fun_requireOwner((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    throw_unless(132, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), ());
+}
+
+((slice, int, cell, int, int, int, slice, int), slice) $TonixLottery$_fun_owner((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    var $fresh$ret_6 = $self'owner;
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), $fresh$ret_6);
+}
+
+;; TonixLottery_TonixLottery.storage.fc
+;;
+;; Type: Context
+;; TLB: _ bounceable:bool sender:address value:int257 raw:^slice = Context
+;;
+
+_ $Context$_get_value((int, slice, int, slice) v) inline {
+    var (v'bounceable, v'sender, v'value, v'raw) = v;
+    return v'value;
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell value:int257 to:address bounce:bool = SendParameters
+;;
+
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce(slice $to, int $value, int $mode, int $bounce) inline {
+    return ($mode, null(), null(), null(), $value, $to, $bounce);
+}
+
+;;
+;; Type: MessageParameters
+;; TLB: _ mode:int257 body:Maybe ^cell value:int257 to:address bounce:bool = MessageParameters
+;;
+
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline {
+    return ($mode, $body, $value, $to, $bounce);
+}
+
+;;
+;; Type: DeployOk
+;; Header: 0xaff90f57
+;; TLB: deploy_ok#aff90f57 queryId:uint64 = DeployOk
+;;
+
+builder $DeployOk$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 2952335191, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $DeployOk$_store_cell((int) v, builder b) inline {
+    return $DeployOk$_store(b, v).end_cell();
+}
+
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline {
+    return ($queryId);
+}
+
+;;
+;; Type: TonixLottery
+;; TLB: _ owner:address ticketPrice:coins participants:dict<int, address> participantCount:int257 pool:coins roundActive:bool winner:address winnerCanClaim:bool = TonixLottery
+;;
+
+builder $TonixLottery$_store(builder build_0, (slice, int, cell, int, int, int, slice, int) v) inline {
+    var (v'owner, v'ticketPrice, v'participants, v'participantCount, v'pool, v'roundActive, v'winner, v'winnerCanClaim) = v;
+    build_0 = build_0.store_slice(v'owner);
+    build_0 = build_0.store_varuint16(v'ticketPrice);
+    build_0 = build_0.store_dict(v'participants);
+    build_0 = build_0.store_int(v'participantCount, 257);
+    build_0 = build_0.store_varuint16(v'pool);
+    build_0 = build_0.store_int(v'roundActive, 1);
+    var build_1 = begin_cell();
+    build_1 = __tact_store_address_opt(build_1, v'winner);
+    build_1 = build_1.store_int(v'winnerCanClaim, 1);
+    build_0 = store_builder_ref(build_0, build_1);
+    return build_0;
+}
+
+(slice, ((slice, int, cell, int, int, int, slice, int))) $TonixLottery$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'ticketPrice = sc_0~load_varuint16();
+    var v'participants = sc_0~load_dict();
+    var v'participantCount = sc_0~load_int(257);
+    var v'pool = sc_0~load_varuint16();
+    var v'roundActive = sc_0~load_int(1);
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'winner = sc_1~__tact_load_address_opt();
+    var v'winnerCanClaim = sc_1~load_int(1);
+    return (sc_0, (v'owner, v'ticketPrice, v'participants, v'participantCount, v'pool, v'roundActive, v'winner, v'winnerCanClaim));
+}
+
+(slice, ((slice, int))) $TonixLottery$init$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'ticketPrice = sc_0~load_varuint16();
+    return (sc_0, (v'owner, v'ticketPrice));
+}
+
+(slice, int, cell, int, int, int, slice, int) $TonixLottery$_contract_load() impure inline {
+    slice $sc = get_data().begin_parse();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$TonixLottery$_load();
+    }
+    else {
+        (slice $owner, int $ticketPrice) = $sc~$TonixLottery$init$_load();
+        $sc.end_parse();
+        return $TonixLottery$_contract_init($owner, $ticketPrice);
+    }
+}
+
+() $TonixLottery$_contract_store((slice, int, cell, int, int, int, slice, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_int(true, 1);
+    b = $TonixLottery$_store(b, v);
+    set_data(b.end_cell());
+}
+
+;;
+;; Contract TonixLottery functions
+;;
+
+(slice, int, cell, int, int, int, slice, int) $TonixLottery$_contract_init(slice $owner, int $ticketPrice) impure inline {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = (null(), null(), null(), 0, 0, true, null(), false);
+    $self'owner = $owner;
+    $self'ticketPrice = $ticketPrice;
+    $self'roundActive = true;
+    $self'participantCount = 0;
+    $self'pool = 0;
+    $self'winner = null();
+    $self'winnerCanClaim = false;
+    return ($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim);
+}
+
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_ticketPrice((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    var $fresh$ret_0 = $self'ticketPrice;
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), $fresh$ret_0);
+}
+
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_participantCount((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    var $fresh$ret_1 = $self'participantCount;
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), $fresh$ret_1);
+}
+
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_pool((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    var $fresh$ret_2 = $self'pool;
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), $fresh$ret_2);
+}
+
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_roundActive((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    var $fresh$ret_3 = $self'roundActive;
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), $fresh$ret_3);
+}
+
+((slice, int, cell, int, int, int, slice, int), slice) $TonixLottery$_fun_winner((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    var $fresh$ret_4 = $self'winner;
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), $fresh$ret_4);
+}
+
+((slice, int, cell, int, int, int, slice, int), int) $TonixLottery$_fun_winnerCanClaim((slice, int, cell, int, int, int, slice, int) $self) impure inline_ref {
+    var (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)) = $self;
+    var $fresh$ret_5 = $self'winnerCanClaim;
+    return (($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim), $fresh$ret_5);
+}
+
+;;
+;; Get methods of a Contract TonixLottery
+;;
+
+_ %ticketPrice() method_id(89749) {
+    var self = $TonixLottery$_contract_load();
+    var res = self~$TonixLottery$_fun_ticketPrice();
+    return res;
+}
+
+_ %participantCount() method_id(111893) {
+    var self = $TonixLottery$_contract_load();
+    var res = self~$TonixLottery$_fun_participantCount();
+    return res;
+}
+
+_ %pool() method_id(82705) {
+    var self = $TonixLottery$_contract_load();
+    var res = self~$TonixLottery$_fun_pool();
+    return res;
+}
+
+_ %roundActive() method_id(94425) {
+    var self = $TonixLottery$_contract_load();
+    var res = self~$TonixLottery$_fun_roundActive();
+    return res;
+}
+
+_ %winner() method_id(126357) {
+    var self = $TonixLottery$_contract_load();
+    var res = self~$TonixLottery$_fun_winner();
+    return res;
+}
+
+_ %winnerCanClaim() method_id(90277) {
+    var self = $TonixLottery$_contract_load();
+    var res = self~$TonixLottery$_fun_winnerCanClaim();
+    return res;
+}
+
+_ %owner() method_id(83229) {
+    var self = $TonixLottery$_contract_load();
+    var res = self~$TonixLottery$_fun_owner();
+    return res;
+}
+
+;;
+;; Routing of a Contract TonixLottery
+;;
+
+;; message opcode reader utility: only binary receivers
+;; Returns 32 bit message opcode, otherwise throws the "Invalid incoming message" exit code
+(slice, int) ~load_opcode_internal(slice s) asm( -> 1 0) "32 LDUQ 130 THROWIFNOT";
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    cs~skip_bits(2);
+    var msg_bounceable = cs~load_int(1);
+    var msg_bounced = cs~load_int(1);
+    slice msg_sender_addr = cs~load_msg_addr();
+    __tact_context = (msg_bounceable, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var ($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim) = $TonixLottery$_contract_load();
+    
+    ;; Handle bounced messages
+    if (msg_bounced) { return (); }
+    var op = in_msg~load_opcode_internal();
+    ;; Receive BuyTicket message
+    if (op == 3031985754) {
+        var $msg = empty_tuple();
+        throw_unless(47697, $self'roundActive);
+        int $receivedAmount = $Context$_get_value(__tact_context_get());
+        throw_unless(21547, ($receivedAmount == $self'ticketPrice));
+        slice $sender = __tact_context_get_sender();
+        int $alreadyParticipant = false;
+        int $i = 0;
+        while (( (($i < $self'participantCount)) ? ((~ $alreadyParticipant)) : (false) )) {
+            slice $participant = __tact_dict_get_int_slice($self'participants, 257, $i);
+            if (( ((~ null?($participant))) ? (( __tact_slice_eq_bits_nullable_left($participant, $sender) )) : (false) )) {
+                $alreadyParticipant = true;
+            }
+            $i = ($i + 1);
+        }
+        throw_unless(59137, (~ $alreadyParticipant));
+        $self'participants~__tact_dict_set_int_slice(257, $self'participantCount, $sender);
+        $self'participantCount = ($self'participantCount + 1);
+        $self'pool = ($self'pool + $receivedAmount);
+        $TonixLottery$_contract_store(($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim));
+        return ();
+    }
+    
+    ;; Receive DrawWinner message
+    if (op == 2838117625) {
+        var $msg = empty_tuple();
+        ($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)~$TonixLottery$_fun_requireOwner();
+        throw_unless(47697, $self'roundActive);
+        throw_unless(39078, ($self'participantCount > 0));
+        int $randomValue = $global_random(0, $self'participantCount);
+        slice $winnerAddress = __tact_dict_get_int_slice($self'participants, 257, $randomValue);
+        throw_unless(63691, (~ null?($winnerAddress)));
+        $self'winner = $winnerAddress;
+        $self'winnerCanClaim = true;
+        $self'roundActive = false;
+        $TonixLottery$_contract_store(($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim));
+        return ();
+    }
+    
+    ;; Receive ClaimPrize message
+    if (op == 2639554183) {
+        var $msg = empty_tuple();
+        throw_unless(18315, (~ null?($self'winner)));
+        throw_unless(45748, $self'winnerCanClaim);
+        slice $sender = __tact_context_get_sender();
+        throw_unless(43564, ( __tact_slice_eq_bits_nullable_left($self'winner, $sender) ));
+        $self'winnerCanClaim = false;
+        int $balance = $global_myBalance();
+        int $reserveGas = 50000000;
+        int $amountToSend = ($balance - $reserveGas);
+        if (($amountToSend > 0)) {
+            $global_send($SendParameters$_constructor_to_value_mode_bounce($sender, $amountToSend, 1, false));
+            $self'pool = 0;
+        }
+        $TonixLottery$_contract_store(($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim));
+        return ();
+    }
+    
+    ;; Receive ResetRound message
+    if (op == 753035870) {
+        var $msg = empty_tuple();
+        ($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)~$TonixLottery$_fun_requireOwner();
+        throw_unless(50778, (~ $self'roundActive));
+        if ((~ null?($self'winner))) {
+            throw_unless(15480, (~ $self'winnerCanClaim));
+        }
+        $self'participantCount = 0;
+        $self'pool = 0;
+        $self'roundActive = true;
+        $self'winner = null();
+        $self'winnerCanClaim = false;
+        $TonixLottery$_contract_store(($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim));
+        return ();
+    }
+    
+    ;; Receive EmergencyWithdraw message
+    if (op == 3624243739) {
+        var $msg = empty_tuple();
+        ($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)~$TonixLottery$_fun_requireOwner();
+        throw_unless(42251, (~ $self'roundActive));
+        if ((~ null?($self'winner))) {
+            throw_unless(4522, (~ $self'winnerCanClaim));
+        }
+        int $balance = $global_myBalance();
+        int $reserveGas = 50000000;
+        int $amountToSend = ($balance - $reserveGas);
+        if (($amountToSend > 0)) {
+            $global_send($SendParameters$_constructor_to_value_mode_bounce($self'owner, $amountToSend, 1, false));
+        }
+        $TonixLottery$_contract_store(($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim));
+        return ();
+    }
+    
+    ;; Receive Deploy message
+    if (op == 0x946a98b6) {
+        var $deploy'queryId = in_msg~load_uint(64);
+        ($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim)~$TonixLottery$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
+        $TonixLottery$_contract_store(($self'owner, $self'ticketPrice, $self'participants, $self'participantCount, $self'pool, $self'roundActive, $self'winner, $self'winnerCanClaim));
+        return ();
+    }
+    
+    ;; Throw if not handled
+    throw(130);
+}

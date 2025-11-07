@@ -1,3 +1,0 @@
-module.exports=[36382,a=>a.a(async(b,c)=>{try{let b=await a.y("@tonconnect/ui-react");a.n(b),c()}catch(a){c(a)}},!0),22676,a=>a.a(async(b,c)=>{try{let b=await a.y("@vercel/speed-insights/next");a.n(b),c()}catch(a){c(a)}},!0),57018,a=>a.a(async(b,c)=>{try{var d=a.i(8171),e=a.i(36382),f=a.i(22676),g=b([e,f]);function h({Component:a,pageProps:b}){return(0,d.jsxs)(e.TonConnectUIProvider,{manifestUrl:"https://tonix-chain.vercel.app/tonconnect-manifest.json",children:[(0,d.jsx)(a,{...b}),(0,d.jsx)(f.SpeedInsights,{})]})}[e,f]=g.then?(await g)():g,a.s(["default",()=>h]),c()}catch(a){c(a)}},!1)];
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__198a1804._.js.map
