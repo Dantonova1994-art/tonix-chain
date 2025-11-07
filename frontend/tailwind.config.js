@@ -1,23 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {
       colors: {
-        neon: {
-          cyan: '#00ffff',
-          blue: '#0088ff',
-        },
-      },
-      backgroundImage: {
-        'cosmic-gradient': 'radial-gradient(circle at top, #00ffff 0%, #000055 50%, #000000 100%)',
-        'neon-gradient': 'linear-gradient(135deg, #00ffff 0%, #0088ff 100%)',
-      },
-    },
+        tonixCyan: "#00FFFF",
+        tonixBlue: "#007BFF"
+      }
+    }
   },
-  plugins: [],
-}
+  plugins: []
+};
 
