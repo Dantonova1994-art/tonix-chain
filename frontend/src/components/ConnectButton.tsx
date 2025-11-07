@@ -1,11 +1,10 @@
 import React from 'react';
-import { TonConnectButton } from '@tonconnect/ui-react';
-import { useTonConnectUI } from '@tonconnect/ui-react';
+import { TonConnectButton, useTonWallet } from '@tonconnect/ui-react';
 
 export default function ConnectButton() {
-  const [tonConnectUI] = useTonConnectUI();
-  const connected = tonConnectUI?.connected || false;
-  const walletAddress = tonConnectUI?.account?.address;
+  const wallet = useTonWallet();
+  const connected = wallet !== null;
+  const walletAddress = wallet?.account?.address;
 
   return (
     <div className="flex flex-col items-center gap-4">
