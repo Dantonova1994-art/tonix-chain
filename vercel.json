@@ -1,9 +1,6 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "npm install && npm run build",
-  "outputDirectory": "frontend/.next",
-  "rootDirectory": "frontend",
   "builds": [
     {
       "src": "frontend/package.json",
@@ -16,4 +13,3 @@
     "NEXT_PUBLIC_TONCENTER_API": "https://toncenter.com/api/v2/jsonRPC"
   }
 }
-
