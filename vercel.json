@@ -1,15 +1,7 @@
 {
   "version": 2,
-  "framework": "nextjs",
   "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/next"
-    }
+    { "src": "package.json", "use": "@vercel/next" }
   ],
-  "env": {
-    "NEXT_PUBLIC_NETWORK": "mainnet",
-    "NEXT_PUBLIC_CONTRACT_ADDRESS": "EQAt1tW6ySperEXATXGHNo63JizWDp6qjn9RgtYp5bCgtnqx",
-    "NEXT_PUBLIC_TONCENTER_API": "https://toncenter.com/api/v2/jsonRPC"
-  }
+  "framework": "nextjs"
 }
