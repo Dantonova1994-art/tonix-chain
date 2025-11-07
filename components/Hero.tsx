@@ -5,6 +5,17 @@ export default function Hero() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, 100]); // эффект параллакса
 
+  const scrollToBuy = () => {
+    console.log("🚀 НАЧАТЬ ИГРУ button clicked");
+    const el = document.getElementById("buy-section");
+    if (el) {
+      console.log("📍 Scrolling to buy-section");
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      console.warn("⚠️ buy-section element not found");
+    }
+  };
+
   return (
     <motion.section
       style={{ y }}
@@ -46,16 +57,15 @@ export default function Hero() {
         Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
       </motion.p>
 
-      <motion.a
-        href="#play"
+      <motion.button
+        onClick={scrollToBuy}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.7 }}
-        className="px-8 py-3 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_rgba(0,255,255,0.5)] hover:shadow-[0_0_40px_rgba(0,255,255,0.8)] transition-all duration-300"
+        className="px-8 py-3 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_rgba(0,255,255,0.5)] hover:shadow-[0_0_40px_rgba(0,255,255,0.8)] transition-all duration-300 cursor-pointer"
       >
         🚀 НАЧАТЬ ИГРУ
-      </motion.a>
+      </motion.button>
     </motion.section>
   );
 }
-
