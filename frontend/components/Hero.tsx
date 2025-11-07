@@ -1,16 +1,37 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function Hero() {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 300], [0, 100]); // эффект параллакса
+
   return (
-    <section className="text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+    <motion.section
+      style={{ y }}
+      className="relative text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6 z-10"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 40 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
         className="flex items-center gap-3"
       >
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 shadow-[0_0_20px_rgba(0,255,255,0.6)]" />
+        <motion.div
+          className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 shadow-[0_0_25px_rgba(0,255,255,0.7)]"
+          animate={{
+            scale: [1, 1.1, 1],
+            boxShadow: [
+              "0 0 20px rgba(0,255,255,0.5)",
+              "0 0 40px rgba(0,255,255,0.9)",
+              "0 0 20px rgba(0,255,255,0.5)"
+            ],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]">
           TONIX CHAIN
         </h1>
@@ -34,6 +55,6 @@ export default function Hero() {
       >
         🚀 НАЧАТЬ ИГРУ
       </motion.a>
-    </section>
+    </motion.section>
   );
 }
