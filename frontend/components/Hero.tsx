@@ -1,7 +1,18 @@
+"use client";
+
+import { useState } from "react";
 import WalletConnect from "./WalletConnect";
 import ContractStatus from "./ContractStatus";
+import BuyTicket from "./BuyTicket";
 
 export default function Hero() {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleTransactionSuccess = () => {
+    // Триггер обновления баланса контракта
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
     <section className="flex flex-col items-center justify-center h-screen text-center bg-gradient-to-b from-[#0b0c10] to-[#121826]">
       <div className="flex flex-col items-center">
@@ -13,7 +24,8 @@ export default function Hero() {
           Bridging TON to the future of Web3
         </p>
         <WalletConnect />
-        <ContractStatus />
+        <BuyTicket onTransactionSuccess={handleTransactionSuccess} />
+        <ContractStatus refreshTrigger={refreshTrigger} />
       </div>
     </section>
   );
