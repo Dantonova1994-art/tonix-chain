@@ -1,0 +1,3 @@
+module.exports=[36382,a=>a.a(async(b,c)=>{try{let b=await a.y("@tonconnect/ui-react");a.n(b),c()}catch(a){c(a)}},!0),57018,a=>a.a(async(b,c)=>{try{var d=a.i(8171),e=a.i(36382),f=b([e]);function g({Component:a,pageProps:b}){return(0,d.jsx)(e.TonConnectUIProvider,{manifestUrl:"https://tonix-chain.vercel.app/tonconnect-manifest.json",children:(0,d.jsx)(a,{...b})})}[e]=f.then?(await f)():f,a.s(["default",()=>g]),c()}catch(a){c(a)}},!1)];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__445954e3._.js.map

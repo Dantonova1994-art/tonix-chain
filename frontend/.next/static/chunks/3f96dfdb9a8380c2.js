@@ -1,0 +1,6 @@
+__turbopack_load_page_chunks__("/roadmap", [
+  "static/chunks/2cb8f3ee17fe8142.js",
+  "static/chunks/adbce6ecf0cf083e.js",
+  "static/chunks/919dd72a921de7fc.css",
+  "static/chunks/turbopack-98afb2a69917eab1.js"
+])
