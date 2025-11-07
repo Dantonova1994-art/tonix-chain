@@ -1,7 +1,10 @@
-import type { AppProps } from 'next/app';
-import '../styles/globals.css';
+import "../styles/globals.css";
+import { TonConnectUIProvider } from "@tonconnect/ui-react";
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+export default function App({ Component, pageProps }: any) {
+  return (
+    <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">
+      <Component {...pageProps} />
+    </TonConnectUIProvider>
+  );
 }
-
