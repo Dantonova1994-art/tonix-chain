@@ -4,6 +4,7 @@ import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { sameWallet } from "../lib/address";
 
 const OWNER_ADDRESS = process.env.NEXT_PUBLIC_OWNER_ADDRESS || "";
 
@@ -21,7 +22,7 @@ export default function DrawButton({ onSuccess }: { onSuccess?: () => void }) {
     }
 
     if (wallet?.account?.address) {
-      const ownerMatch = wallet.account.address.toLowerCase() === OWNER_ADDRESS.toLowerCase();
+      const ownerMatch = sameWallet(wallet.account.address, OWNER_ADDRESS);
       setIsOwner(ownerMatch);
       if (!ownerMatch) {
         console.log("⚠️ Not owner. Wallet:", wallet.account.address, "Owner:", OWNER_ADDRESS);
@@ -103,10 +104,11 @@ export default function DrawButton({ onSuccess }: { onSuccess?: () => void }) {
       <motion.button
         onClick={handleDraw}
         disabled={loading || !isOwner || !isConnected}
+        aria-busy={loading}
         whileHover={{ scale: isOwner && isConnected && !loading ? 1.05 : 1 }}
         whileTap={{ scale: isOwner && isConnected && !loading ? 0.95 : 1 }}
         className="w-full px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_25px_rgba(168,85,247,0.6)] hover:shadow-[0_0_40px_rgba(168,85,247,0.9)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative"
-        title={!isOwner ? "Только владелец" : ""}
+        title={!isOwner && isConnected ? "Только владелец может запустить розыгрыш" : ""}
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">

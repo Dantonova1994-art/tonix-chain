@@ -1,5 +1,6 @@
 const TONCENTER_API = process.env.NEXT_PUBLIC_TONCENTER_API || "https://toncenter.com/api/v2/jsonRPC";
 const NETWORK = process.env.NEXT_PUBLIC_NETWORK || "mainnet";
+const TONCENTER_KEY = process.env.NEXT_PUBLIC_TONCENTER_KEY || "";
 
 export interface ParsedEvent {
   type: "BUY" | "DRAW" | "CLAIM";
@@ -10,19 +11,26 @@ export interface ParsedEvent {
   unixtime: number;
 }
 
+function getApiUrl(endpoint: string): string {
+  const url = `${TONCENTER_API}${endpoint}`;
+  if (TONCENTER_KEY) {
+    const separator = endpoint.includes("?") ? "&" : "?";
+    return `${url}${separator}api_key=${TONCENTER_KEY}`;
+  }
+  return url;
+}
+
 export async function fetchContractBalance(address: string): Promise<number> {
   if (!TONCENTER_API || !address) {
     throw new Error("TONCENTER_API or address not configured");
   }
 
   try {
-    const response = await fetch(
-      `${TONCENTER_API}/getAddressBalance?address=${address}&network=${NETWORK}`,
-      {
-        method: "GET",
-        signal: AbortSignal.timeout(15000),
-      }
-    );
+    const url = getApiUrl(`/getAddressBalance?address=${address}&network=${NETWORK}`);
+    const response = await fetch(url, {
+      method: "GET",
+      signal: AbortSignal.timeout(15000),
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -43,18 +51,25 @@ export async function fetchRecentTx(address: string, limit: number = 30): Promis
   }
 
   try {
+    const body: any = {
+      id: 1,
+      jsonrpc: "2.0",
+      method: "getTransactions",
+      params: {
+        address: address,
+        limit: limit,
+      },
+    };
+
+    const headers: any = { "Content-Type": "application/json" };
+    if (TONCENTER_KEY) {
+      body.api_key = TONCENTER_KEY;
+    }
+
     const response = await fetch(TONCENTER_API, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: 1,
-        jsonrpc: "2.0",
-        method: "getTransactions",
-        params: {
-          address: address,
-          limit: limit,
-        },
-      }),
+      headers,
+      body: JSON.stringify(body),
       signal: AbortSignal.timeout(15000),
     });
 

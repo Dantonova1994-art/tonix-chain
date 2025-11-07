@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTonWallet } from "@tonconnect/ui-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import { formatAddressShort } from "../lib/address";
 
 interface Ticket {
   type: "BUY";
@@ -57,6 +58,15 @@ export default function MyTickets({ refreshKey }: { refreshKey?: number }) {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const copyAddress = async (addr: string) => {
+    try {
+      await navigator.clipboard.writeText(addr);
+      toast.success("Скопировано");
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   if (!wallet?.account?.address) {
@@ -138,4 +148,3 @@ export default function MyTickets({ refreshKey }: { refreshKey?: number }) {
     </motion.div>
   );
 }
-

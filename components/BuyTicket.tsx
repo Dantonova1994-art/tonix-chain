@@ -61,6 +61,7 @@ export default function BuyTicket({ onSuccess }: { onSuccess?: () => void }) {
       <motion.button
         onClick={handleBuyTicket}
         disabled={loading || !isConnected}
+        aria-busy={loading}
         whileHover={{ scale: isConnected && !loading ? 1.05 : 1 }}
         whileTap={{ scale: isConnected && !loading ? 0.95 : 1 }}
         className="w-full px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:shadow-[0_0_40px_rgba(0,255,255,0.9)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"

@@ -4,6 +4,8 @@ import { TonConnectButton } from "@tonconnect/ui-react";
 import { useTonWallet } from "@tonconnect/ui-react";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { formatAddressShort } from "../lib/address";
+import toast from "react-hot-toast";
 
 export default function WalletConnect() {
   const wallet = useTonWallet();
@@ -17,6 +19,15 @@ export default function WalletConnect() {
       console.log("ℹ️ Кошелёк не подключен");
     }
   }, [wallet]);
+
+  const copyAddress = async (addr: string) => {
+    try {
+      await navigator.clipboard.writeText(addr);
+      toast.success("Скопировано");
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
 
   return (
     <motion.div
@@ -34,9 +45,13 @@ export default function WalletConnect() {
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-400">Адрес</p>
-              <p className="text-xs text-cyan-300 font-mono">
-                {wallet.account.address.slice(0, 6)}...{wallet.account.address.slice(-4)}
-              </p>
+              <button
+                onClick={() => copyAddress(wallet.account.address)}
+                className="text-xs text-cyan-300 font-mono hover:text-cyan-200 cursor-pointer"
+                title={wallet.account.address}
+              >
+                {formatAddressShort(wallet.account.address)}
+              </button>
             </div>
           </div>
         </div>

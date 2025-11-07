@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getContractBalance } from "../lib/ton";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -12,6 +12,9 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
   const [status, setStatus] = useState<"Приём ставок" | "Розыгрыш" | "Выплата">("Приём ставок");
   const [participants, setParticipants] = useState(42); // Заглушка
   const [statusIndex, setStatusIndex] = useState(0);
+  const [errorCount, setErrorCount] = useState(0);
+  const [refreshInterval, setRefreshInterval] = useState(15000);
+  const lastErrorToastRef = useRef<number>(0);
 
   const statuses: Array<"Приём ставок" | "Розыгрыш" | "Выплата"> = ["Приём ставок", "Розыгрыш", "Выплата"];
   const statusColors = {
@@ -20,15 +23,24 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
     "Выплата": "bg-cyan-500/20 text-cyan-300 border-cyan-500/50",
   };
 
+  const showErrorToast = (message: string) => {
+    const now = Date.now();
+    if (now - lastErrorToastRef.current > 60000) {
+      toast.error(message);
+      lastErrorToastRef.current = now;
+    }
+  };
+
   const fetchBalance = async (showToast = false) => {
     try {
       if (showToast) {
         setRefreshing(true);
-        console.log("🔁 Обновление данных контракта...");
       }
       
       const bal = await getContractBalance(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!);
       setBalance(bal);
+      setErrorCount(0);
+      setRefreshInterval(15000); // Сбрасываем интервал при успехе
       
       // Определяем статус на основе баланса (заглушка логики)
       if (bal > 0 && bal < 10) {
@@ -45,8 +57,17 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
       console.log("✅ Contract balance updated:", bal, "TON");
     } catch (e) {
       console.error("❌ Error fetching contract balance:", e);
+      const newErrorCount = errorCount + 1;
+      setErrorCount(newErrorCount);
+      
+      // Backoff: если 2 ошибки подряд, увеличиваем интервал до 30с
+      if (newErrorCount >= 2) {
+        setRefreshInterval(30000);
+        console.log("⚠️ Backoff: increasing refresh interval to 30s");
+      }
+      
       if (showToast) {
-        toast.error("Ошибка при получении данных контракта");
+        showErrorToast("Ошибка при получении данных контракта");
       }
     } finally {
       setLoading(false);
@@ -59,14 +80,14 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
     fetchBalance();
   }, [refreshKey]);
 
-  // Автообновление каждые 15 секунд
+  // Автообновление с динамическим интервалом
   useEffect(() => {
     const interval = setInterval(() => {
       fetchBalance(true);
-    }, 15000);
+    }, refreshInterval);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshInterval]);
 
   // Эмуляция смены статуса каждые 30 секунд
   useEffect(() => {
@@ -108,8 +129,11 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
           {/* Баланс */}
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-1">💰 Призовой фонд</p>
-            {loading ? (
-              <p className="text-2xl font-bold text-cyan-300 animate-pulse">Загрузка...</p>
+            {loading || refreshing ? (
+              <div className="space-y-2">
+                <div className="h-8 bg-white/10 rounded animate-pulse mx-auto max-w-[120px]" />
+                <div className="h-4 bg-white/5 rounded animate-pulse mx-auto max-w-[80px]" />
+              </div>
             ) : (
               <AnimatePresence mode="wait">
                 <motion.p
@@ -124,45 +148,44 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
                 </motion.p>
               </AnimatePresence>
             )}
-            {refreshing && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-xs text-cyan-400 mt-1"
-              >
-                Обновление...
-              </motion.p>
-            )}
           </div>
 
           {/* Статус */}
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-1">🎯 Статус</p>
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={status}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                className={`inline-block px-4 py-2 rounded-full font-semibold border ${statusColors[status]}`}
-              >
-                {status}
-              </motion.span>
-            </AnimatePresence>
+            {refreshing ? (
+              <div className="h-8 bg-white/10 rounded-full animate-pulse mx-auto max-w-[140px]" />
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={status}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  className={`inline-block px-4 py-2 rounded-full font-semibold border ${statusColors[status]}`}
+                >
+                  {status}
+                </motion.span>
+              </AnimatePresence>
+            )}
           </div>
 
           {/* Участники */}
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-1">👥 Участников</p>
-            <motion.p
-              key={participants}
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              className="text-xl font-bold text-white"
-            >
-              {participants}
-            </motion.p>
+            {refreshing ? (
+              <div className="h-6 bg-white/10 rounded animate-pulse mx-auto max-w-[60px]" />
+            ) : (
+              <motion.p
+                key={participants}
+                initial={{ scale: 1.1 }}
+                animate={{ scale: 1 }}
+                className="text-xl font-bold text-white"
+              >
+                {participants}
+              </motion.p>
+            )}
           </div>
         </div>
       </div>

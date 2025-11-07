@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import { formatAddressShort } from "../lib/address";
 
 interface ParsedEvent {
   type: "BUY" | "DRAW" | "CLAIM";
@@ -16,6 +17,17 @@ interface ParsedEvent {
 export default function LastDraws() {
   const [events, setEvents] = useState<ParsedEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorCount, setErrorCount] = useState(0);
+  const [refreshInterval, setRefreshInterval] = useState(30000);
+  const lastErrorToastRef = useRef<number>(0);
+
+  const showErrorToast = (message: string) => {
+    const now = Date.now();
+    if (now - lastErrorToastRef.current > 60000) {
+      toast.error(message);
+      lastErrorToastRef.current = now;
+    }
+  };
 
   const fetchHistory = async () => {
     try {
@@ -27,10 +39,21 @@ export default function LastDraws() {
       }
       const data = await response.json();
       setEvents(data.events || []);
+      setErrorCount(0);
+      setRefreshInterval(30000); // Сбрасываем интервал при успехе
       console.log("✅ History loaded:", data.events?.length || 0, "events");
     } catch (err: any) {
       console.error("❌ Error fetching history:", err);
-      toast.error("Ошибка при загрузке истории");
+      const newErrorCount = errorCount + 1;
+      setErrorCount(newErrorCount);
+      
+      // Backoff: если 2 ошибки подряд, увеличиваем интервал до 60с
+      if (newErrorCount >= 2) {
+        setRefreshInterval(60000);
+        console.log("⚠️ Backoff: increasing refresh interval to 60s");
+      }
+      
+      showErrorToast("Ошибка при загрузке истории");
     } finally {
       setLoading(false);
     }
@@ -38,14 +61,9 @@ export default function LastDraws() {
 
   useEffect(() => {
     fetchHistory();
-    const interval = setInterval(fetchHistory, 30000); // Обновление каждые 30 секунд
+    const interval = setInterval(fetchHistory, refreshInterval);
     return () => clearInterval(interval);
-  }, []);
-
-  const formatAddress = (addr: string) => {
-    if (!addr) return "—";
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-  };
+  }, [refreshInterval]);
 
   const formatTime = (unixtime: number) => {
     const date = new Date(unixtime * 1000);
@@ -83,6 +101,15 @@ export default function LastDraws() {
     }
   };
 
+  const copyAddress = async (addr: string) => {
+    try {
+      await navigator.clipboard.writeText(addr);
+      toast.success("Скопировано");
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -106,7 +133,7 @@ export default function LastDraws() {
 
         {loading && events.length === 0 ? (
           <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />
             ))}
           </div>
@@ -125,19 +152,35 @@ export default function LastDraws() {
                   className={`p-3 rounded-lg border ${getEventColor(event.type)} backdrop-blur-sm`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1">
                       <span className="text-xl">{getEventIcon(event.type)}</span>
-                      <div>
-                        <p className="text-sm font-semibold text-white">
-                          {event.type === "BUY" && `${formatAddress(event.from)} купил билет`}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">
+                          {event.type === "BUY" && (
+                            <span
+                              onClick={() => copyAddress(event.from)}
+                              className="cursor-pointer hover:text-cyan-300"
+                              title={event.from}
+                            >
+                              {formatAddressShort(event.from)} купил билет
+                            </span>
+                          )}
                           {event.type === "DRAW" && "Розыгрыш проведён"}
-                          {event.type === "CLAIM" && `${formatAddress(event.from)} забрал приз`}
+                          {event.type === "CLAIM" && (
+                            <span
+                              onClick={() => copyAddress(event.from)}
+                              className="cursor-pointer hover:text-cyan-300"
+                              title={event.from}
+                            >
+                              {formatAddressShort(event.from)} забрал приз
+                            </span>
+                          )}
                         </p>
                         <p className="text-xs text-gray-400">{formatTime(event.unixtime)}</p>
                       </div>
                     </div>
                     {event.valueTon > 0 && (
-                      <span className="text-sm font-bold text-cyan-300">
+                      <span className="text-sm font-bold text-cyan-300 ml-2">
                         {event.valueTon.toFixed(2)} TON
                       </span>
                     )}
@@ -151,4 +194,3 @@ export default function LastDraws() {
     </motion.div>
   );
 }
-
