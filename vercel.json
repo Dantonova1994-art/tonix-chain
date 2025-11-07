@@ -3,5 +3,10 @@
   "builds": [
     { "src": "package.json", "use": "@vercel/next" }
   ],
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_NETWORK": "mainnet",
+    "NEXT_PUBLIC_CONTRACT_ADDRESS": "EQBtB8vIHgdO49Ih02Yt9kD5tDKxOTrFgZHkRkAjFTrvJziT",
+    "NEXT_PUBLIC_TONCENTER_API": "https://toncenter.com/api/v2/jsonRPC"
+  }
 }

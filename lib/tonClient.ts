@@ -1,9 +1,15 @@
 import { TonConnectUI } from "@tonconnect/ui-react";
 
-const contractAddress = "EQAt1tW6ySperEXATXGHNo63JizWDp6qjn9RgtYp5bCgtnqx";
-
 export async function buyTicket(tonConnectUI: TonConnectUI) {
   try {
+    const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+    
+    if (!contractAddress) {
+      console.error("❌ Contract address not configured");
+      alert("❌ Адрес контракта не настроен. Проверьте переменные окружения.");
+      return;
+    }
+
     console.log("🎫 Initiating ticket purchase...");
     console.log("📍 Contract address:", contractAddress);
     console.log("💰 Amount: 0.5 TON (500000000 nanoTON)");
@@ -33,4 +39,3 @@ export async function buyTicket(tonConnectUI: TonConnectUI) {
     alert("❌ Ошибка при покупке билета.");
   }
 }
-
