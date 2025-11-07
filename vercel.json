@@ -1,15 +1,19 @@
 {
   "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": "frontend/.next",
+  "rootDirectory": "frontend",
   "builds": [
     {
-      "src": "package.json",
+      "src": "frontend/package.json",
       "use": "@vercel/next"
     }
   ],
-  "framework": "nextjs",
   "env": {
     "NEXT_PUBLIC_NETWORK": "mainnet",
     "NEXT_PUBLIC_CONTRACT_ADDRESS": "EQAt1tW6ySperEXATXGHNo63JizWDp6qjn9RgtYp5bCgtnqx",
     "NEXT_PUBLIC_TONCENTER_API": "https://toncenter.com/api/v2/jsonRPC"
   }
 }
+
