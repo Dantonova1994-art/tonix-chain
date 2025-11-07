@@ -3,33 +3,23 @@
 import { useEffect, useState } from "react";
 import { getContractBalance } from "../lib/ton";
 
-interface ContractStatusProps {
-  refreshTrigger?: number;
-}
-
-export default function ContractStatus({ refreshTrigger = 0 }: ContractStatusProps) {
+export default function ContractStatus({ refreshKey }: { refreshKey?: number }) {
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchBalance = async () => {
-    try {
-      const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-      if (!contractAddress) {
-        setLoading(false);
-        return;
-      }
-      const bal = await getContractBalance(contractAddress);
-      setBalance(bal);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchBalance();
-  }, [refreshTrigger]);
+    (async () => {
+      setLoading(true);
+      try {
+        const bal = await getContractBalance(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!);
+        setBalance(bal);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [refreshKey]);
 
   return (
     <div className="text-center mt-6 bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-md max-w-sm mx-auto">
