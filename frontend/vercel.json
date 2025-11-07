@@ -1,6 +1,7 @@
 {
-  "buildCommand": "npm install && npm run build",
+  "buildCommand": "npm ci --include=dev && npm run build",
+  "installCommand": "npm ci --include=dev",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "npm install"
+  "rootDirectory": "."
 }
