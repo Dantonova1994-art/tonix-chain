@@ -1,21 +1,21 @@
 self.__BUILD_MANIFEST = {
   "/": [
-    "static/chunks/44eadd6a39f06aba.js"
+    "static/chunks/38c8288879de50fa.js"
   ],
   "/_error": [
-    "static/chunks/30fbf88b4073f3ef.js"
+    "static/chunks/6631c7003aa26dee.js"
   ],
   "/admin": [
-    "static/chunks/59be136ec51fa4ea.js"
+    "static/chunks/fad32ff53ef8f55d.js"
   ],
   "/privacy": [
-    "static/chunks/e001e915c3c5e5c2.js"
+    "static/chunks/f9af378928c70f10.js"
   ],
   "/roadmap": [
-    "static/chunks/3f96dfdb9a8380c2.js"
+    "static/chunks/cb4081c7b643779d.js"
   ],
   "/terms": [
-    "static/chunks/dfe20e5d922d5de7.js"
+    "static/chunks/d851f9993c329244.js"
   ],
   "__rewrites": {
     "afterFiles": [],
