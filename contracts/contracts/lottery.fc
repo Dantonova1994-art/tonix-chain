@@ -1,0 +1,152 @@
+#include "imports/stdlib.fc";
+
+;; ─────────────────────────────────────────────
+;; TONIX CHAIN — Lottery Smart Contract MVP
+;; Language: FunC
+;; Version: 1.0
+;; ─────────────────────────────────────────────
+;; Author: Tonix Chain
+;; Description:
+;;  • принимает ставки (buy_ticket)
+;;  • хранит участников
+;;  • выбирает победителя
+;;  • сбрасывает список после розыгрыша
+;; ─────────────────────────────────────────────
+
+const int OP_BUY = 0x01;
+const int OP_DRAW = 0x02;
+
+() handle_buy(int msg_value, cell in_msg_full) impure {
+    slice cs = in_msg_full.begin_parse();
+    cs~load_uint(4); ;; skip flags
+    var sender = cs~load_msg_addr(); ;; load sender
+    cs~load_msg_addr(); ;; skip destination
+    cs~load_coins(); ;; skip value
+    cs~skip_dict(); ;; skip extra currencies
+    cs~load_coins(); ;; skip ihr_fee
+    cs~load_coins(); ;; skip fwd_fee
+    cs~skip_bits(64 + 32); ;; skip created_lt and created_at
+    cs~skip_bits(1); ;; skip maybe StateInit
+    ;; now cs points to body
+    
+    var ds = get_data().begin_parse();
+
+    ;; storage layout:
+    ;; [0] owner address
+    ;; [1] ticket price
+    ;; [2] participants dict
+    ;; [3] count
+
+    var owner = ds~load_msg_addr();
+    var price = ds~load_coins();
+    var participants = ds~load_dict();
+    var count = ds~load_uint(16);
+    
+    ;; инициализируем словарь, если он null
+    if (null?(participants)) {
+        participants = new_dict();
+    }
+
+    ;; проверяем оплату
+    if (msg_value < price) {
+        throw(100); ;; недостаточно средств
+    }
+
+    ;; добавляем участника
+    ;; сохраняем адрес в ячейку как ссылку
+    var participant_cell = begin_cell().store_slice(sender).end_cell();
+    participants = udict_set_ref(participants, 16, count, participant_cell);
+
+    ;; увеличиваем счётчик
+    count += 1;
+
+    ;; сохраняем
+    set_data(begin_cell()
+        .store_slice(owner)
+        .store_coins(price)
+        .store_dict(participants)
+        .store_uint(count, 16)
+        .end_cell());
+}
+
+() handle_draw(cell in_msg_full, int my_balance) impure {
+    ;; проверяем, что отправитель - владелец
+    slice cs = in_msg_full.begin_parse();
+    cs~load_uint(4); ;; skip flags
+    var sender = cs~load_msg_addr(); ;; load sender
+    
+    var ds = get_data().begin_parse();
+    var owner = ds~load_msg_addr();
+    var price = ds~load_coins();
+    var participants = ds~load_dict();
+    var count = ds~load_uint(16);
+    
+    ;; проверяем, что словарь не null (есть участники)
+    if (null?(participants)) {
+        throw(101); ;; нет участников
+    }
+
+    ;; проверяем права владельца
+    if (~ equal_slices_bits(sender, owner)) {
+        throw(103); ;; только владелец может запустить розыгрыш
+    }
+
+    ;; должен быть хотя бы 1 участник
+    if (count == 0) {
+        throw(101);
+    }
+
+    ;; выбираем случайного победителя на основе блока
+    var rand = (now() + my_balance) % count;
+    (cell winner_cell, int found) = udict_get_ref?(participants, 16, rand);
+    if (found == 0) {
+        throw(102);
+    }
+
+    slice winner_slice = winner_cell.begin_parse();
+    var winner = winner_slice~load_msg_addr();
+
+    ;; отправляем весь баланс победителю
+    ;; формат сообщения согласно TON: flags (4) + src (MsgAddress) + dest + amount + extra + ihr + fwd + created_lt + created_at + init + body
+    var msg = begin_cell()
+        .store_uint(0x18, 6) ;; flags (4) + src addr_none$00 (2) = 6 бит
+        .store_slice(winner) ;; destination address
+        .store_coins(0) ;; amount (будет заменено на весь баланс из-за mode 128)
+        .store_uint(0, 1) ;; extra currencies: no dict  
+        .store_coins(0) ;; ihr_fee
+        .store_coins(0) ;; fwd_fee
+        .store_uint(0, 64) ;; created_lt (автоматически заполняется)
+        .store_uint(0, 32) ;; created_at (автоматически заполняется)
+        .store_uint(0, 2) ;; no StateInit (1 bit) + body in cell (1 bit = 0)
+        .end_cell();
+    send_raw_message(msg, 128); ;; mode 128 = carry all remaining balance
+
+    ;; сбрасываем участников
+    set_data(begin_cell()
+        .store_slice(owner)
+        .store_coins(price)
+        .store_dict(new_dict())
+        .store_uint(0, 16)
+        .end_cell());
+}
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    ;; загружаем opcode
+    if (in_msg_body.slice_empty?()) {
+        return ();
+    }
+    var op = in_msg_body~load_uint(8);
+
+    if (op == OP_BUY) {
+        ;; игрок покупает билет
+        handle_buy(msg_value, in_msg_full);
+    } else {
+        if (op == OP_DRAW) {
+            ;; владелец запускает розыгрыш
+            handle_draw(in_msg_full, my_balance);
+        } else {
+            ;; неизвестная операция — игнор
+            return ();
+        }
+    }
+}

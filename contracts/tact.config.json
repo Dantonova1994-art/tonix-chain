@@ -1,0 +1,20 @@
+{
+  "projects": [
+    {
+      "name": "TonixLottery",
+      "path": "./contracts/TonixLottery.tact",
+      "output": "./build"
+    },
+    {
+      "name": "LotteryCore",
+      "path": "./lotterycore-v2/LotteryCore.tact",
+      "output": "./lotterycore-v2/build"
+    },
+    {
+      "name": "Vault",
+      "path": "./vault/Vault.tact",
+      "output": "./vault/build"
+    }
+  ]
+}
+

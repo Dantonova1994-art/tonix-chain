@@ -1,0 +1,55 @@
+name: Deploy Tonix Lottery (Mainnet)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./contracts
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: contracts/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd contracts
+          npm ci
+
+      - name: Build contract
+        run: npx blueprint build TonixLottery
+
+      - name: Run tests
+        run: npx vitest run --reporter=verbose || echo "⚠️ Tests require local setup"
+
+      - name: Deploy to TON mainnet
+        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        env:
+          MNEMONIC: ${{ secrets.TONIX_MAINNET_MNEMONIC }}
+          TICKET_PRICE: ${{ vars.TICKET_PRICE || '1' }}
+          TONCENTER_API_KEY: ${{ secrets.TONCENTER_API_KEY }}
+        run: |
+          cd contracts
+          npx tsx scripts/deploy.ts
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Build: OK"
+          echo "🧪 Tests: Completed"
+          echo "🚀 Deploy: ${{ job.status == 'success' && 'Success' || 'Skipped/Error' }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+

@@ -1,0 +1,109 @@
+.container {
+  background: radial-gradient(circle at top, #00ffff33, #000011);
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+  line-height: 1.6;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 40px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  text-align: center;
+  background: linear-gradient(90deg, #00ffff, #0077ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section {
+  margin-bottom: 30px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section:last-of-type {
+  border-bottom: none;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #00ffff;
+}
+
+.section p {
+  margin-bottom: 15px;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.section ul {
+  margin-left: 20px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.section li {
+  margin-bottom: 8px;
+  opacity: 0.85;
+}
+
+.section strong {
+  color: #00ffff;
+  font-weight: 600;
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.footer p {
+  opacity: 0.7;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.link {
+  display: inline-block;
+  color: #00ffff;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.link:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: #00ffff;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 25px 20px;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .section h2 {
+    font-size: 1.3rem;
+  }
+}
