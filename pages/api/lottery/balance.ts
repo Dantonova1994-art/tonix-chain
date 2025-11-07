@@ -1,0 +1,23 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+import { fetchContractBalance } from "../../../lib/ton-read";
+import toast from "react-hot-toast";
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+  if (!contractAddress) {
+    return res.status(500).json({ error: "Contract address not configured" });
+  }
+
+  try {
+    const balanceTon = await fetchContractBalance(contractAddress);
+    res.setHeader("Cache-Control", "s-maxage=15, stale-while-revalidate=60");
+    return res.status(200).json({ balanceTon });
+  } catch (err: any) {
+    console.error("❌ Error in balance API:", err);
+    return res.status(500).json({ error: err.message || "Failed to fetch balance" });
+  }
+}

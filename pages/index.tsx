@@ -1,22 +1,47 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Hero from "../components/Hero";
 import WalletConnect from "../components/WalletConnect";
 import ContractStatus from "../components/ContractStatus";
 import BackgroundSpace from "../components/BackgroundSpace";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 // Динамический импорт компонентов с TonConnect для избежания SSR ошибок
 const BuyTicket = dynamic(() => import("../components/BuyTicket"), { ssr: false });
 const DrawButton = dynamic(() => import("../components/DrawButton"), { ssr: false });
+const MyTickets = dynamic(() => import("../components/MyTickets"), { ssr: false });
+const LastDraws = dynamic(() => import("../components/LastDraws"), { ssr: false });
 
 export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [envWarning, setEnvWarning] = useState(false);
+
+  // Проверка ENV переменных (только в development)
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      const requiredEnv = [
+        "NEXT_PUBLIC_NETWORK",
+        "NEXT_PUBLIC_CONTRACT_ADDRESS",
+        "NEXT_PUBLIC_TONCENTER_API",
+      ];
+      const missing = requiredEnv.filter((key) => !process.env[key]);
+      if (missing.length > 0) {
+        console.warn("⚠️ Missing ENV variables:", missing);
+        setEnvWarning(true);
+      }
+    }
+  }, []);
 
   const handleTicketBought = () => {
-    console.log("🔄 Refreshing contract status...");
+    console.log("🔄 Refreshing all components after ticket purchase...");
+    setRefreshKey((prev) => prev + 1);
+  };
+
+  const handleDrawSuccess = () => {
+    console.log("🔄 Refreshing all components after draw...");
     setRefreshKey((prev) => prev + 1);
   };
 
@@ -33,8 +58,8 @@ export default function Home() {
           url: "https://t.me/tonixchain_lottery_bot/app?startapp=lottery"
         });
       } else {
-        // Fallback - копирование в буфер обмена
         navigator.clipboard.writeText("https://t.me/tonixchain_lottery_bot/app?startapp=lottery");
+        toast.success("Ссылка скопирована!");
         console.log("🔗 Link copied to clipboard");
       }
     }
@@ -52,12 +77,20 @@ export default function Home() {
     <main className="relative min-h-screen bg-gradient-to-b from-[#0b0c10] to-[#121826] text-white flex flex-col items-center justify-center p-4 overflow-hidden">
       <BackgroundSpace />
       
+      {envWarning && process.env.NODE_ENV === "development" && (
+        <div className="fixed top-4 left-4 right-4 z-50 bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3 text-xs text-yellow-300">
+          ⚠️ Missing ENV variables. Check console.
+        </div>
+      )}
+      
       <div className="z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-6 pb-20">
         <Hero />
         <WalletConnect />
+        <MyTickets refreshKey={refreshKey} />
         <ContractStatus refreshKey={refreshKey} />
         <BuyTicket onSuccess={handleTicketBought} />
-        <DrawButton />
+        <DrawButton onSuccess={handleDrawSuccess} />
+        <LastDraws />
         
         <motion.div
           initial={{ opacity: 0 }}

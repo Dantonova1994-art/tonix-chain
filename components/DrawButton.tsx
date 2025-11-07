@@ -5,10 +5,9 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
-// Временный адрес владельца (заменить на реальный из контракта)
 const OWNER_ADDRESS = process.env.NEXT_PUBLIC_OWNER_ADDRESS || "";
 
-export default function DrawButton() {
+export default function DrawButton({ onSuccess }: { onSuccess?: () => void }) {
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const [loading, setLoading] = useState(false);
@@ -16,17 +15,33 @@ export default function DrawButton() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (wallet?.account?.address) {
-      setIsOwner(wallet.account.address === OWNER_ADDRESS);
+    if (!OWNER_ADDRESS) {
+      setIsOwner(false);
+      return;
     }
+
+    if (wallet?.account?.address) {
+      const ownerMatch = wallet.account.address.toLowerCase() === OWNER_ADDRESS.toLowerCase();
+      setIsOwner(ownerMatch);
+      if (!ownerMatch) {
+        console.log("⚠️ Not owner. Wallet:", wallet.account.address, "Owner:", OWNER_ADDRESS);
+      }
+    } else {
+      setIsOwner(false);
+    }
+
     if (tonConnectUI) {
       setIsConnected(tonConnectUI.connected || false);
     }
   }, [wallet, tonConnectUI]);
 
   const handleDraw = async () => {
+    if (!OWNER_ADDRESS) {
+      toast.error("Адрес владельца не настроен");
+      return;
+    }
+
     if (!isOwner) {
-      console.warn("⚠️ Only owner can draw");
       toast.error("Только владелец может запустить розыгрыш");
       return;
     }
@@ -64,6 +79,7 @@ export default function DrawButton() {
       toast.dismiss(loadingToast);
       toast.success("🎲 Розыгрыш запущен!");
       console.log("✅ Розыгрыш успешно проведён!");
+      onSuccess?.();
     } catch (err) {
       toast.dismiss(loadingToast);
       toast.error("❌ Ошибка при проведении розыгрыша");
@@ -73,8 +89,8 @@ export default function DrawButton() {
     }
   };
 
-  if (!isOwner) {
-    return null;
+  if (!OWNER_ADDRESS) {
+    return null; // Скрываем кнопку, если OWNER_ADDRESS не задан
   }
 
   return (
@@ -86,10 +102,11 @@ export default function DrawButton() {
     >
       <motion.button
         onClick={handleDraw}
-        disabled={loading}
-        whileHover={{ scale: !loading ? 1.05 : 1 }}
-        whileTap={{ scale: !loading ? 0.95 : 1 }}
-        className="w-full px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_25px_rgba(168,85,247,0.6)] hover:shadow-[0_0_40px_rgba(168,85,247,0.9)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={loading || !isOwner || !isConnected}
+        whileHover={{ scale: isOwner && isConnected && !loading ? 1.05 : 1 }}
+        whileTap={{ scale: isOwner && isConnected && !loading ? 0.95 : 1 }}
+        className="w-full px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_25px_rgba(168,85,247,0.6)] hover:shadow-[0_0_40px_rgba(168,85,247,0.9)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative"
+        title={!isOwner ? "Только владелец" : ""}
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -103,6 +120,11 @@ export default function DrawButton() {
           </span>
         ) : (
           <span>🎲 Провести розыгрыш</span>
+        )}
+        {!isOwner && isConnected && (
+          <span className="block text-xs mt-1 text-purple-200/80">
+            Только владелец
+          </span>
         )}
       </motion.button>
     </motion.div>

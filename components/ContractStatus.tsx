@@ -90,10 +90,19 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
       className="w-full max-w-md mx-auto mt-8"
     >
       <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 shadow-[0_0_20px_rgba(0,255,255,0.3)] relative overflow-hidden">
-        {/* Blur glow эффект */}
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-transparent blur-xl -z-10" />
         
-        <h2 className="text-xl font-bold mb-4 text-cyan-400 text-center">Статус контракта</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-cyan-400">Статус контракта</h2>
+          <button
+            onClick={() => fetchBalance(true)}
+            disabled={loading || refreshing}
+            className="text-xs text-cyan-300 hover:text-cyan-200 disabled:opacity-50"
+            title="Обновить"
+          >
+            {refreshing ? "⏳" : "🔄"}
+          </button>
+        </div>
         
         <div className="space-y-4">
           {/* Баланс */}
