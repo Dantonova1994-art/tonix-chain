@@ -2,6 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // Указываем корневую директорию для Turbopack
+  experimental: {
+    turbopack: {
+      root: __dirname,
+    },
+  },
   // Явно указываем, что статические файлы должны обслуживаться
   // Next.js автоматически обслуживает файлы из public/ по корневому пути
   async headers() {
