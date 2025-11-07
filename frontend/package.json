@@ -16,7 +16,8 @@
     "@tonconnect/ui-react": "^2.3.1",
     "next": "14.2.3",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "tonweb": "^0.0.66"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",

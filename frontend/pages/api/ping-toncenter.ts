@@ -1,20 +1,11 @@
-import { getHttpEndpoint } from '@orbs-network/ton-access';
+import { getHttpEndpoint } from "@orbs-network/ton-access";
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const endpoint = await getHttpEndpoint({ network: 'mainnet' });
-    return res.status(200).json({ endpoint, status: 'ok' });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return res.status(500).json({ error: errorMessage });
+    const endpoint = await getHttpEndpoint({ network: "mainnet" });
+    res.status(200).json({ endpoint });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 }
-

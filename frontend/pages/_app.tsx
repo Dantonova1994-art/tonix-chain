@@ -1,12 +1,9 @@
-import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import "../styles/globals.css";
-
-const manifestUrl = process.env.NEXT_PUBLIC_TONCONNECT_MANIFEST_URL || 
-  'https://tonix-lottery-ui.vercel.app/tonconnect-manifest.json';
+import { TonConnectUIProvider } from "@tonconnect/ui-react";
 
 export default function App({ Component, pageProps }: any) {
   return (
-    <TonConnectUIProvider manifestUrl={manifestUrl}>
+    <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">
       <Component {...pageProps} />
     </TonConnectUIProvider>
   );

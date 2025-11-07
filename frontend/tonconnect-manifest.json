@@ -1,8 +1,5 @@
 {
-  "url": "https://tonix-lottery-ui.vercel.app",
+  "url": "https://tonix-chain.vercel.app",
   "name": "Tonix Chain",
-  "iconUrl": "https://tonix-lottery-ui.vercel.app/favicon.ico",
-  "termsOfUseUrl": "https://tonix-lottery-ui.vercel.app/terms",
-  "privacyPolicyUrl": "https://tonix-lottery-ui.vercel.app/privacy"
+  "iconUrl": "https://tonix-chain.vercel.app/favicon.ico"
 }
-
