@@ -14,9 +14,14 @@ const BuyTicket = dynamic(() => import("../components/BuyTicket"), { ssr: false 
 const DrawButton = dynamic(() => import("../components/DrawButton"), { ssr: false });
 const MyTickets = dynamic(() => import("../components/MyTickets"), { ssr: false });
 const LastDraws = dynamic(() => import("../components/LastDraws"), { ssr: false });
+const Rounds = dynamic(() => import("../components/Rounds"), { ssr: false });
+const RoundHistory = dynamic(() => import("../components/RoundHistory"), { ssr: false });
+const MyWins = dynamic(() => import("../components/MyWins"), { ssr: false });
 
 export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedRoundId, setSelectedRoundId] = useState<number | null>(null);
+  const [currentRoundId, setCurrentRoundId] = useState<number | null>(null);
   const [envWarning, setEnvWarning] = useState(false);
 
   // Проверка ENV переменных (только в development)
@@ -35,6 +40,25 @@ export default function Home() {
     }
   }, []);
 
+  // Загрузка текущего раунда
+  useEffect(() => {
+    const fetchCurrentRound = async () => {
+      try {
+        const response = await fetch("/api/lottery/rounds");
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentRoundId(data.currentRoundId);
+          if (!selectedRoundId) {
+            setSelectedRoundId(data.currentRoundId);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching current round:", err);
+      }
+    };
+    fetchCurrentRound();
+  }, []);
+
   const handleTicketBought = () => {
     console.log("🔄 Refreshing all components after ticket purchase...");
     setRefreshKey((prev) => prev + 1);
@@ -43,6 +67,25 @@ export default function Home() {
   const handleDrawSuccess = () => {
     console.log("🔄 Refreshing all components after draw...");
     setRefreshKey((prev) => prev + 1);
+    // Обновляем текущий раунд после розыгрыша
+    const fetchCurrentRound = async () => {
+      try {
+        const response = await fetch("/api/lottery/rounds");
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentRoundId(data.currentRoundId);
+          setSelectedRoundId(data.currentRoundId);
+        }
+      } catch (err) {
+        console.error("Error fetching current round:", err);
+      }
+    };
+    fetchCurrentRound();
+  };
+
+  const handleRoundChange = (roundId: number) => {
+    console.log("🔄 Round changed to:", roundId);
+    setSelectedRoundId(roundId);
   };
 
   const handleShare = () => {
@@ -86,10 +129,19 @@ export default function Home() {
       <div className="z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-6 pb-20">
         <Hero />
         <WalletConnect />
-        <MyTickets refreshKey={refreshKey} />
         <ContractStatus refreshKey={refreshKey} />
-        <BuyTicket onSuccess={handleTicketBought} />
+        <BuyTicket onSuccess={handleTicketBought} currentRoundId={currentRoundId || undefined} />
         <DrawButton onSuccess={handleDrawSuccess} />
+        
+        {selectedRoundId && (
+          <>
+            <Rounds selectedRoundId={selectedRoundId} onRoundChange={handleRoundChange} />
+            <RoundHistory roundId={selectedRoundId} />
+          </>
+        )}
+        
+        <MyTickets refreshKey={refreshKey} />
+        <MyWins refreshKey={refreshKey} />
         <LastDraws />
         
         <motion.div

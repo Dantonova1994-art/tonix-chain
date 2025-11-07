@@ -1,46 +1,58 @@
-"use client";
-
 import "../styles/globals.css";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Script from "next/script";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
+
+// Sentry инициализация (если DSN задан) - динамическая загрузка
+if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_SENTRY_DSN) {
+  import("@sentry/nextjs").then((Sentry) => {
+    Sentry.init({
+      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+      environment: process.env.NODE_ENV,
+      tracesSampleRate: 0.1,
+      beforeSend(event, hint) {
+        // Логируем ошибки в консоль
+        console.error("🔴 Sentry error:", event, hint);
+        return event;
+      },
+    });
+    console.log("✅ Sentry initialized");
+  }).catch((err) => {
+    console.warn("⚠️ Sentry initialization failed:", err);
+  });
+}
 
 export default function App({ Component, pageProps }: any) {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-
   useEffect(() => {
-    // Telegram WebApp SDK инициализация
     if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
       const tg = (window as any).Telegram.WebApp;
       tg.ready();
       tg.expand();
-      
-      // Установка цветов темы
-      const bgColor = tg.themeParams.bg_color || "#0b0c10";
-      const textColor = tg.themeParams.text_color || "#ffffff";
-      
-      document.body.style.backgroundColor = bgColor;
-      document.body.style.color = textColor;
-      
-      // Определение темы
-      const isDark = !tg.themeParams.bg_color || tg.themeParams.bg_color === "#0b0c10" || tg.themeParams.bg_color?.includes("0b0c10");
-      setTheme(isDark ? "dark" : "light");
-      
-      // Реакция на смену темы
-      tg.onEvent("themeChanged", () => {
-        const newBgColor = tg.themeParams.bg_color || "#0b0c10";
-        const newTextColor = tg.themeParams.text_color || "#ffffff";
-        document.body.style.backgroundColor = newBgColor;
-        document.body.style.color = newTextColor;
-        setTheme(newBgColor.includes("0b0c10") || !newBgColor ? "dark" : "light");
-        console.log("🎨 Theme changed:", newBgColor.includes("0b0c10") ? "dark" : "light");
-      });
-      
+
+      const applyTheme = () => {
+        const bgColor = tg.themeParams.bg_color || "#0b0c10";
+        const textColor = tg.themeParams.text_color || "#ffffff";
+        document.body.style.backgroundColor = bgColor;
+        document.body.style.color = textColor;
+        tg.setHeaderColor(bgColor);
+        tg.setBackgroundColor(bgColor);
+        console.log("🎨 Telegram Theme changed:", tg.themeParams);
+
+        // Update toast theme
+        toast.remove(); // Clear existing toasts to re-render with new theme
+      };
+
+      applyTheme(); // Apply theme on initial load
+      tg.onEvent("themeChanged", applyTheme); // Apply theme on change
+
       console.log("✅ Telegram WebApp initialized");
       console.log("📱 Platform:", tg.platform);
       console.log("👤 User:", tg.initDataUnsafe?.user);
-      console.log("🎨 Theme:", isDark ? "dark" : "light");
+
+      return () => {
+        tg.offEvent("themeChanged", applyTheme);
+      };
     }
   }, []);
 
@@ -53,27 +65,23 @@ export default function App({ Component, pageProps }: any) {
       <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">
         <Component {...pageProps} />
         <Toaster
-          position="top-center"
           toastOptions={{
-            duration: 4000,
             style: {
-              background: theme === "dark" ? "#1a1b26" : "#ffffff",
-              color: theme === "dark" ? "#ffffff" : "#000000",
-              border: `1px solid ${theme === "dark" ? "rgba(0,255,255,0.3)" : "rgba(0,0,0,0.1)"}`,
-              borderRadius: "12px",
-              padding: "12px 16px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              background: 'rgba(17, 24, 39, 0.8)', // bg-gray-900/80
+              color: '#fff',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(0, 255, 255, 0.3)', // cyan-500/30
             },
             success: {
               iconTheme: {
-                primary: "#00ff00",
-                secondary: "#ffffff",
+                primary: '#00FFFF', // cyan
+                secondary: '#0b0c10',
               },
             },
             error: {
               iconTheme: {
-                primary: "#ff0000",
-                secondary: "#ffffff",
+                primary: '#FF0000', // red
+                secondary: '#0b0c10',
               },
             },
           }}
