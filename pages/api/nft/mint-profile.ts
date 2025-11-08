@@ -27,10 +27,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Проверка HMAC подписи
   try {
-    const isValid = verifySignature(
-      JSON.stringify({ address, username, xp, level, badges }),
-      signature
-    );
+    const payload = JSON.stringify({ address, username, xp, level, badges });
+    const secretKey = process.env.TONIX_SECRET_KEY || "dev-secret-key-change-in-production";
+    const isValid = verifySignature(payload, signature, secretKey);
     if (!isValid) {
       return res.status(401).json({ error: "Invalid signature" });
     }
