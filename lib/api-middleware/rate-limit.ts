@@ -1,60 +1,55 @@
 /**
- * In-memory rate limiter для API маршрутов
+ * In-memory rate limiting для API endpoints
  */
 
-import { NextApiRequest } from "next";
-
-interface RateLimitStore {
-  [key: string]: {
-    count: number;
-    resetAt: number;
-  };
-}
-
-const store: RateLimitStore = {};
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 const RATE_LIMIT = {
-  windowMs: 10000, // 10 секунд
   maxRequests: 5,
+  windowMs: 10000, // 10 seconds
 };
 
-export function getClientIdentifier(req: NextApiRequest): string {
+export function getClientIdentifier(req: any): string {
+  // Получение IP адреса клиента
   const forwarded = req.headers["x-forwarded-for"];
-  if (Array.isArray(forwarded)) {
-    return forwarded[0];
-  }
-  return forwarded || req.socket.remoteAddress || "unknown";
+  const ip = forwarded
+    ? (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(",")[0])
+    : req.socket?.remoteAddress || "unknown";
+  return ip;
 }
 
-export function rateLimit(ip: string): { allowed: boolean; retryAfter?: number } {
+export function rateLimit(identifier: string): { allowed: boolean; retryAfter?: number } {
   const now = Date.now();
-  const key = ip;
-  
-  if (!store[key] || now > store[key].resetAt) {
-    store[key] = {
+  const record = rateLimitMap.get(identifier);
+
+  if (!record || now > record.resetTime) {
+    // Создаём новую запись
+    rateLimitMap.set(identifier, {
       count: 1,
-      resetAt: now + RATE_LIMIT.windowMs,
-    };
+      resetTime: now + RATE_LIMIT.windowMs,
+    });
     return { allowed: true };
   }
 
-  if (store[key].count >= RATE_LIMIT.maxRequests) {
-    const retryAfter = Math.ceil((store[key].resetAt - now) / 1000);
+  if (record.count >= RATE_LIMIT.maxRequests) {
+    // Превышен лимит
+    const retryAfter = Math.ceil((record.resetTime - now) / 1000);
     return { allowed: false, retryAfter };
   }
 
-  store[key].count++;
+  // Увеличиваем счётчик
+  record.count++;
   return { allowed: true };
 }
 
-// Очистка старых записей каждые 60 секунд
+// Очистка старых записей каждые 5 минут
 if (typeof setInterval !== "undefined") {
   setInterval(() => {
     const now = Date.now();
-    Object.keys(store).forEach((key) => {
-      if (now > store[key].resetAt) {
-        delete store[key];
+    for (const [key, value] of rateLimitMap.entries()) {
+      if (now > value.resetTime) {
+        rateLimitMap.delete(key);
       }
-    });
-  }, 60000);
+    }
+  }, 5 * 60 * 1000);
 }
