@@ -2,6 +2,8 @@
  * In-memory rate limiter для API маршрутов
  */
 
+import { NextApiRequest } from "next";
+
 interface RateLimitStore {
   [key: string]: {
     count: number;
@@ -15,6 +17,14 @@ const RATE_LIMIT = {
   windowMs: 10000, // 10 секунд
   maxRequests: 5,
 };
+
+export function getClientIdentifier(req: NextApiRequest): string {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (Array.isArray(forwarded)) {
+    return forwarded[0];
+  }
+  return forwarded || req.socket.remoteAddress || "unknown";
+}
 
 export function rateLimit(ip: string): { allowed: boolean; retryAfter?: number } {
   const now = Date.now();

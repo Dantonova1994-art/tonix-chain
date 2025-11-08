@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { useGame } from "../context/GameContext";
 import { ENV } from "../lib/env";
 import ReferralPanel from "../components/ReferralPanel";
+import MyNFTs from "../components/nft/MyNFTs";
 
 // Динамический импорт компонентов с TonConnect для избежания SSR ошибок
 const BuyTicket = dynamic(() => import("../components/BuyTicket"), { ssr: false });
@@ -167,6 +168,7 @@ export default function Home() {
           <Hero />
           <WalletConnect />
           <ReferralPanel />
+          {ENV.NFT_ENABLED === "true" && <MyNFTs />}
           <MyTickets refreshKey={refreshKey} />
           <ContractStatus refreshKey={refreshKey} />
           <BuyTicket onSuccess={handleTicketBought} currentRoundId={currentRoundId || undefined} />

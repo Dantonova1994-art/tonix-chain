@@ -12,12 +12,30 @@ export const ENV = {
   NFT_MINTER: process.env.NEXT_PUBLIC_NFT_MINTER_ADDRESS,
   NFT_COLLECTION_URL: process.env.NEXT_PUBLIC_NFT_COLLECTION_URL || "https://tonviewer.com/",
   GAMING_MODE: process.env.NEXT_PUBLIC_GAMING_MODE,
+  // TON Battle
+  BATTLE_ENABLED: process.env.NEXT_PUBLIC_BATTLE_ENABLED,
+  BATTLE_ENTRY_TON: process.env.NEXT_PUBLIC_BATTLE_ENTRY_TON || "0.1",
+  BATTLEPOOL_ADDRESS: process.env.NEXT_PUBLIC_BATTLEPOOL_ADDRESS,
+  // NFT Collections
+  NFT_ENABLED: process.env.NEXT_PUBLIC_NFT_ENABLED,
+  TICKET_COLLECTION_ADDRESS: process.env.NEXT_PUBLIC_TICKET_COLLECTION_ADDRESS,
+  WINNER_COLLECTION_ADDRESS: process.env.NEXT_PUBLIC_WINNER_COLLECTION_ADDRESS,
+  ASSETS_BASE: process.env.NEXT_PUBLIC_ASSETS_BASE || "https://tonix-chain.vercel.app/api/nft/metadata",
+  // Server-side secrets
+  PRIVATE_NFT_MINTER_KEY: process.env.PRIVATE_NFT_MINTER_KEY,
+  TONIX_SECRET_KEY: process.env.TONIX_SECRET_KEY || "dev-secret-key-change-in-production",
 } as const;
 
 export function requireEnv<K extends keyof typeof ENV>(key: K): string {
   const v = ENV[key];
   if (!v) {
-    throw new Error(`Missing env: ${key}`);
+    const error = new Error(`Missing env: ${key}`);
+    // В браузере показываем toast, на сервере логируем
+    if (typeof window !== "undefined") {
+      console.error("❌ Missing ENV:", key);
+      // Можно добавить toast, но не крашим UI
+    }
+    throw error;
   }
   return v;
 }
