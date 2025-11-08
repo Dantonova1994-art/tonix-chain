@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Script from "next/script";
 import { ENV, TWA } from "../lib/env";
 import { formatAddressShort } from "../lib/address";
 import toast from "react-hot-toast";
@@ -9,6 +10,29 @@ import toast from "react-hot-toast";
 export default function StatusPage() {
   const [battleEntryValue, setBattleEntryValue] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
+  const [telegramData, setTelegramData] = useState<{
+    initData: string | null;
+    initDataUnsafe: any;
+    platform: string | null;
+    version: string | null;
+  }>({
+    initData: null,
+    initDataUnsafe: null,
+    platform: null,
+    version: null,
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
+      const tg = (window as any).Telegram.WebApp;
+      setTelegramData({
+        initData: tg.initData || null,
+        initDataUnsafe: tg.initDataUnsafe || null,
+        platform: tg.platform || null,
+        version: tg.version || null,
+      });
+    }
+  }, []);
 
   const copyToClipboard = async (text: string, label: string) => {
     try {
@@ -202,6 +226,59 @@ export default function StatusPage() {
               <p className="text-xs text-gray-500 mb-2">🌐 App URL:</p>
               <code className="text-cyan-400 text-sm break-all">{TWA.URL}</code>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Telegram Debug */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-white/5 backdrop-blur-md rounded-2xl border border-yellow-500/30 p-6"
+        >
+          <h2 className="text-xl font-bold text-yellow-400 mb-4">🔍 Telegram Debug</h2>
+          <div className="space-y-3 text-sm">
+            <div>
+              <p className="text-gray-400 mb-1">Platform:</p>
+              <code className="text-yellow-300 font-mono text-xs">
+                {telegramData.platform || "Not detected (browser mode)"}
+              </code>
+            </div>
+            <div>
+              <p className="text-gray-400 mb-1">Version:</p>
+              <code className="text-yellow-300 font-mono text-xs">
+                {telegramData.version || "N/A"}
+              </code>
+            </div>
+            <div>
+              <p className="text-gray-400 mb-1">initData:</p>
+              <button
+                onClick={() => {
+                  if (telegramData.initData) {
+                    copyToClipboard(telegramData.initData, "initData");
+                  }
+                }}
+                className="block w-full bg-black/40 px-3 py-2 rounded-md text-xs text-yellow-300 font-mono break-all text-left hover:bg-black/60 transition-colors"
+                disabled={!telegramData.initData}
+              >
+                {telegramData.initData || "Not available (open from Telegram)"}
+              </button>
+            </div>
+            {telegramData.initDataUnsafe && (
+              <div>
+                <p className="text-gray-400 mb-1">User Info:</p>
+                <div className="bg-black/40 px-3 py-2 rounded-md text-xs text-yellow-300 font-mono">
+                  <pre className="whitespace-pre-wrap break-all">
+                    {JSON.stringify(telegramData.initDataUnsafe, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            )}
+            {!telegramData.initData && (
+              <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded text-xs text-yellow-300">
+                ⚠️ Open this page from Telegram Mini App to see initData
+              </div>
+            )}
           </div>
         </motion.div>
 
