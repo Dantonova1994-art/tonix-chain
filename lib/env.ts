@@ -26,6 +26,13 @@ export const ENV = {
   TONIX_SECRET_KEY: process.env.TONIX_SECRET_KEY || "dev-secret-key-change-in-production",
 } as const;
 
+// Telegram Mini App (TWA) конфигурация
+export const TWA = {
+  BOT: process.env.NEXT_PUBLIC_TWA_BOT_USERNAME || "tonixchain_lottery_bot",
+  URL: process.env.NEXT_PUBLIC_TWA_APP_URL || "https://tonix-chain.vercel.app",
+  MODE: process.env.NEXT_PUBLIC_TWA_MODE || "production",
+} as const;
+
 export function requireEnv<K extends keyof typeof ENV>(key: K): string {
   const v = ENV[key];
   if (!v) {

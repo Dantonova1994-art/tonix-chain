@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ENV } from "../lib/env";
+import { ENV, TWA } from "../lib/env";
 import { formatAddressShort } from "../lib/address";
 import toast from "react-hot-toast";
 
@@ -167,10 +167,48 @@ export default function StatusPage() {
           </motion.div>
         )}
 
+        {/* Mini App Link */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
+          className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 text-center"
+        >
+          <h2 className="text-xl font-bold text-cyan-400 mb-4">🔗 Telegram Mini App</h2>
+          <div className="space-y-3">
+            <div>
+              <p className="text-gray-400 text-sm mb-2">Mini App Link:</p>
+              <button
+                onClick={() => copyToClipboard(`https://t.me/${TWA.BOT}/app?startapp=lottery`, "Mini App Link")}
+                className="bg-black/40 px-4 py-2 rounded-md text-sm text-cyan-300 font-mono hover:bg-black/60 transition-colors break-all"
+              >
+                https://t.me/{TWA.BOT}/app?startapp=lottery
+              </button>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm mb-2">GameHub Link:</p>
+              <button
+                onClick={() => copyToClipboard(`https://t.me/${TWA.BOT}/app?startapp=game`, "GameHub Link")}
+                className="bg-black/40 px-4 py-2 rounded-md text-sm text-purple-300 font-mono hover:bg-black/60 transition-colors break-all"
+              >
+                https://t.me/{TWA.BOT}/app?startapp=game
+              </button>
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <p className="text-xs text-gray-500 mb-2">📱 Bot Username:</p>
+              <code className="text-cyan-400 text-sm">@{TWA.BOT}</code>
+            </div>
+            <div className="mt-2">
+              <p className="text-xs text-gray-500 mb-2">🌐 App URL:</p>
+              <code className="text-cyan-400 text-sm break-all">{TWA.URL}</code>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
           className="text-center"
         >
           <a
