@@ -85,6 +85,7 @@ export default function GalaxyRun() {
     // Игровой цикл
     let lastTime = Date.now();
     let meteorId = 0;
+    const shipYPos = canvas.height - SHIP_SIZE - 20;
 
     const gameLoop = () => {
       if (!isPlaying) return;
@@ -127,7 +128,6 @@ export default function GalaxyRun() {
       });
 
       // Проверка столкновений (используем currentMeteors)
-      const shipYPos = canvas.height - SHIP_SIZE - 20;
       const collision = currentMeteors.find((m) => {
         const dx = shipX - m.x;
         const dy = shipYPos - m.y;
@@ -162,7 +162,6 @@ export default function GalaxyRun() {
       }
 
       // Корабль
-      const shipYPos = canvas.height - SHIP_SIZE - 20;
       ctx.fillStyle = "#00FFFF";
       ctx.beginPath();
       ctx.moveTo(shipX, shipYPos);
