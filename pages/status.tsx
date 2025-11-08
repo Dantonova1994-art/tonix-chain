@@ -15,22 +15,36 @@ export default function StatusPage() {
     initDataUnsafe: any;
     platform: string | null;
     version: string | null;
+    startapp: string | null;
   }>({
     initData: null,
     initDataUnsafe: null,
     platform: null,
     version: null,
+    startapp: null,
   });
 
   useEffect(() => {
-    if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
-      const tg = (window as any).Telegram.WebApp;
-      setTelegramData({
-        initData: tg.initData || null,
-        initDataUnsafe: tg.initDataUnsafe || null,
-        platform: tg.platform || null,
-        version: tg.version || null,
-      });
+    if (typeof window !== "undefined") {
+      // Получение параметра startapp из URL
+      const url = new URL(window.location.href);
+      const startapp = url.searchParams.get("startapp");
+      
+      if ((window as any).Telegram?.WebApp) {
+        const tg = (window as any).Telegram.WebApp;
+        setTelegramData({
+          initData: tg.initData || null,
+          initDataUnsafe: tg.initDataUnsafe || null,
+          platform: tg.platform || null,
+          version: tg.version || null,
+          startapp: startapp || tg.initDataUnsafe?.start_param || null,
+        });
+      } else {
+        setTelegramData((prev) => ({
+          ...prev,
+          startapp: startapp || null,
+        }));
+      }
     }
   }, []);
 
@@ -248,6 +262,12 @@ export default function StatusPage() {
               <p className="text-gray-400 mb-1">Version:</p>
               <code className="text-yellow-300 font-mono text-xs">
                 {telegramData.version || "N/A"}
+              </code>
+            </div>
+            <div>
+              <p className="text-gray-400 mb-1">startapp param:</p>
+              <code className="text-yellow-300 font-mono text-xs">
+                {telegramData.startapp || "Not set"}
               </code>
             </div>
             <div>

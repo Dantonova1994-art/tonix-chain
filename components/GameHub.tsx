@@ -13,9 +13,26 @@ import { ENV } from "../lib/env";
 
 type GameView = "hub" | "flip" | "catch" | "spin" | "pass" | "battle";
 
-export default function GameHub({ onClose }: { onClose: () => void }) {
+export default function GameHub({ onClose, autoStart }: { onClose: () => void; autoStart?: boolean }) {
   const [currentView, setCurrentView] = useState<GameView>("hub");
   const battleEnabled = ENV.BATTLE_ENABLED === "true";
+
+  // Автоматический запуск игры при autoStart
+  useEffect(() => {
+    if (autoStart) {
+      console.log("🎮 Auto-starting game from deep link");
+      // Сначала показываем hub, затем через небольшую задержку открываем первую игру
+      setTimeout(() => {
+        if (battleEnabled) {
+          setCurrentView("battle");
+          console.log("⚔️ Auto-opened TON Battle");
+        } else {
+          setCurrentView("flip");
+          console.log("🎲 Auto-opened Flip & Win");
+        }
+      }, 800);
+    }
+  }, [autoStart, battleEnabled]);
 
   const games = [
     { id: "flip" as GameView, name: "Flip & Win", icon: "🎲", component: GameFlip },

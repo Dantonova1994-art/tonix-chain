@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import Script from "next/script";
 import { Toaster, toast } from "react-hot-toast";
 import { GameProvider } from "../context/GameContext";
@@ -27,6 +28,31 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_SENTRY_DSN) {
 
 export default function App({ Component, pageProps }: any) {
   const [analyticsConsent, setAnalyticsConsent] = useState<boolean | null>(null);
+  const router = useRouter();
+
+  // Обработка параметра startapp из Telegram диплинка
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
+      const tg = (window as any).Telegram.WebApp;
+      tg.ready();
+      
+      // Проверка параметра startapp из URL или initDataUnsafe
+      const url = new URL(window.location.href);
+      const startapp = url.searchParams.get("startapp") || tg.initDataUnsafe?.start_param;
+      
+      console.log("🎯 startapp param:", startapp);
+      
+      if (startapp === "lottery") {
+        localStorage.setItem("tonix_start_target", "lottery");
+        console.log("🚀 Auto navigation to: lottery");
+      } else if (startapp === "game") {
+        localStorage.setItem("tonix_start_target", "game");
+        console.log("🚀 Auto navigation to: game");
+      } else {
+        localStorage.removeItem("tonix_start_target");
+      }
+    }
+  }, [router.asPath]);
 
   useEffect(() => {
     // Инициализация локализации

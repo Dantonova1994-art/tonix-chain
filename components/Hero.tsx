@@ -6,10 +6,23 @@ import GalaxyParticles from "./GalaxyParticles";
 import PassPanel from "./PassPanel";
 import { ENV } from "../lib/env";
 
-export default function Hero() {
+export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, 100]);
   const [showPassPanel, setShowPassPanel] = useState(false);
+
+  // Автоматический скролл к секции покупки билетов
+  useEffect(() => {
+    if (scrollToBuy) {
+      setTimeout(() => {
+        const buySection = document.getElementById("buy-section");
+        if (buySection) {
+          buySection.scrollIntoView({ behavior: "smooth", block: "center" });
+          console.log("📍 Scrolled to buy section");
+        }
+      }, 500);
+    }
+  }, [scrollToBuy]);
 
   const scrollToBuy = () => {
     console.log("🚀 НАЧАТЬ ИГРУ button clicked");

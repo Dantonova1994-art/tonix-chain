@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import Hero from "../components/Hero";
 import WalletConnect from "../components/WalletConnect";
 import ContractStatus from "../components/ContractStatus";
 import BackgroundSpace from "../components/BackgroundSpace";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { useGame } from "../context/GameContext";
 import { ENV } from "../lib/env";
@@ -26,11 +27,13 @@ const GameHub = dynamic(() => import("../components/GameHub"), { ssr: false });
 const GAMING_MODE = ENV.GAMING_MODE === "true";
 
 export default function Home() {
+  const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedRoundId, setSelectedRoundId] = useState<number | null>(null);
   const [currentRoundId, setCurrentRoundId] = useState<number | null>(null);
   const [envWarning, setEnvWarning] = useState(false);
   const [showGameHub, setShowGameHub] = useState(false);
+  const [startTarget, setStartTarget] = useState<string | null>(null);
 
   // Проверка ENV переменных (только в development)
   useEffect(() => {
@@ -65,6 +68,27 @@ export default function Home() {
       }
     };
     fetchCurrentRound();
+  }, []);
+
+  // Обработка параметра startapp для автоматической навигации
+  useEffect(() => {
+    const saved = localStorage.getItem("tonix_start_target");
+    if (saved) {
+      setStartTarget(saved);
+      console.log("🚀 Auto navigation to:", saved);
+      
+      if (saved === "game") {
+        setShowGameHub(true);
+      } else if (saved === "lottery") {
+        // Скролл к секции покупки билетов будет выполнен в Hero
+      }
+      
+      // Очистка через 3 секунды
+      setTimeout(() => {
+        setStartTarget(null);
+        localStorage.removeItem("tonix_start_target");
+      }, 3000);
+    }
   }, []);
 
   // Telegram MainButton integration
@@ -162,7 +186,7 @@ export default function Home() {
       )}
 
       {showGameHub && GAMING_MODE ? (
-        <GameHub onClose={handleCloseGameHub} />
+        <GameHub onClose={handleCloseGameHub} autoStart={startTarget === "game"} />
       ) : (
         <div className="z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-6 pb-20">
           <Hero />
@@ -231,8 +255,9 @@ export default function Home() {
               Статус системы
             </a>
           </motion.footer>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
