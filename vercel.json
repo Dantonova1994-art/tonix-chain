@@ -12,6 +12,7 @@
     "NEXT_PUBLIC_NETWORK": "mainnet",
     "NEXT_PUBLIC_CONTRACT_ADDRESS": "EQBtB8vIHgdO49Ih02Yt9kD5tDKxOTrFgZHkRkAjFTrvJziT",
     "NEXT_PUBLIC_TONCENTER_API": "https://toncenter.com/api/v2/jsonRPC",
+    "NEXT_PUBLIC_TONCENTER_RPC": "https://toncenter.com/api/v2/jsonRPC",
     "NEXT_PUBLIC_MANIFEST_URL": "https://tonix-chain.vercel.app/tonconnect-manifest.json",
     "NEXT_PUBLIC_BATTLE_ENABLED": "true",
     "NEXT_PUBLIC_BATTLE_ENTRY_TON": "0.1",

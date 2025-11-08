@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { getContractBalance } from "../lib/ton";
-import { getRoundInfoOnChain } from "../lib/ton-read";
+import { getRoundInfoOnChain, fetchContractBalance } from "../lib/ton-read";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { t } from "../i18n";
@@ -18,6 +18,7 @@ const statusColors = {
 
 function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
   const [balance, setBalance] = useState<number | null>(null);
+  const [liveBalance, setLiveBalance] = useState<number | null>(null);
   const [roundInfo, setRoundInfo] = useState<{ roundId: number; ticketsCount: number; prizePoolTon: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

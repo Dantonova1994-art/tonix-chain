@@ -5,11 +5,13 @@ import { motion } from "framer-motion";
 import Script from "next/script";
 import { ENV, TWA, CONTRACT_ADDRESS } from "../lib/env";
 import { formatAddressShort } from "../lib/address";
+import { fetchContractBalance } from "../lib/ton-read";
 import toast from "react-hot-toast";
 
 export default function StatusPage() {
   const [battleEntryValue, setBattleEntryValue] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
+  const [liveBalance, setLiveBalance] = useState<number | null>(null);
   const [telegramData, setTelegramData] = useState<{
     initData: string | null;
     initDataUnsafe: any;
@@ -46,6 +48,30 @@ export default function StatusPage() {
         }));
       }
     }
+  }, []);
+
+  // Live обновление баланса каждые 5 секунд
+  useEffect(() => {
+    let mounted = true;
+    
+    async function loadLiveBalance() {
+      try {
+        const b = await fetchContractBalance(CONTRACT_ADDRESS);
+        if (mounted) {
+          setLiveBalance(b);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching live balance:", err);
+      }
+    }
+    
+    loadLiveBalance();
+    const interval = setInterval(loadLiveBalance, 5000);
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const copyToClipboard = async (text: string, label: string) => {
@@ -121,6 +147,18 @@ export default function StatusPage() {
               >
                 🔗 View on TonViewer
               </a>
+            </div>
+            <div className="mt-4 pt-4 border-t border-cyan-500/20">
+              <motion.p
+                key={liveBalance}
+                initial={{ opacity: 0.4, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="text-cyan-400 text-sm"
+              >
+                💎 Текущий баланс (live): {liveBalance !== null ? `${liveBalance.toFixed(3)} TON` : "Загрузка..."}
+              </motion.p>
+              <p className="text-xs text-gray-500 mt-1">Обновляется каждые 5 секунд</p>
             </div>
           </div>
         </motion.div>
