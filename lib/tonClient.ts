@@ -1,20 +1,16 @@
 import { TonConnectUI } from "@tonconnect/ui-react";
+import { toNano } from "@ton/core";
 import toast from "react-hot-toast";
-import { requireEnv } from "./env";
+import { requireEnv, CONTRACT_ADDRESS } from "./env";
+
+const CONTRACT_ADDRESS_FALLBACK = "EQBtB8vIHgdO49Ih02Yt9kD5tDKxOTrFgZHkRkAjFTrvJziT";
 
 export async function buyTicket(tonConnectUI: TonConnectUI) {
   try {
-    let contractAddress: string;
-    try {
-      contractAddress = requireEnv("CONTRACT");
-    } catch (err: any) {
-      console.error("❌ Contract address not configured:", err);
-      toast.error("❌ Адрес контракта не настроен!");
-      throw err;
-    }
-
+    const contractAddress = CONTRACT_ADDRESS || CONTRACT_ADDRESS_FALLBACK;
+    
     console.log("🎫 Initiating ticket purchase...");
-    console.log("📍 Contract address:", contractAddress);
+    console.log("📍 Sending to contract:", contractAddress);
     console.log("💰 Amount: 0.5 TON (500000000 nanoTON)");
 
     if (!tonConnectUI.connected) {
@@ -28,7 +24,7 @@ export async function buyTicket(tonConnectUI: TonConnectUI) {
       messages: [
         {
           address: contractAddress,
-          amount: "500000000" // 0.5 TON в nanoTON
+          amount: toNano(0.5).toString() // 0.5 TON в nanoTON
         }
       ]
     };
@@ -44,15 +40,8 @@ export async function buyTicket(tonConnectUI: TonConnectUI) {
 
 export async function sendDrawTransaction(tonConnectUI: TonConnectUI, ownerAddress: string) {
   try {
-    let contractAddress: string;
-    try {
-      contractAddress = requireEnv("CONTRACT");
-    } catch (err: any) {
-      console.error("❌ Contract address not configured:", err);
-      toast.error("❌ Адрес контракта не настроен!");
-      throw err;
-    }
-
+    const contractAddress = CONTRACT_ADDRESS || CONTRACT_ADDRESS_FALLBACK;
+    
     console.log("🎲 Initiating draw transaction...");
     console.log("📍 Contract address:", contractAddress);
     console.log("👤 Owner address:", ownerAddress);

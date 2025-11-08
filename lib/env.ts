@@ -2,9 +2,11 @@
  * Централизованное управление переменными окружения с фолбэками
  */
 
+export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "EQBtB8vIHgdO49Ih02Yt9kD5tDKxOTrFgZHkRkAjFTrvJziT";
+
 export const ENV = {
   NETWORK: process.env.NEXT_PUBLIC_NETWORK,
-  CONTRACT: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+  CONTRACT: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || CONTRACT_ADDRESS,
   OWNER: process.env.NEXT_PUBLIC_OWNER_ADDRESS,
   TONCENTER: process.env.NEXT_PUBLIC_TONCENTER_API,
   TONCENTER_KEY: process.env.NEXT_PUBLIC_TONCENTER_KEY,

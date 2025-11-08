@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Script from "next/script";
-import { ENV, TWA } from "../lib/env";
+import { ENV, TWA, CONTRACT_ADDRESS } from "../lib/env";
 import { formatAddressShort } from "../lib/address";
 import toast from "react-hot-toast";
 
@@ -88,11 +88,48 @@ export default function StatusPage() {
           <p className="text-gray-400">Страница статуса системы</p>
         </motion.div>
 
-        {/* Конфигурация */}
+        {/* Smart Contract */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6"
+        >
+          <h2 className="text-xl font-bold text-cyan-400 mb-4">📜 Smart Contract</h2>
+          <div className="space-y-3">
+            <div>
+              <p className="text-gray-400 text-sm mb-2">Contract Address:</p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 bg-black/40 px-3 py-2 rounded-md text-sm text-cyan-300 font-mono break-all">
+                  {CONTRACT_ADDRESS}
+                </code>
+                <button
+                  onClick={() => copyToClipboard(CONTRACT_ADDRESS, "Contract Address")}
+                  className="px-3 py-2 rounded-md bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 transition-colors text-sm"
+                  aria-label="Copy contract address"
+                >
+                  📋
+                </button>
+              </div>
+            </div>
+            <div>
+              <a
+                href={`https://tonviewer.com/${CONTRACT_ADDRESS}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 transition-colors text-sm"
+              >
+                🔗 View on TonViewer
+              </a>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Конфигурация */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
           className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6"
         >
           <h2 className="text-xl font-bold text-cyan-400 mb-4">Конфигурация</h2>

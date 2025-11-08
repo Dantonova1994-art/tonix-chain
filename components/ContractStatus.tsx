@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { t } from "../i18n";
 import { useThrottle } from "../lib/hooks";
+import { CONTRACT_ADDRESS } from "../lib/env";
 
 const statuses: Array<"Приём ставок" | "Розыгрыш" | "Выплата"> = ["Приём ставок", "Розыгрыш", "Выплата"];
 const statusColors = {
@@ -40,7 +41,7 @@ function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
         setRefreshing(true);
       }
       
-      const bal = await getContractBalance(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!);
+      const bal = await getContractBalance(CONTRACT_ADDRESS);
       setBalance(bal);
       
       try {

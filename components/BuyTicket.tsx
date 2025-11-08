@@ -10,7 +10,7 @@ import { REFERRAL_XP } from "../constants/game";
 import { useGame } from "../context/GameContext";
 import { captureEvent } from "../lib/analytics";
 import { generateSignature } from "../lib/verify";
-import { ENV } from "../lib/env";
+import { ENV, CONTRACT_ADDRESS } from "../lib/env";
 
 function getSecretKey(): string {
   return process.env.NEXT_PUBLIC_TONIX_SECRET_KEY || "dev-secret-key";
@@ -42,6 +42,7 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
     }
 
     console.log("🎫 Покупка билета началась");
+    console.log("📍 Sending to contract:", CONTRACT_ADDRESS);
     setLoading(true);
 
     const loadingToast = toast.loading("⏳ Отправка транзакции...", {
