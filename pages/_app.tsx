@@ -3,6 +3,7 @@ import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { useEffect } from "react";
 import Script from "next/script";
 import { Toaster, toast } from "react-hot-toast";
+import { GameProvider } from "../context/GameContext";
 
 // Sentry инициализация (если DSN задан) - динамическая загрузка
 if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_SENTRY_DSN) {
@@ -63,29 +64,31 @@ export default function App({ Component, pageProps }: any) {
         strategy="beforeInteractive"
       />
       <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">
-        <Component {...pageProps} />
-        <Toaster
-          toastOptions={{
-            style: {
-              background: 'rgba(17, 24, 39, 0.8)', // bg-gray-900/80
-              color: '#fff',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0, 255, 255, 0.3)', // cyan-500/30
-            },
-            success: {
-              iconTheme: {
-                primary: '#00FFFF', // cyan
-                secondary: '#0b0c10',
+        <GameProvider>
+          <Component {...pageProps} />
+          <Toaster
+            toastOptions={{
+              style: {
+                background: 'rgba(17, 24, 39, 0.8)', // bg-gray-900/80
+                color: '#fff',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(0, 255, 255, 0.3)', // cyan-500/30
               },
-            },
-            error: {
-              iconTheme: {
-                primary: '#FF0000', // red
-                secondary: '#0b0c10',
+              success: {
+                iconTheme: {
+                  primary: '#00FFFF', // cyan
+                  secondary: '#0b0c10',
+                },
               },
-            },
-          }}
-        />
+              error: {
+                iconTheme: {
+                  primary: '#FF0000', // red
+                  secondary: '#0b0c10',
+                },
+              },
+            }}
+          />
+        </GameProvider>
       </TonConnectUIProvider>
     </>
   );
