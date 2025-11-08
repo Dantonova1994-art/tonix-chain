@@ -186,8 +186,8 @@ export default function Home() {
 
           {/* GameHub section */}
           {GAMING_MODE ? (
-            <div id="game-hub" className="w-full">
-              <GameHub onClose={() => {}} />
+            <div id="game-hub" className="w-full mt-8">
+              <GameHub onClose={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
             </div>
           ) : (
             <div className="text-center text-gray-400 mt-6 mb-10 text-sm">
