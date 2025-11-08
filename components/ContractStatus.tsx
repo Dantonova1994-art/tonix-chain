@@ -198,6 +198,20 @@ function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
               </motion.p>
             </div>
           )}
+          
+          {/* Live баланс контракта */}
+          <div className="text-center mt-4 pt-4 border-t border-cyan-500/20">
+            <motion.p
+              key={liveBalance}
+              initial={{ opacity: 0.4, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="text-xl font-semibold text-cyan-400"
+            >
+              💎 Баланс контракта: {liveBalance !== null ? `${liveBalance.toFixed(3)} TON` : "—"}
+            </motion.p>
+            <p className="text-xs text-gray-500 mt-1">Обновляется каждые 5 секунд</p>
+          </div>
 
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-1">{t("contract.statusLabel")}</p>
