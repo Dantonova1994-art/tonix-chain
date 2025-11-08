@@ -29,7 +29,7 @@ export default function GameHub({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="min-h-screen bg-gradient-to-b from-[#0b0c10] to-[#121826] text-white p-6"
+      className="w-full bg-gradient-to-b from-[#0b0c10] to-[#121826] text-white p-6 rounded-2xl border border-cyan-500/30 backdrop-blur-md"
     >
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
