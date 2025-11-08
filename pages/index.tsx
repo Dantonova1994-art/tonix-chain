@@ -184,6 +184,17 @@ export default function Home() {
           <MyWins refreshKey={refreshKey} />
           <LastDraws />
 
+          {/* GameHub section */}
+          {GAMING_MODE ? (
+            <div id="game-hub" className="w-full">
+              <GameHub onClose={() => {}} />
+            </div>
+          ) : (
+            <div className="text-center text-gray-400 mt-6 mb-10 text-sm">
+              🎮 Игровой режим скоро будет
+            </div>
+          )}
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

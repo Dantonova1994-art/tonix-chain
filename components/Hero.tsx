@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import GalaxyParticles from "./GalaxyParticles";
 import PassPanel from "./PassPanel";
+import { ENV } from "../lib/env";
 
 export default function Hero() {
   const { scrollY } = useScroll();
@@ -95,6 +96,24 @@ export default function Hero() {
             Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
           </p>
         </motion.div>
+
+        {ENV.GAMING_MODE === "true" && (
+          <motion.button
+            onClick={() => {
+              const gameHub = document.getElementById("game-hub");
+              if (gameHub) {
+                gameHub.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="mt-6 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:shadow-[0_0_25px_rgba(0,255,255,0.8)] transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            aria-label="Играть"
+          >
+            🎮 Играть
+          </motion.button>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

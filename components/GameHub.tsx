@@ -25,6 +25,7 @@ export default function GameHub({ onClose }: { onClose: () => void }) {
 
   return (
     <motion.div
+      id="game-hub"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}

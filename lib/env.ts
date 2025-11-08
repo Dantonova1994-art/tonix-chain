@@ -11,7 +11,7 @@ export const ENV = {
   SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   NFT_MINTER: process.env.NEXT_PUBLIC_NFT_MINTER_ADDRESS,
   NFT_COLLECTION_URL: process.env.NEXT_PUBLIC_NFT_COLLECTION_URL || "https://tonviewer.com/",
-  GAMING_MODE: process.env.NEXT_PUBLIC_GAMING_MODE,
+  GAMING_MODE: process.env.NEXT_PUBLIC_GAMING_MODE || "true",
   // TON Battle
   BATTLE_ENABLED: process.env.NEXT_PUBLIC_BATTLE_ENABLED,
   BATTLE_ENTRY_TON: process.env.NEXT_PUBLIC_BATTLE_ENTRY_TON || "0.1",
