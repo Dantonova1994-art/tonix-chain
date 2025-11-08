@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { rateLimit, getClientIdentifier } from "../lib/api-middleware/rate-limit";
+import { rateLimit, getClientIdentifier } from "../../lib/api-middleware/rate-limit";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Security headers
