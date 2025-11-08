@@ -1,4 +1,6 @@
 import { sameWallet, formatAddressShort } from "./address";
+import { fetchJSON } from "./fetch-helper";
+import { ENV, requireEnv } from "./env";
 
 const TONCENTER_API = process.env.NEXT_PUBLIC_TONCENTER_API || "https://toncenter.com/api/v2/jsonRPC";
 const NETWORK = process.env.NEXT_PUBLIC_NETWORK || "mainnet";
@@ -39,6 +41,12 @@ export interface Win {
   amountTon: number;
   hash: string;
   time: number;
+}
+
+export interface OnChainRoundInfo {
+  roundId: number;
+  ticketsCount: number;
+  prizePoolTon: number;
 }
 
 function getApiUrl(endpoint: string): string {
@@ -111,6 +119,57 @@ export async function fetchRecentTx(address: string, limit: number = 30): Promis
     return data.result || [];
   } catch (err) {
     console.error("❌ Error fetching transactions:", err);
+    throw err;
+  }
+}
+
+export async function getRoundInfoOnChain(): Promise<OnChainRoundInfo> {
+  try {
+    const endpoint = requireEnv("TONCENTER");
+    const contract = requireEnv("CONTRACT");
+
+    const body: any = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "runGetMethod",
+      params: {
+        address: contract,
+        method: "get_round_info",
+        stack: [],
+      },
+    };
+
+    if (TONCENTER_KEY) {
+      body.api_key = TONCENTER_KEY;
+    }
+
+    const res = await fetchJSON(
+      endpoint,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+      15000
+    );
+
+    if (!res.result || !res.result.stack) {
+      throw new Error("No result from Toncenter");
+    }
+
+    // Parse stack: [roundId, ticketsCount, prizePoolNano]
+    const stack = res.result.stack;
+    const roundId = parseInt(stack[0]?.[1] || "0", 16);
+    const ticketsCount = parseInt(stack[1]?.[1] || "0", 16);
+    const prizePoolNano = parseInt(stack[2]?.[1] || "0", 16);
+
+    return {
+      roundId,
+      ticketsCount,
+      prizePoolTon: prizePoolNano / 1e9,
+    };
+  } catch (err) {
+    console.error("❌ Error getting round info on-chain:", err);
     throw err;
   }
 }

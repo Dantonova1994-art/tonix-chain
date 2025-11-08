@@ -9,6 +9,8 @@ export const ENV = {
   TONCENTER: process.env.NEXT_PUBLIC_TONCENTER_API,
   TONCENTER_KEY: process.env.NEXT_PUBLIC_TONCENTER_KEY,
   SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  NFT_MINTER: process.env.NEXT_PUBLIC_NFT_MINTER_ADDRESS,
+  NFT_COLLECTION_URL: process.env.NEXT_PUBLIC_NFT_COLLECTION_URL || "https://tonviewer.com/",
 } as const;
 
 export function requireEnv<K extends keyof typeof ENV>(key: K): string {
@@ -31,4 +33,3 @@ export function hasRequiredEnv(): { missing: string[]; allPresent: boolean } {
     allPresent: missing.length === 0,
   };
 }
-

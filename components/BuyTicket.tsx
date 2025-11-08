@@ -13,12 +13,80 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
   const [isConnected, setIsConnected] = useState(false);
   const [showNFTModal, setShowNFTModal] = useState(false);
   const [justBought, setJustBought] = useState(false);
+  const [lastTxHash, setLastTxHash] = useState<string>("");
 
   useEffect(() => {
     if (tonConnectUI) {
       setIsConnected(tonConnectUI.connected || false);
     }
   }, [tonConnectUI]);
+
+  const triggerConfetti = () => {
+    // Простой эффект конфетти через canvas
+    if (typeof window !== "undefined") {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.style.position = "fixed";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.pointerEvents = "none";
+        canvas.style.zIndex = "9999";
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles: Array<{ x: number; y: number; vx: number; vy: number; color: string }> = [];
+        const colors = ["#00FFFF", "#007BFF", "#FF00FF", "#FFFF00"];
+
+        for (let i = 0; i < 50; i++) {
+          particles.push({
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            vx: (Math.random() - 0.5) * 10,
+            vy: (Math.random() - 0.5) * 10,
+            color: colors[Math.floor(Math.random() * colors.length)],
+          });
+        }
+
+        let animationFrame: number;
+        const animate = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          particles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.2; // гравитация
+            
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+          });
+
+          if (particles.some((p) => p.y < canvas.height + 100)) {
+            animationFrame = requestAnimationFrame(animate);
+          } else {
+            document.body.removeChild(canvas);
+          }
+        };
+
+        animate();
+        setTimeout(() => {
+          if (document.body.contains(canvas)) {
+            document.body.removeChild(canvas);
+          }
+        }, 3000);
+      } catch (err) {
+        console.warn("Confetti animation failed:", err);
+      }
+    }
+  };
 
   const handleBuyTicket = async () => {
     if (!tonConnectUI) {
@@ -43,7 +111,13 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
       toast.dismiss(loadingToast);
       toast.success("🎟 Билет куплен успешно!");
       console.log("✅ Транзакция успешна");
+      
+      // Генерируем заглушку txHash (в реальном приложении получаем из ответа)
+      const mockTxHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
+      setLastTxHash(mockTxHash);
+      
       setJustBought(true);
+      triggerConfetti();
       onSuccess?.();
       
       // Вибрация (если доступно)
@@ -104,7 +178,7 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
             onClick={() => setShowNFTModal(true)}
             className="mt-4 px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] transition-all duration-300"
           >
-            🎫 Mint NFT ticket (soon)
+            🎫 Mint NFT Ticket
           </motion.button>
         )}
       </motion.div>
@@ -116,6 +190,7 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
           setJustBought(false);
         }}
         roundId={currentRoundId}
+        txHash={lastTxHash}
       />
     </>
   );
