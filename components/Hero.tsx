@@ -10,7 +10,6 @@ export default function Hero() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, 100]);
   const [showPassPanel, setShowPassPanel] = useState(false);
-  const [hovered, setHovered] = useState(false);
 
   const scrollToBuy = () => {
     console.log("🚀 НАЧАТЬ ИГРУ button clicked");
