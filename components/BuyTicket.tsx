@@ -6,87 +6,23 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import NFTTicketModal from "./NFTTicketModal";
+import { REFERRAL_XP } from "../constants/game";
+import { useGame } from "../context/GameContext";
+import { captureEvent } from "../lib/analytics";
 
 export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: () => void; currentRoundId?: number }) {
   const [tonConnectUI] = useTonConnectUI();
+  const { addXP } = useGame();
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [showNFTModal, setShowNFTModal] = useState(false);
-  const [justBought, setJustBought] = useState(false);
-  const [lastTxHash, setLastTxHash] = useState<string>("");
+  const [lastTxHash, setLastTxHash] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (tonConnectUI) {
       setIsConnected(tonConnectUI.connected || false);
     }
   }, [tonConnectUI]);
-
-  const triggerConfetti = () => {
-    // Простой эффект конфетти через canvas
-    if (typeof window !== "undefined") {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.style.position = "fixed";
-        canvas.style.top = "0";
-        canvas.style.left = "0";
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.pointerEvents = "none";
-        canvas.style.zIndex = "9999";
-        document.body.appendChild(canvas);
-
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles: Array<{ x: number; y: number; vx: number; vy: number; color: string }> = [];
-        const colors = ["#00FFFF", "#007BFF", "#FF00FF", "#FFFF00"];
-
-        for (let i = 0; i < 50; i++) {
-          particles.push({
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            vx: (Math.random() - 0.5) * 10,
-            vy: (Math.random() - 0.5) * 10,
-            color: colors[Math.floor(Math.random() * colors.length)],
-          });
-        }
-
-        let animationFrame: number;
-        const animate = () => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          
-          particles.forEach((p) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.2; // гравитация
-            
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-            ctx.fill();
-          });
-
-          if (particles.some((p) => p.y < canvas.height + 100)) {
-            animationFrame = requestAnimationFrame(animate);
-          } else {
-            document.body.removeChild(canvas);
-          }
-        };
-
-        animate();
-        setTimeout(() => {
-          if (document.body.contains(canvas)) {
-            document.body.removeChild(canvas);
-          }
-        }, 3000);
-      } catch (err) {
-        console.warn("Confetti animation failed:", err);
-      }
-    }
-  };
 
   const handleBuyTicket = async () => {
     if (!tonConnectUI) {
@@ -101,26 +37,68 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
 
     console.log("🎫 Покупка билета началась");
     setLoading(true);
-    
+
     const loadingToast = toast.loading("⏳ Отправка транзакции...", {
       duration: 10000,
     });
-    
+
     try {
       await buyTicket(tonConnectUI);
       toast.dismiss(loadingToast);
       toast.success("🎟 Билет куплен успешно!");
       console.log("✅ Транзакция успешна");
       
-      // Генерируем заглушку txHash (в реальном приложении получаем из ответа)
-      const mockTxHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
-      setLastTxHash(mockTxHash);
+      // Генерируем mock txHash (в реальном приложении получаем из ответа)
+      const txHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
+      setLastTxHash(txHash);
       
-      setJustBought(true);
-      triggerConfetti();
+      // Трекинг реферала
+      const referrerWallet = localStorage.getItem("referrer_wallet");
+      if (referrerWallet && tonConnectUI.account?.address) {
+        try {
+          await fetch("/api/referral/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              referrer: referrerWallet,
+              buyer: tonConnectUI.account.address,
+              txHash,
+            }),
+          });
+          
+          addXP(REFERRAL_XP, "Реферал");
+          toast.success("🎁 1 XP за приглашённого друга!");
+          captureEvent("referral_tracked", {
+            referrer: referrerWallet,
+            buyer: tonConnectUI.account.address,
+          });
+          
+          // Очищаем реферала после первого использования
+          localStorage.removeItem("referrer_wallet");
+        } catch (err) {
+          console.warn("⚠️ Failed to track referral:", err);
+        }
+      }
+
+      // Webhook для автоматического минта NFT (в фоне)
+      if (txHash && tonConnectUI.account?.address) {
+        fetch("/api/hooks/mint-webhook", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            walletAddress: tonConnectUI.account.address,
+            txHash,
+            type: "ticket_purchase",
+          }),
+        }).catch((err) => {
+          console.warn("⚠️ Webhook call failed (non-critical):", err);
+        });
+      }
+
       onSuccess?.();
+      setShowNFTModal(true);
       
-      // Вибрация (если доступно)
+      // Вибрация
       if (typeof window !== "undefined" && "vibrate" in navigator) {
         navigator.vibrate(100);
       }
@@ -128,6 +106,10 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
       toast.dismiss(loadingToast);
       toast.error("❌ Ошибка при транзакции");
       console.error("❌ Ошибка при покупке билета:", err);
+      captureEvent("tx_buy_error", {
+        wallet: tonConnectUI.account?.address,
+        error: err instanceof Error ? err.message : "Unknown",
+      });
     } finally {
       setLoading(false);
     }
@@ -163,31 +145,20 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
           ) : (
             <span>🎟 Купить билет — 0.5 TON</span>
           )}
-          
+
           {!isConnected && !loading && (
             <span className="block text-xs mt-1 text-cyan-200/80">
               Сначала подключите кошелёк
             </span>
           )}
         </motion.button>
-
-        {justBought && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            onClick={() => setShowNFTModal(true)}
-            className="mt-4 px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] transition-all duration-300"
-          >
-            🎫 Mint NFT Ticket
-          </motion.button>
-        )}
       </motion.div>
 
       <NFTTicketModal
         isOpen={showNFTModal}
         onClose={() => {
           setShowNFTModal(false);
-          setJustBought(false);
+          setLastTxHash(undefined);
         }}
         roundId={currentRoundId}
         txHash={lastTxHash}

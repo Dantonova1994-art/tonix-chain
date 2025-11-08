@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { requireEnv } from "../../../lib/env";
 import { fetchJSON } from "../../../lib/fetch-helper";
+import { rateLimit } from "../../../lib/api-middleware/rate-limit";
+import { getClientIP } from "../../../lib/api-middleware/validation";
+import { NFTMintSchema } from "../../../lib/api-middleware/validation";
 
 // Sentry для логирования (если доступен)
 let Sentry: any = null;
@@ -13,8 +16,30 @@ if (typeof window === "undefined" && process.env.NEXT_PUBLIC_SENTRY_DSN) {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Security headers
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "no-referrer");
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  // Validation
+  try {
+    NFTMintSchema.parse({
+      method: req.method,
+      body: req.body,
+    });
+  } catch (err: any) {
+    return res.status(400).json({ error: "Invalid request", details: err.errors });
+  }
+
+  // Rate limiting
+  const ip = getClientIP(req);
+  const limit = rateLimit(ip);
+  if (!limit.allowed) {
+    res.setHeader("Retry-After", limit.retryAfter?.toString() || "10");
+    return res.status(429).json({ error: "Too many requests", retryAfter: limit.retryAfter });
   }
 
   const { address, roundId, txHash, secretKey } = req.body;
@@ -31,16 +56,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const nftMinterAddress = requireEnv("CONTRACT"); // Используем основной контракт как minter
+    const nftMinterAddress = requireEnv("CONTRACT");
     const toncenterApi = requireEnv("TONCENTER");
     const toncenterKey = process.env.NEXT_PUBLIC_TONCENTER_KEY || "";
 
     console.log("🎫 Minting NFT ticket...", { address, roundId, txHash });
 
     // TODO: Отправка internal message к NFT minter контракту через Toncenter
-    // Это требует реального контракта и правильного payload
-    // Пока возвращаем заглушку с успешным ответом
-
     const nftAddress = `${nftMinterAddress.slice(0, 6)}...${nftMinterAddress.slice(-4)}-${roundId}`;
     const timestamp = Date.now();
 
@@ -76,4 +98,3 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: err.message || "Failed to mint NFT" });
   }
 }
-

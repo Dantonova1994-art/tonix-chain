@@ -3,152 +3,173 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "../context/GameContext";
-import { STORAGE_KEYS } from "../constants/game";
+import { getBoostMultiplier } from "../lib/pass";
 import toast from "react-hot-toast";
 
-interface LeaderboardEntry {
-  username: string;
+interface PlayerScore {
+  name: string;
   xp: number;
-  level: number;
+  timestamp: number;
+  boost?: number;
 }
 
+const LEADERBOARD_KEY = "tonix_leaderboard";
+const PLAYER_NAME_KEY = "tonix_player_name";
+
 export default function Leaderboard() {
-  const { xp, level } = useGame();
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [username, setUsername] = useState("");
-  const [showInput, setShowInput] = useState(false);
+  const { xp, passLevel } = useGame();
+  const [leaderboard, setLeaderboard] = useState<PlayerScore[]>([]);
+  const [playerName, setPlayerName] = useState<string>("");
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [newRecordPopup, setNewRecordPopup] = useState(false);
+  const initialXpRef = useState(xp)[0];
 
   useEffect(() => {
-    loadLeaderboard();
-    const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
-    if (savedUsername) {
-      setUsername(savedUsername);
-    } else {
-      setShowInput(true);
+    if (typeof window !== "undefined") {
+      const savedLeaderboard = localStorage.getItem(LEADERBOARD_KEY);
+      if (savedLeaderboard) {
+        setLeaderboard(JSON.parse(savedLeaderboard));
+      }
+      const savedName = localStorage.getItem(PLAYER_NAME_KEY);
+      if (savedName) {
+        setPlayerName(savedName);
+      } else {
+        setShowNameInput(true);
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (username && xp > 0) {
-      updateLeaderboard();
+    if (xp > initialXpRef) {
+      updateLeaderboard(xp);
     }
-  }, [xp, username]);
+  }, [xp]);
 
-  const loadLeaderboard = () => {
-    const saved = localStorage.getItem(STORAGE_KEYS.LEADERBOARD);
-    if (saved) {
-      try {
-        const entries = JSON.parse(saved) as LeaderboardEntry[];
-        setLeaderboard(entries.sort((a, b) => b.xp - a.xp).slice(0, 5));
-      } catch (e) {
-        console.error("Error loading leaderboard:", e);
-      }
-    }
-  };
-
-  const updateLeaderboard = () => {
-    const saved = localStorage.getItem(STORAGE_KEYS.LEADERBOARD);
-    let entries: LeaderboardEntry[] = saved ? JSON.parse(saved) : [];
+  const updateLeaderboard = (currentXP: number) => {
+    const boost = getBoostMultiplier(passLevel);
+    const newScore: PlayerScore = {
+      name: playerName || "Anon",
+      xp: currentXP,
+      timestamp: Date.now(),
+      boost: Math.round((boost - 1) * 100),
+    };
     
-    const existingIndex = entries.findIndex((e) => e.username === username);
-    const entry: LeaderboardEntry = { username, xp, level };
+    const updatedLeaderboard = [...leaderboard, newScore]
+      .sort((a, b) => b.xp - a.xp)
+      .slice(0, 5);
 
-    if (existingIndex >= 0) {
-      entries[existingIndex] = entry;
+    setLeaderboard(updatedLeaderboard);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(updatedLeaderboard));
+    }
+
+    const isNewRecord = updatedLeaderboard.some(
+      (score) => score.name === newScore.name && score.xp === newScore.xp && score.timestamp === newScore.timestamp
+    );
+    if (isNewRecord && currentXP > initialXpRef) {
+      setNewRecordPopup(true);
+      setTimeout(() => setNewRecordPopup(false), 5000);
+    }
+  };
+
+  const handleSaveName = () => {
+    if (playerName.trim()) {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(PLAYER_NAME_KEY, playerName.trim());
+      }
+      setShowNameInput(false);
+      updateLeaderboard(xp);
     } else {
-      entries.push(entry);
-    }
-
-    entries = entries.sort((a, b) => b.xp - a.xp).slice(0, 5);
-    localStorage.setItem(STORAGE_KEYS.LEADERBOARD, JSON.stringify(entries));
-    setLeaderboard(entries);
-
-    // Проверка на новый рекорд
-    if (entries[0]?.username === username && entries[0]?.xp === xp) {
-      toast.success("🔥 Новый уровень! Ты вошёл в ТОП!");
+      toast.error("Пожалуйста, введите имя.");
     }
   };
 
-  const handleUsernameSubmit = () => {
-    if (username.trim()) {
-      localStorage.setItem(STORAGE_KEYS.USERNAME, username);
-      setShowInput(false);
-      updateLeaderboard();
-      toast.success(`Добро пожаловать, ${username}!`);
-    }
-  };
+  const boost = getBoostMultiplier(passLevel);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4, duration: 0.5 }}
-      className="w-full max-w-md mx-auto mt-6"
+      transition={{ delay: 0.5 }}
+      className="bg-white/5 backdrop-blur-md rounded-2xl border border-green-500/30 p-6 shadow-[0_0_20px_rgba(34,197,94,0.3)] relative overflow-hidden"
+      role="region"
+      aria-label="Leaderboard"
     >
-      <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 shadow-[0_0_20px_rgba(0,255,255,0.3)] relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-transparent blur-xl -z-10" />
-        
-        <h3 className="text-xl font-bold text-cyan-400 mb-4 text-center">🏆 Лидерборд</h3>
+      <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-teal-500/10 to-transparent blur-xl -z-10" />
 
-        {/* Ввод имени */}
-        {showInput && (
+      <h2 className="text-xl font-bold text-green-400 mb-4 text-center">🏆 Leaderboard</h2>
+
+      {showNameInput && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-3 rounded-lg bg-white/5 border border-gray-600"
+        >
+          <p className="text-sm text-gray-400 mb-2">Введите ваше имя:</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSaveName()}
+              className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              placeholder="Ваше имя"
+              aria-label="Player name"
+            />
+            <button
+              onClick={handleSaveName}
+              className="px-4 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-300 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400"
+              aria-label="Save name"
+            >
+              Сохранить
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      <div className="space-y-2">
+        {leaderboard.length === 0 ? (
+          <p className="text-center text-gray-400 text-sm">Пока нет участников</p>
+        ) : (
+          leaderboard.map((entry, index) => (
+            <motion.div
+              key={`${entry.name}-${entry.timestamp}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-gray-600"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl font-bold text-gray-400 w-6">#{index + 1}</span>
+                <div>
+                  <p className="font-semibold text-white">{entry.name}</p>
+                  <p className="text-xs text-gray-400">{entry.xp} XP</p>
+                </div>
+              </div>
+              {entry.boost !== undefined && entry.boost > 0 && (
+                <span className="text-xs text-purple-300 font-semibold">+{entry.boost}% Boost</span>
+              )}
+            </motion.div>
+          ))
+        )}
+      </div>
+
+      {newRecordPopup && (
+        <AnimatePresence>
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-4 rounded-lg border border-cyan-500/50 bg-cyan-500/10"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl"
           >
-            <p className="text-sm text-gray-400 mb-2">Введите ваше имя:</p>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleUsernameSubmit()}
-                className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-cyan-500/30 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
-                placeholder="Ваше имя"
-                maxLength={20}
-              />
-              <button
-                onClick={handleUsernameSubmit}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold"
-              >
-                OK
-              </button>
+            <div className="text-center p-6">
+              <p className="text-4xl mb-2">🔥</p>
+              <p className="text-xl font-bold text-yellow-400">Новый уровень!</p>
+              <p className="text-sm text-gray-300 mt-2">Ты вошёл в ТОП!</p>
             </div>
           </motion.div>
-        )}
-
-        {/* Таблица лидеров */}
-        <div className="space-y-2">
-          {leaderboard.length === 0 ? (
-            <p className="text-center text-gray-400 py-4">Пока нет участников</p>
-          ) : (
-            leaderboard.map((entry, index) => (
-              <motion.div
-                key={entry.username}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`p-3 rounded-lg border flex items-center justify-between ${
-                  entry.username === username
-                    ? "border-cyan-500 bg-cyan-500/20"
-                    : "border-gray-500/50 bg-white/5"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold text-cyan-300 w-8">#{index + 1}</span>
-                  <div>
-                    <p className="text-white font-semibold">{entry.username}</p>
-                    <p className="text-xs text-gray-400">Уровень {entry.level}</p>
-                  </div>
-                </div>
-                <span className="text-cyan-300 font-bold">{entry.xp} XP</span>
-              </motion.div>
-            ))
-          )}
-        </div>
-      </div>
+        </AnimatePresence>
+      )}
     </motion.div>
   );
 }
-

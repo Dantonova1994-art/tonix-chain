@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { getContractBalance } from "../lib/ton";
 import { getRoundInfoOnChain } from "../lib/ton-read";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import { t } from "../i18n";
+import { useThrottle } from "../lib/hooks";
 
-export default function ContractStatus({ refreshKey }: { refreshKey?: number }) {
+const statuses: Array<"Приём ставок" | "Розыгрыш" | "Выплата"> = ["Приём ставок", "Розыгрыш", "Выплата"];
+const statusColors = {
+  "Приём ставок": "bg-green-500/20 text-green-300 border-green-500/50",
+  "Розыгрыш": "bg-yellow-500/20 text-yellow-300 border-yellow-500/50",
+  "Выплата": "bg-cyan-500/20 text-cyan-300 border-cyan-500/50",
+};
+
+function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
   const [balance, setBalance] = useState<number | null>(null);
   const [roundInfo, setRoundInfo] = useState<{ roundId: number; ticketsCount: number; prizePoolTon: number } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,39 +26,29 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
   const [refreshInterval, setRefreshInterval] = useState(15000);
   const lastErrorToastRef = useRef<number>(0);
 
-  const statuses: Array<"Приём ставок" | "Розыгрыш" | "Выплата"> = ["Приём ставок", "Розыгрыш", "Выплата"];
-  const statusColors = {
-    "Приём ставок": "bg-green-500/20 text-green-300 border-green-500/50",
-    "Розыгрыш": "bg-yellow-500/20 text-yellow-300 border-yellow-500/50",
-    "Выплата": "bg-cyan-500/20 text-cyan-300 border-cyan-500/50",
-  };
-
-  const showErrorToast = (message: string) => {
+  const showErrorToast = useCallback((message: string) => {
     const now = Date.now();
     if (now - lastErrorToastRef.current > 60000) {
       toast.error(message);
       lastErrorToastRef.current = now;
     }
-  };
+  }, []);
 
-  const fetchContractData = async (showToast = false) => {
+  const fetchContractData = useCallback(async (showToast = false) => {
     try {
       if (showToast) {
         setRefreshing(true);
       }
       
-      // Получаем баланс
       const bal = await getContractBalance(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!);
       setBalance(bal);
       
-      // Получаем он-чейн данные раунда
       try {
         const onChainInfo = await getRoundInfoOnChain();
         setRoundInfo(onChainInfo);
         console.log("✅ On-chain round info:", onChainInfo);
       } catch (err: any) {
         console.warn("⚠️ Failed to get on-chain round info, using fallback:", err);
-        // Fallback: используем баланс для определения статуса
         if (bal > 0 && bal < 10) {
           setStatus("Приём ставок");
           setStatusIndex(0);
@@ -63,7 +62,7 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
       }
       
       setErrorCount(0);
-      setRefreshInterval(15000); // Сбрасываем интервал при успехе
+      setRefreshInterval(15000);
       
       console.log("✅ Contract data updated:", bal, "TON");
     } catch (e: any) {
@@ -71,56 +70,56 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
       const newErrorCount = errorCount + 1;
       setErrorCount(newErrorCount);
       
-      // Backoff: если 2 ошибки подряд, увеличиваем интервал до 30с
       if (newErrorCount >= 2) {
         setRefreshInterval(30000);
         console.log("⚠️ Backoff: increasing refresh interval to 30s");
       }
       
-      // Проверяем, не перегружена ли сеть
       if (e.message?.includes("timeout") || e.message?.includes("network")) {
-        toast("⚠️ Сеть перегружена, попробуйте позже", {
+        toast(t("toast.networkBusy"), {
           icon: "⚠️",
           duration: 5000,
         });
       } else if (showToast) {
-        showErrorToast("Ошибка при получении данных контракта");
+        showErrorToast(t("toast.error"));
       }
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [errorCount, showErrorToast]);
 
-  // Первоначальная загрузка
+  const throttledFetch = useThrottle(fetchContractData, 500);
+
   useEffect(() => {
     fetchContractData();
-  }, [refreshKey]);
+  }, [refreshKey, fetchContractData]);
 
-  // Автообновление с динамическим интервалом
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchContractData(true);
+      throttledFetch(true);
     }, refreshInterval);
 
     return () => clearInterval(interval);
-  }, [refreshInterval]);
+  }, [refreshInterval, throttledFetch]);
 
-  // Эмуляция смены статуса каждые 30 секунд (если нет он-чейн данных)
   useEffect(() => {
-    if (roundInfo) return; // Используем он-чейн данные, если доступны
+    if (roundInfo) return;
     
     const statusInterval = setInterval(() => {
       setStatusIndex((prev) => {
         const next = (prev + 1) % statuses.length;
         setStatus(statuses[next]);
-        console.log("🔄 Status changed to:", statuses[next]);
         return next;
       });
     }, 30000);
 
     return () => clearInterval(statusInterval);
   }, [roundInfo]);
+
+  const displayBalance = useMemo(() => {
+    return roundInfo ? roundInfo.prizePoolTon : balance;
+  }, [roundInfo, balance]);
 
   return (
     <motion.div
@@ -133,30 +132,29 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-transparent blur-xl -z-10" />
         
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-cyan-400">Статус контракта</h2>
+          <h2 className="text-xl font-bold text-cyan-400">{t("contract.status")}</h2>
           <button
             onClick={() => fetchContractData(true)}
             disabled={loading || refreshing}
             className="text-xs text-cyan-300 hover:text-cyan-200 disabled:opacity-50"
-            title="Обновить"
+            title={t("contract.refresh")}
+            aria-label={t("contract.refresh")}
           >
             {refreshing ? "⏳" : "🔄"}
           </button>
         </div>
         
         <div className="space-y-4">
-          {/* Round ID (он-чейн) */}
           {roundInfo && (
             <div className="text-center p-3 rounded-lg border border-cyan-500/50 bg-cyan-500/10">
-              <p className="text-sm text-gray-400 mb-1">Раунд</p>
+              <p className="text-sm text-gray-400 mb-1">{t("contract.round")}</p>
               <p className="text-2xl font-bold text-cyan-300">#{roundInfo.roundId}</p>
             </div>
           )}
 
-          {/* Баланс / Prize Pool */}
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-1">
-              {roundInfo ? "💰 Призовой фонд" : "💰 Баланс контракта"}
+              {roundInfo ? t("contract.prizePool") : t("contract.prizePool")}
             </p>
             {loading || refreshing ? (
               <div className="space-y-2">
@@ -166,23 +164,22 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
             ) : (
               <AnimatePresence mode="wait">
                 <motion.p
-                  key={roundInfo ? roundInfo.prizePoolTon : balance}
+                  key={displayBalance}
                   initial={{ scale: 1.2, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.8, opacity: 0 }}
                   transition={{ duration: 0.3 }}
                   className="text-3xl font-bold text-white"
                 >
-                  {(roundInfo ? roundInfo.prizePoolTon : balance)?.toFixed(2) || "0.00"} TON
+                  {displayBalance?.toFixed(2) || "0.00"} TON
                 </motion.p>
               </AnimatePresence>
             )}
           </div>
 
-          {/* Tickets Count (он-чейн) */}
           {roundInfo && (
             <div className="text-center">
-              <p className="text-sm text-gray-400 mb-1">🎟 Билетов</p>
+              <p className="text-sm text-gray-400 mb-1">{t("contract.tickets")}</p>
               <motion.p
                 key={roundInfo.ticketsCount}
                 initial={{ scale: 1.1 }}
@@ -194,9 +191,8 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
             </div>
           )}
 
-          {/* Статус */}
           <div className="text-center">
-            <p className="text-sm text-gray-400 mb-1">🎯 Статус</p>
+            <p className="text-sm text-gray-400 mb-1">{t("contract.statusLabel")}</p>
             {refreshing ? (
               <div className="h-8 bg-white/10 rounded-full animate-pulse mx-auto max-w-[140px]" />
             ) : (
@@ -219,3 +215,5 @@ export default function ContractStatus({ refreshKey }: { refreshKey?: number }) 
     </motion.div>
   );
 }
+
+export default React.memo(ContractStatusComponent);

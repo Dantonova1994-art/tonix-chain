@@ -1,9 +1,10 @@
 /**
- * Универсальный helper для fetch с таймаутом и обработкой ошибок
+ * Универсальный helper для fetch с таймаутом, ретраями и обработкой ошибок
  */
 
 export interface FetchOptions extends RequestInit {
   timeout?: number;
+  retries?: number;
 }
 
 export async function fetchJSON(
@@ -11,27 +12,42 @@ export async function fetchJSON(
   options: FetchOptions = {},
   timeout: number = 15000
 ): Promise<any> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const retries = options.retries ?? 2;
+  let lastError: Error | null = null;
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    clearTimeout(timeoutId);
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      lastError = err;
+
+      if (err.name === "AbortError") {
+        lastError = new Error("Request timeout");
+      }
+
+      // Экспоненциальный backoff: 200ms → 600ms
+      if (attempt < retries) {
+        const delay = 200 * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
     }
-
-    return await response.json();
-  } catch (err: any) {
-    clearTimeout(timeoutId);
-    if (err.name === "AbortError") {
-      throw new Error("Request timeout");
-    }
-    throw err;
   }
+
+  throw lastError || new Error("Request failed after retries");
 }

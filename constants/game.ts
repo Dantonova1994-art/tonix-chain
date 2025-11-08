@@ -1,68 +1,18 @@
-/**
- * Игровые константы и конфигурация
- */
-
 export const LEVELS = [
-  { level: 1, xp: 0, name: "Новичок" },
-  { level: 2, xp: 100, name: "Игрок" },
-  { level: 3, xp: 250, name: "Профи" },
-  { level: 4, xp: 500, name: "Мастер" },
-  { level: 5, xp: 1000, name: "Легенда" },
+  { level: 1, name: "Новичок", xp: 0, color: "#A8A29E" },
+  { level: 2, name: "Участник", xp: 100, color: "#FCD34D" },
+  { level: 3, name: "Игрок", xp: 250, color: "#34D399" },
+  { level: 4, name: "Мастер", xp: 500, color: "#60A5FA" },
+  { level: 5, name: "Легенда", xp: 1000, color: "#A78BFA" },
+  { level: 6, name: "Чемпион", xp: 2000, color: "#F87171" },
 ];
+
+export const DAILY_BONUS_XP = 25;
+export const REFERRAL_XP = 25;
+export const NFT_MINT_XP = 100;
 
 export const GAME_REWARDS = {
   FLIP_WIN: 1,
   CATCH_COIN: 2,
   SPIN_BONUS: 5,
-  DAILY_BONUS: 25,
-  LOTTERY_TICKET: 10,
-};
-
-export const GAME_COLORS = {
-  primary: "#00FFFF",
-  secondary: "#007BFF",
-  accent: "#FF00FF",
-  success: "#00FF00",
-  warning: "#FFFF00",
-  error: "#FF0000",
-};
-
-export const STORAGE_KEYS = {
-  XP: "tonix_xp",
-  LEVEL: "tonix_level",
-  STREAK: "tonix_streak",
-  LAST_BONUS: "tonix_last_bonus",
-  LEADERBOARD: "tonix_leaderboard",
-  USERNAME: "tonix_username",
-};
-
-export function getLevelByXP(xp: number): { level: number; name: string; xpForNext: number } {
-  for (let i = LEVELS.length - 1; i >= 0; i--) {
-    if (xp >= LEVELS[i].xp) {
-      const nextLevel = LEVELS[i + 1];
-      return {
-        level: LEVELS[i].level,
-        name: LEVELS[i].name,
-        xpForNext: nextLevel ? nextLevel.xp - xp : 0,
-      };
-    }
-  }
-  return { level: 1, name: "Новичок", xpForNext: 100 };
-}
-
-export function getXPProgress(xp: number): { current: number; next: number; percentage: number } {
-  const { level, xpForNext } = getLevelByXP(xp);
-  const currentLevelXP = LEVELS.find((l) => l.level === level)?.xp || 0;
-  const nextLevelXP = LEVELS.find((l) => l.level === level + 1)?.xp || currentLevelXP + 100;
-  
-  const progress = xp - currentLevelXP;
-  const total = nextLevelXP - currentLevelXP;
-  const percentage = total > 0 ? (progress / total) * 100 : 0;
-
-  return {
-    current: progress,
-    next: total,
-    percentage: Math.min(100, Math.max(0, percentage)),
-  };
-}
-
+} as const;

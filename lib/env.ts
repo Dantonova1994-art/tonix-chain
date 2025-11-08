@@ -11,6 +11,7 @@ export const ENV = {
   SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   NFT_MINTER: process.env.NEXT_PUBLIC_NFT_MINTER_ADDRESS,
   NFT_COLLECTION_URL: process.env.NEXT_PUBLIC_NFT_COLLECTION_URL || "https://tonviewer.com/",
+  GAMING_MODE: process.env.NEXT_PUBLIC_GAMING_MODE,
 } as const;
 
 export function requireEnv<K extends keyof typeof ENV>(key: K): string {

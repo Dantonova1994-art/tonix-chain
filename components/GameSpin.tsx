@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import { useGame } from "../context/GameContext";
 import { GAME_REWARDS } from "../constants/game";
 import toast from "react-hot-toast";
+import { getOrFetchSeed, getRandomInt } from "../lib/fair-rng";
+import { useHapticFeedback } from "../lib/hooks";
+import { captureEvent } from "../lib/analytics";
 
 const SPIN_OPTIONS = [
   { label: "TON Bonus", value: "bonus", color: "from-yellow-500 to-orange-600", xp: GAME_REWARDS.SPIN_BONUS },
@@ -17,124 +20,122 @@ const SPIN_OPTIONS = [
 
 export default function GameSpin() {
   const { addXP } = useGame();
+  const haptic = useHapticFeedback();
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<typeof SPIN_OPTIONS[0] | null>(null);
   const [rotation, setRotation] = useState(0);
+  const [seedSynced, setSeedSynced] = useState(false);
   const canSpinRef = useRef(true);
 
-  const handleSpin = () => {
-    if (isSpinning || !canSpinRef.current) return;
+  useEffect(() => {
+    getOrFetchSeed()
+      .then(() => {
+        setSeedSynced(true);
+        toast("🌀 Fair-Seed synced", { icon: "✅", duration: 2000 });
+      })
+      .catch((err) => {
+        console.warn("⚠️ Failed to sync fair seed:", err);
+        setSeedSynced(true);
+      });
+  }, []);
+
+  const handleSpin = async () => {
+    if (isSpinning || !canSpinRef.current || !seedSynced) return;
 
     setIsSpinning(true);
     canSpinRef.current = false;
     setResult(null);
 
-    // Случайный результат
-    const randomIndex = Math.floor(Math.random() * SPIN_OPTIONS.length);
-    const selected = SPIN_OPTIONS[randomIndex];
-    
-    // Вращение: базовое + несколько полных оборотов + позиция результата
-    const baseRotation = 360 * 5; // 5 полных оборотов
-    const segmentAngle = 360 / SPIN_OPTIONS.length;
-    const targetRotation = baseRotation + (360 - randomIndex * segmentAngle - segmentAngle / 2);
+    try {
+      const fairSeed = await getOrFetchSeed();
+      const randomIndex = getRandomInt(fairSeed.seed + Date.now().toString(), SPIN_OPTIONS.length);
+      const selected = SPIN_OPTIONS[randomIndex];
+      
+      const baseRotation = 360 * 5;
+      const segmentAngle = 360 / SPIN_OPTIONS.length;
+      const targetRotation = baseRotation + (360 - randomIndex * segmentAngle - segmentAngle / 2);
 
-    setRotation(targetRotation);
-
-    setTimeout(() => {
-      setResult(selected);
-      setIsSpinning(false);
-
-      if (selected.xp > 0) {
-        addXP(selected.xp, selected.label);
-        toast.success(`🎉 ${selected.label}! +${selected.xp} XP`);
-        
-        // Вибрация
-        if (typeof window !== "undefined" && "vibrate" in navigator) {
-          navigator.vibrate([50, 30, 50]);
-        }
-      } else if (selected.value === "nft") {
-        toast.success("🎫 NFT Ticket разблокирован!");
-      } else {
-        toast("Попробуйте ещё раз!", { icon: "🔄" });
-      }
+      setRotation(targetRotation);
 
       setTimeout(() => {
-        canSpinRef.current = true;
-        setResult(null);
+        setResult(selected);
+        setIsSpinning(false);
+
+        if (selected.xp > 0) {
+          addXP(selected.xp, selected.label);
+          toast.success(`🎉 ${selected.label}! +${selected.xp} XP`);
+          haptic("medium");
+          captureEvent("game_spin_play", { result: selected.value, xp: selected.xp });
+        } else {
+          toast("Попробуйте ещё раз!", { icon: "🔄" });
+          captureEvent("game_spin_play", { result: selected.value, xp: 0 });
+        }
+
+        setTimeout(() => {
+          canSpinRef.current = true;
+          setResult(null);
+        }, 2000);
       }, 3000);
-    }, 3000);
+    } catch (err) {
+      console.error("❌ Error in GameSpin:", err);
+      setIsSpinning(false);
+      canSpinRef.current = true;
+      toast.error("Ошибка при игре");
+    }
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 shadow-[0_0_20px_rgba(0,255,255,0.3)]"
+      className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 shadow-[0_0_20px_rgba(0,255,255,0.3)] text-center space-y-6"
+      role="region"
+      aria-label="Spin the Galaxy game"
     >
-      <h3 className="text-xl font-bold text-cyan-400 mb-4 text-center">Spin the Galaxy</h3>
-      
-      <div className="flex flex-col items-center space-y-6">
-        {/* Колесо */}
-        <div className="relative w-64 h-64">
-          <motion.div
-            animate={{ rotate: rotation }}
-            transition={{ duration: 3, ease: "easeOut" }}
-            className="w-full h-full rounded-full relative overflow-hidden border-4 border-cyan-500/50"
-            style={{ transformOrigin: "center" }}
-          >
-            {SPIN_OPTIONS.map((option, index) => {
-              const angle = (360 / SPIN_OPTIONS.length) * index;
-              return (
-                <div
-                  key={index}
-                  className="absolute inset-0"
-                  style={{
-                    transform: `rotate(${angle}deg)`,
-                    clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos(Math.PI / SPIN_OPTIONS.length)}% ${50 - 50 * Math.sin(Math.PI / SPIN_OPTIONS.length)}%)`,
-                  }}
-                >
-                  <div
-                    className={`w-full h-full bg-gradient-to-br ${option.color} flex items-center justify-center text-xs font-bold text-white p-2`}
-                    style={{ transform: `rotate(${-angle}deg)` }}
-                  >
-                    {option.label}
-                  </div>
-                </div>
-              );
-            })}
-          </motion.div>
-          
-          {/* Указатель */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-cyan-400" />
-        </div>
+      <h3 className="text-2xl font-bold text-cyan-400">Spin the Galaxy</h3>
+      <p className="text-gray-400">Вращайте колесо и выигрывайте призы!</p>
 
-        {/* Результат */}
-        {result && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={`p-4 rounded-lg border ${
-              result.xp > 0
-                ? "bg-green-500/20 border-green-500/50 text-green-300"
-                : "bg-gray-500/20 border-gray-500/50 text-gray-300"
-            }`}
-          >
-            <p className="text-center font-semibold">{result.label}</p>
-          </motion.div>
-        )}
+      {!seedSynced && (
+        <div className="text-sm text-yellow-400">🌀 Синхронизация Fair-Seed...</div>
+      )}
 
-        {/* Кнопка */}
-        <motion.button
-          onClick={handleSpin}
-          disabled={isSpinning || !canSpinRef.current}
-          whileHover={{ scale: canSpinRef.current ? 1.05 : 1 }}
-          whileTap={{ scale: canSpinRef.current ? 0.95 : 1 }}
-          className="w-full px-8 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 text-white font-semibold shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_40px_rgba(168,85,247,0.8)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+      <div className="relative mx-auto w-[300px] h-[300px]">
+        <motion.div
+          className="relative w-full h-full rounded-full border-4 border-cyan-500 overflow-hidden"
+          animate={{ rotate: rotation }}
+          transition={{ duration: 3, ease: "easeOut" }}
         >
-          {isSpinning ? "⏳ Вращается..." : canSpinRef.current ? "🎰 SPIN" : "⏳ Ожидание..."}
-        </motion.button>
+          {SPIN_OPTIONS.map((option, index) => {
+            const angle = (360 / SPIN_OPTIONS.length) * index;
+            return (
+              <div
+                key={option.value}
+                className="absolute inset-0"
+                style={{
+                  transform: `rotate(${angle}deg)`,
+                  clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((Math.PI * 2) / SPIN_OPTIONS.length)}% ${50 + 50 * Math.sin((Math.PI * 2) / SPIN_OPTIONS.length)}%)`,
+                }}
+              >
+                <div className={`h-full bg-gradient-to-br ${option.color} flex items-center justify-center text-white font-bold text-sm`}>
+                  {option.label}
+                </div>
+              </div>
+            );
+          })}
+        </motion.div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -mt-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-red-500" />
       </div>
+
+      <motion.button
+        onClick={handleSpin}
+        disabled={isSpinning || !seedSynced}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="px-8 py-3 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_rgba(0,255,255,0.5)] hover:shadow-[0_0_40px_rgba(0,255,255,0.8)] transition-all duration-300 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+        aria-label="Spin wheel"
+      >
+        {isSpinning ? "Вращаем..." : "SPIN"}
+      </motion.button>
     </motion.div>
   );
 }
-
