@@ -52,3 +52,16 @@ export function hasRequiredEnv(): { missing: string[]; allPresent: boolean } {
     allPresent: missing.length === 0,
   };
 }
+
+// Безопасные require для Battle (не крашат UI, возвращают fallback)
+export function requireBattleEnv(): {
+  enabled: boolean;
+  entryTon: string;
+  poolAddress: string | null;
+} {
+  return {
+    enabled: ENV.BATTLE_ENABLED === "true",
+    entryTon: ENV.BATTLE_ENTRY_TON || "0.1",
+    poolAddress: ENV.BATTLEPOOL_ADDRESS || null,
+  };
+}

@@ -1,117 +1,71 @@
 "use client";
 
-import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useTonConnectUI } from "@tonconnect/ui-react";
-import toast from "react-hot-toast";
+import { useTonWallet } from "@tonconnect/ui-react";
+import React, { useEffect, useState } from "react";
 import { ENV } from "../../lib/env";
-import { generateSignature } from "../../lib/verify";
-import BattleRoom from "./BattleRoom";
-
-function getSecretKey(): string {
-  return process.env.NEXT_PUBLIC_TONIX_SECRET_KEY || "dev-secret-key";
-}
+import toast from "react-hot-toast";
 
 export default function BattleHub() {
-  const [tonConnectUI] = useTonConnectUI();
-  const [joining, setJoining] = useState(false);
-  const [matchId, setMatchId] = useState<string | null>(null);
-  const [entryValue] = useState(parseFloat(ENV.BATTLE_ENTRY_TON || "0.1"));
+  const wallet = useTonWallet();
+  const [status, setStatus] = useState<"idle" | "disabled" | "comingsoon" | "ready">("idle");
 
-  const handleJoinBattle = async () => {
-    if (!tonConnectUI?.connected || !tonConnectUI.account?.address) {
-      toast.error("⚠️ Подключите кошелёк");
-      return;
+  const enabled = ENV.BATTLE_ENABLED === "true";
+  const entry = ENV.BATTLE_ENTRY_TON || "0.1";
+  const pool = ENV.BATTLEPOOL_ADDRESS;
+
+  useEffect(() => {
+    console.log("⚔️ TON Battle init:", { enabled, entry, pool });
+    if (!enabled) {
+      setStatus("disabled");
+    } else if (!pool || pool.startsWith("EQAAAA") || pool === "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c") {
+      setStatus("comingsoon");
+    } else {
+      setStatus("ready");
     }
+  }, [enabled, pool, entry]);
 
-    setJoining(true);
-    toast.loading("🎮 Поиск соперника...", { id: "battle-join" });
+  if (status === "disabled") return null;
 
-    try {
-      const wallet = tonConnectUI.account.address;
-      const tempMatchId = `temp-${Date.now()}`; // Временный ID, сервер вернёт реальный
-      const payload = `${wallet}-${tempMatchId}`;
-      const signature = generateSignature(payload, getSecretKey());
-
-      const response = await fetch("/api/battle/join", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          wallet,
-          matchId: tempMatchId,
-          signature,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to join battle");
-      }
-
-      const data = await response.json();
-      const realMatchId = data.matchId;
-
-      // Отправляем транзакцию
-      await tonConnectUI.sendTransaction(data.tx);
-      toast.success("✅ Транзакция отправлена!", { id: "battle-join" });
-
-      setMatchId(realMatchId);
-      toast.success("🎮 Соперник найден! Начинаем бой!", { duration: 3000 });
-    } catch (err: any) {
-      console.error("❌ Error joining battle:", err);
-      toast.error(`Ошибка: ${err.message}`, { id: "battle-join" });
-    } finally {
-      setJoining(false);
-    }
-  };
-
-  if (matchId) {
-    return <BattleRoom matchId={matchId} onExit={() => setMatchId(null)} />;
+  if (status === "comingsoon") {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="p-6 text-center border border-cyan-500/30 rounded-xl backdrop-blur-md bg-black/40"
+      >
+        <h2 className="text-xl font-semibold text-cyan-400">⚔️ TON Battle</h2>
+        <p className="text-gray-400 mt-2">Coming soon... Prepare for the Arena.</p>
+      </motion.div>
+    );
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white/5 backdrop-blur-md rounded-2xl border border-red-500/30 p-6 shadow-[0_0_20px_rgba(239,68,68,0.3)] text-center space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="p-6 text-center border border-cyan-500/30 rounded-xl backdrop-blur-md bg-black/40"
     >
-      <div className="text-6xl mb-4">⚔️</div>
-      <h2 className="text-2xl font-bold text-red-400">TON Battle</h2>
-      <p className="text-gray-400">Мультиплеерная битва на TON</p>
-
-      <div className="p-4 rounded-lg bg-white/5 border border-gray-600">
-        <p className="text-sm text-gray-400 mb-1">Ставка</p>
-        <p className="text-2xl font-bold text-cyan-300">{entryValue} TON</p>
-        <p className="text-xs text-gray-500 mt-1">Победитель забирает весь банк</p>
-      </div>
-
-      <motion.button
-        onClick={handleJoinBattle}
-        disabled={joining || !tonConnectUI?.connected}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="w-full px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-red-500 to-orange-600 text-white shadow-[0_0_20px_rgba(239,68,68,0.5)] hover:shadow-[0_0_40px_rgba(239,68,68,0.8)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-400"
-        aria-label="Join battle"
-      >
-        {joining ? (
-          <span className="flex items-center justify-center gap-2">
-            <motion.span
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            >
-              ⏳
-            </motion.span>
-            Поиск соперника...
-          </span>
-        ) : (
-          "⚔️ В БОЙ!"
-        )}
-      </motion.button>
-
-      {!tonConnectUI?.connected && (
-        <p className="text-xs text-gray-500">Сначала подключите кошелёк</p>
+      <h2 className="text-xl font-semibold text-cyan-400 mb-2">⚔️ TON Battle</h2>
+      {wallet ? (
+        <button
+          onClick={() => {
+            console.log("⚔️ Battle button clicked, pool:", pool);
+            toast("Battle functionality coming soon! Join the arena when it's ready.", {
+              icon: "⚔️",
+            });
+          }}
+          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-white font-medium hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          aria-label="Join battle"
+        >
+          В бой за {entry} TON
+        </button>
+      ) : (
+        <p className="text-gray-400 mt-2">Подключи кошелёк, чтобы участвовать.</p>
       )}
+      <p className="text-gray-500 text-xs mt-3">
+        BattlePool: {pool ? `${pool.slice(0, 6)}...${pool.slice(-6)}` : "N/A"}
+      </p>
     </motion.div>
   );
 }
-

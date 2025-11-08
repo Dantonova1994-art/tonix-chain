@@ -4,10 +4,21 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ENV } from "../lib/env";
 import { formatAddressShort } from "../lib/address";
+import toast from "react-hot-toast";
 
 export default function StatusPage() {
   const [battleEntryValue, setBattleEntryValue] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${label} скопировано`);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      toast.error("Ошибка при копировании");
+    }
+  };
 
   const testMetadata = async (type: "ticket" | "winner", id: string) => {
     setTesting(`metadata-${type}-${id}`);
@@ -74,28 +85,45 @@ export default function StatusPage() {
         </motion.div>
 
         {/* BattlePool */}
-        {ENV.BATTLE_ENABLED === "true" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white/5 backdrop-blur-md rounded-2xl border border-red-500/30 p-6"
-          >
-            <h2 className="text-xl font-bold text-red-400 mb-4">⚔️ TON Battle</h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-400">BattlePool Address:</span>
-                <span className="text-red-300 font-mono text-xs">
-                  {ENV.BATTLEPOOL_ADDRESS ? formatAddressShort(ENV.BATTLEPOOL_ADDRESS) : "N/A"}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Entry Value:</span>
-                <span className="text-red-300">{ENV.BATTLE_ENTRY_TON || "0.1"} TON</span>
-              </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white/5 backdrop-blur-md rounded-2xl border border-red-500/30 p-6"
+        >
+          <h2 className="text-xl font-bold text-red-400 mb-4">⚔️ TON Battle</h2>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Battle Enabled:</span>
+              <span className={ENV.BATTLE_ENABLED === "true" ? "text-green-400" : "text-red-400"}>
+                {ENV.BATTLE_ENABLED === "true" ? "✅ Enabled" : "❌ Disabled"}
+              </span>
             </div>
-          </motion.div>
-        )}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Entry Value:</span>
+              <span className="text-red-300">{ENV.BATTLE_ENTRY_TON || "0.1"} TON</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">BattlePool Address:</span>
+              {ENV.BATTLEPOOL_ADDRESS ? (
+                <button
+                  onClick={() => copyToClipboard(ENV.BATTLEPOOL_ADDRESS!, "BattlePool address")}
+                  className="text-red-300 font-mono text-xs hover:text-red-200 cursor-pointer"
+                  title={ENV.BATTLEPOOL_ADDRESS}
+                >
+                  {formatAddressShort(ENV.BATTLEPOOL_ADDRESS)}
+                </button>
+              ) : (
+                <span className="text-gray-500">N/A</span>
+              )}
+            </div>
+            {ENV.BATTLEPOOL_ADDRESS && (ENV.BATTLEPOOL_ADDRESS.startsWith("EQAAAA") || ENV.BATTLEPOOL_ADDRESS === "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c") && (
+              <div className="mt-2 p-2 bg-yellow-500/20 border border-yellow-500/50 rounded text-xs text-yellow-300">
+                ⚠️ Placeholder address — Battle coming soon
+              </div>
+            )}
+          </div>
+        </motion.div>
 
         {/* NFT Collections */}
         {ENV.NFT_ENABLED === "true" && (
