@@ -153,6 +153,47 @@ body {
   animation: buttonFlicker 1.5s ease-in-out infinite;
 }
 
+/* Pulsate border для кнопок голосований */
+@keyframes pulsateBorder {
+  0%, 100% {
+    border-color: rgba(168, 85, 247, 0.5);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+  }
+  50% {
+    border-color: rgba(168, 85, 247, 1);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+  }
+}
+
+.pulsate-border {
+  animation: pulsateBorder 2s ease-in-out infinite;
+}
+
+/* Glow grid для DAO экрана */
+.glow-grid {
+  background-image: 
+    linear-gradient(rgba(168, 85, 247, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.15) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Hologram cards эффект */
+@keyframes hologramFloat {
+  0%, 100% {
+    transform: translateY(0) rotateX(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) rotateX(5deg);
+    opacity: 1;
+  }
+}
+
+.hologram-card {
+  animation: hologramFloat 4s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
 /* Скрытие скроллбара */
 ::-webkit-scrollbar {
   width: 6px;

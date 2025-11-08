@@ -238,8 +238,38 @@ export default function StatusPage() {
           </div>
         </motion.div>
 
-        {/* NFT Collections */}
-        {ENV.NFT_ENABLED === "true" && (
+               {/* DAO System */}
+               <motion.div
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.35 }}
+                 className="bg-white/5 backdrop-blur-md rounded-2xl border border-purple-500/30 p-6"
+               >
+                 <h2 className="text-xl font-bold text-purple-400 mb-4">🏛️ DAO System</h2>
+                 <div className="space-y-2 text-sm">
+                   <div className="flex justify-between">
+                     <span className="text-gray-400">TONIX Token (TIX):</span>
+                     <span className="text-purple-300 font-mono text-xs">
+                       {ENV.TONIX_TOKEN_ADDRESS ? formatAddressShort(ENV.TONIX_TOKEN_ADDRESS) : "N/A"}
+                     </span>
+                   </div>
+                   <div className="flex justify-between">
+                     <span className="text-gray-400">DAO Address:</span>
+                     <span className="text-purple-300 font-mono text-xs">
+                       {ENV.DAO_ADDRESS ? formatAddressShort(ENV.DAO_ADDRESS) : "N/A"}
+                     </span>
+                   </div>
+                   <div className="flex justify-between">
+                     <span className="text-gray-400">Profile Collection:</span>
+                     <span className="text-purple-300 font-mono text-xs">
+                       {ENV.PROFILE_COLLECTION_ADDRESS ? formatAddressShort(ENV.PROFILE_COLLECTION_ADDRESS) : "N/A"}
+                     </span>
+                   </div>
+                 </div>
+               </motion.div>
+
+               {/* NFT Collections */}
+               {ENV.NFT_ENABLED === "true" && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

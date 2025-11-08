@@ -38,6 +38,49 @@ export async function buyTicket(tonConnectUI: TonConnectUI) {
   }
 }
 
+export async function sendVoteTransaction(
+  tonConnectUI: TonConnectUI,
+  daoAddress: string,
+  proposalId: number,
+  option: string
+) {
+  try {
+    console.log("🗳️ Initiating vote transaction...");
+    console.log("📍 DAO address:", daoAddress);
+    console.log("📋 Proposal ID:", proposalId);
+    console.log("✅ Option:", option);
+
+    if (!tonConnectUI.connected) {
+      console.warn("⚠️ Wallet not connected");
+      toast.error("⚠️ Пожалуйста, подключите кошелек сначала");
+      return;
+    }
+
+    // Формирование payload для голосования
+    const payload = Buffer.from(
+      JSON.stringify({ method: "vote", proposalId, option })
+    ).toString("base64");
+
+    const tx = {
+      validUntil: Math.floor(Date.now() / 1000) + 300,
+      messages: [
+        {
+          address: daoAddress,
+          amount: "0",
+          payload: payload,
+        },
+      ],
+    };
+
+    console.log("📤 Sending vote transaction...", tx);
+    await tonConnectUI.sendTransaction(tx);
+    console.log("✅ Vote transaction sent successfully!");
+  } catch (err) {
+    console.error("❌ Vote transaction failed:", err);
+    throw err;
+  }
+}
+
 export async function sendDrawTransaction(tonConnectUI: TonConnectUI, ownerAddress: string) {
   try {
     const contractAddress = CONTRACT_ADDRESS || CONTRACT_ADDRESS_FALLBACK;

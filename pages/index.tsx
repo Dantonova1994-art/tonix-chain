@@ -16,6 +16,9 @@ import ReferralPanel from "../components/ReferralPanel";
 import MyNFTs from "../components/nft/MyNFTs";
 import { useOnchainEvents } from "../hooks/useOnchainEvents";
 import OnchainGraph from "../components/OnchainGraph";
+import DAODashboard from "../components/DAODashboard";
+import MyProfile from "../components/MyProfile";
+import Identity from "../components/Identity";
 
 // Динамический импорт компонентов с TonConnect для избежания SSR ошибок
 const BuyTicket = dynamic(() => import("../components/BuyTicket"), { ssr: false });
@@ -240,6 +243,17 @@ export default function Home() {
 
           <MyWins refreshKey={refreshKey} />
           <LastDraws />
+
+          {/* Identity & Profile */}
+          <div className="mt-8 w-full max-w-md mx-auto space-y-4">
+            <Identity />
+            <MyProfile />
+          </div>
+
+          {/* DAO Section */}
+          <div className="mt-8 w-full max-w-md mx-auto">
+            <DAODashboard />
+          </div>
 
           {/* GameHub section */}
           {GAMING_MODE ? (

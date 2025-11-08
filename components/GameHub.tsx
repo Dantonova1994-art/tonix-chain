@@ -10,9 +10,10 @@ import XPPanel from "./XPPanel";
 import Leaderboard from "./Leaderboard";
 import PassPanel from "./PassPanel";
 import BattleHub from "./battle/BattleHub";
+import DAODashboard from "./DAODashboard";
 import { ENV } from "../lib/env";
 
-type GameView = "hub" | "flip" | "catch" | "spin" | "galaxy" | "pass" | "battle";
+type GameView = "hub" | "flip" | "catch" | "spin" | "galaxy" | "pass" | "battle" | "dao";
 
 export default function GameHub({ onClose, autoStart }: { onClose: () => void; autoStart?: boolean }) {
   const [currentView, setCurrentView] = useState<GameView>("hub");

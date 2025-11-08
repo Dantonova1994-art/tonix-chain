@@ -21,14 +21,24 @@ const RESPONSES: Record<string, string[]> = {
     "⚔️ TON Battle — это мультиплеерная битва на TON. Войди в GameHub и выбери 'TON Battle'.",
     "🎮 TON Battle доступен в игровом хабе. Требуется подключенный кошелек и ставка 0.1 TON.",
   ],
+  dao: [
+    "🏛️ TONIX DAO — это система управления сообществом. Активные голосования доступны в разделе DAO Dashboard.",
+    "🗳️ В DAO можно создавать предложения (Level 5+), голосовать и влиять на развитие платформы.",
+    "💎 Токены TIX дают право голоса. Чем больше токенов, тем больше влияние!",
+  ],
+  token: [
+    "🪙 TONIX Token (TIX) — нативный токен платформы. Total Supply: 10,000,000 TIX.",
+    "💎 Токены TIX можно получить за активность, покупку билетов или участие в DAO.",
+    "📈 Текущий курс и supply можно увидеть в разделе DAO.",
+  ],
   help: [
-    "💡 Доступные команды: /balance, /rounds, /battle, /help",
-    "🚀 Я TONIX Navigator — твой AI-гид по платформе. Спроси меня о балансе, раундах или битвах!",
+    "💡 Доступные команды: /balance, /rounds, /battle, /dao, /token, /help",
+    "🚀 Я TONIX Navigator — твой AI-гид по платформе. Спроси меня о балансе, раундах, битвах или DAO!",
   ],
   default: [
     "💎 Привет, игрок. Хочешь узнать, кто выиграл последний раунд?",
     "🚀 Добро пожаловать в TONIX CHAIN! Я помогу тебе разобраться с платформой.",
-    "⚡ Используй команды: /balance, /rounds, /battle, /help",
+    "⚡ Используй команды: /balance, /rounds, /battle, /dao, /token, /help",
   ],
 };
 
@@ -50,15 +60,31 @@ export default function ChatPanel({ onClose }: { onClose: () => void }) {
   const getResponse = (prompt: string): string => {
     const lowerPrompt = prompt.toLowerCase().trim();
 
+    // Сохранение последней команды в память
+    if (lowerPrompt.startsWith("/")) {
+      localStorage.setItem("tonix_last_command", lowerPrompt);
+    }
+
     if (lowerPrompt.startsWith("/balance")) {
       return RESPONSES.balance[Math.floor(Math.random() * RESPONSES.balance.length)];
     } else if (lowerPrompt.startsWith("/rounds")) {
       return RESPONSES.rounds[Math.floor(Math.random() * RESPONSES.rounds.length)];
     } else if (lowerPrompt.startsWith("/battle")) {
       return RESPONSES.battle[Math.floor(Math.random() * RESPONSES.battle.length)];
+    } else if (lowerPrompt.startsWith("/dao")) {
+      return RESPONSES.dao[Math.floor(Math.random() * RESPONSES.dao.length)];
+    } else if (lowerPrompt.startsWith("/token")) {
+      return RESPONSES.token[Math.floor(Math.random() * RESPONSES.token.length)];
     } else if (lowerPrompt.startsWith("/help")) {
       return RESPONSES.help[Math.floor(Math.random() * RESPONSES.help.length)];
     } else {
+      // Проверка памяти для контекста
+      const lastCommand = localStorage.getItem("tonix_last_command");
+      if (lastCommand === "/dao") {
+        return RESPONSES.dao[Math.floor(Math.random() * RESPONSES.dao.length)];
+      } else if (lastCommand === "/token") {
+        return RESPONSES.token[Math.floor(Math.random() * RESPONSES.token.length)];
+      }
       return RESPONSES.default[Math.floor(Math.random() * RESPONSES.default.length)];
     }
   };
