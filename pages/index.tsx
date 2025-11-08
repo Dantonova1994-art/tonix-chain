@@ -72,6 +72,11 @@ export default function Home() {
     fetchCurrentRound();
   }, []);
 
+  // Подписка на ончейн-события
+  useOnchainEvents((event) => {
+    console.log("💎 Onchain event:", event);
+  });
+
   // Обработка параметра startapp для автоматической навигации
   useEffect(() => {
     const saved = localStorage.getItem("tonix_start_target");
