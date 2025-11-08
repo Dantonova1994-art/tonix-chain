@@ -15,6 +15,7 @@ import { ENV } from "../lib/env";
 import ReferralPanel from "../components/ReferralPanel";
 import MyNFTs from "../components/nft/MyNFTs";
 import { useOnchainEvents } from "../hooks/useOnchainEvents";
+import OnchainGraph from "../components/OnchainGraph";
 
 // Динамический импорт компонентов с TonConnect для избежания SSR ошибок
 const BuyTicket = dynamic(() => import("../components/BuyTicket"), { ssr: false });
@@ -186,6 +187,7 @@ export default function Home() {
     <main className="relative min-h-screen bg-gradient-to-b from-[#0b0c10] to-[#121826] text-white flex flex-col items-center justify-center p-4 overflow-hidden">
       <CyberGalaxyBackground />
       <BackgroundSpace />
+      <div className="absolute inset-0 cyber-grid opacity-20" />
 
       {envWarning && process.env.NODE_ENV === "development" && (
         <div className="fixed top-4 left-4 right-4 z-50 bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3 text-xs text-yellow-300">
@@ -220,6 +222,12 @@ export default function Home() {
           {ENV.NFT_ENABLED === "true" && <MyNFTs />}
           <MyTickets refreshKey={refreshKey} />
           <ContractStatus refreshKey={refreshKey} />
+          
+          {/* On-chain граф */}
+          <div className="mt-8 w-full max-w-md mx-auto">
+            <OnchainGraph />
+          </div>
+          
           <BuyTicket onSuccess={handleTicketBought} currentRoundId={currentRoundId || undefined} />
           <DrawButton onSuccess={handleDrawSuccess} />
 

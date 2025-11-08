@@ -96,6 +96,63 @@ body {
   -webkit-box-reflect: below 0 linear-gradient(transparent, rgba(0, 255, 255, 0.3));
 }
 
+/* Neon border flow - градиентное течение рамки */
+@keyframes neonBorderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.neon-border-flow {
+  background: linear-gradient(90deg, #00ffff, #0088ff, #9b5cff, #00ffff);
+  background-size: 200% 200%;
+  animation: neonBorderFlow 3s linear infinite;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+}
+
+/* Glow flicker для текста */
+@keyframes glowFlicker {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8), 0 0 20px rgba(0, 255, 255, 0.6);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(123, 97, 255, 0.6);
+  }
+}
+
+.glow-flicker {
+  animation: glowFlicker 2s ease-in-out infinite;
+}
+
+/* Cyber grid фон */
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Flicker подсветка для кнопок */
+@keyframes buttonFlicker {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(123, 97, 255, 0.6);
+  }
+}
+
+.button-flicker:hover {
+  animation: buttonFlicker 1.5s ease-in-out infinite;
+}
+
 /* Скрытие скроллбара */
 ::-webkit-scrollbar {
   width: 6px;

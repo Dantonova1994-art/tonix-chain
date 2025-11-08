@@ -138,14 +138,14 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
         transition={{ delay: 0.5, duration: 0.6 }}
         className="flex flex-col items-center mt-8 w-full max-w-md mx-auto px-4"
       >
-        <motion.button
-          onClick={handleBuyTicket}
-          disabled={loading || !isConnected}
-          aria-busy={loading}
-          whileHover={{ scale: isConnected && !loading ? 1.05 : 1 }}
-          whileTap={{ scale: isConnected && !loading ? 0.95 : 1 }}
-          className="w-full px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:shadow-[0_0_40px_rgba(0,255,255,0.9)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
-        >
+               <motion.button
+                 onClick={handleBuyTicket}
+                 disabled={loading || !isConnected}
+                 aria-busy={loading}
+                 whileHover={{ scale: isConnected && !loading ? 1.05 : 1 }}
+                 whileTap={{ scale: isConnected && !loading ? 0.95 : 1 }}
+                 className="w-full px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:shadow-[0_0_40px_rgba(0,255,255,0.9)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden button-flicker"
+               >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
               <motion.span

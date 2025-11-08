@@ -6,6 +6,9 @@ import Script from "next/script";
 import { Toaster, toast } from "react-hot-toast";
 import { GameProvider } from "../context/GameContext";
 import { SoundProvider } from "../components/SoundProvider";
+import IntroSequence from "../components/IntroSequence";
+import MusicPlayer from "../components/MusicPlayer";
+import Navigator from "../components/Navigator";
 import { initAnalytics } from "../lib/analytics";
 import { getLocale, setLocale } from "../i18n";
 
@@ -29,7 +32,16 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_SENTRY_DSN) {
 
 export default function App({ Component, pageProps }: any) {
   const [analyticsConsent, setAnalyticsConsent] = useState<boolean | null>(null);
+  const [showIntro, setShowIntro] = useState(false);
   const router = useRouter();
+
+  // Проверка, показывали ли интро
+  useEffect(() => {
+    const introSeen = localStorage.getItem("introSeen");
+    if (!introSeen) {
+      setShowIntro(true);
+    }
+  }, []);
 
   // Обработка параметра startapp из Telegram диплинка
   useEffect(() => {
@@ -169,7 +181,20 @@ export default function App({ Component, pageProps }: any) {
       <TonConnectUIProvider manifestUrl="https://tonix-chain.vercel.app/tonconnect-manifest.json">
         <GameProvider>
           <SoundProvider>
-            <Component {...pageProps} />
+            {showIntro ? (
+              <IntroSequence
+                onComplete={() => {
+                  localStorage.setItem("introSeen", "true");
+                  setShowIntro(false);
+                }}
+              />
+            ) : (
+              <>
+                <Component {...pageProps} />
+                <MusicPlayer />
+                <Navigator />
+              </>
+            )}
             <Toaster
             toastOptions={{
               style: {

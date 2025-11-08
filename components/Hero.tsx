@@ -97,7 +97,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl md:text-4xl drop-shadow-[0_0_25px_rgba(0,255,255,0.9)] animate-pulse"
+            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl md:text-4xl drop-shadow-[0_0_25px_rgba(0,255,255,0.9)] glow-flicker"
           >
             TONIX CHAIN
           </motion.span>
