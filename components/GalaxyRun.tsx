@@ -127,10 +127,10 @@ export default function GalaxyRun() {
       });
 
       // Проверка столкновений (используем currentMeteors)
-      const shipY = canvas.height - SHIP_SIZE - 20;
+      const shipYPos = canvas.height - SHIP_SIZE - 20;
       const collision = currentMeteors.find((m) => {
         const dx = shipX - m.x;
-        const dy = shipY - m.y;
+        const dy = shipYPos - m.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         return distance < (SHIP_SIZE + m.size) / 2;
       });
@@ -162,12 +162,12 @@ export default function GalaxyRun() {
       }
 
       // Корабль
-      const shipY = canvas.height - SHIP_SIZE - 20;
+      const shipYPos = canvas.height - SHIP_SIZE - 20;
       ctx.fillStyle = "#00FFFF";
       ctx.beginPath();
-      ctx.moveTo(shipX, shipY);
-      ctx.lineTo(shipX - SHIP_SIZE / 2, shipY + SHIP_SIZE);
-      ctx.lineTo(shipX + SHIP_SIZE / 2, shipY + SHIP_SIZE);
+      ctx.moveTo(shipX, shipYPos);
+      ctx.lineTo(shipX - SHIP_SIZE / 2, shipYPos + SHIP_SIZE);
+      ctx.lineTo(shipX + SHIP_SIZE / 2, shipYPos + SHIP_SIZE);
       ctx.closePath();
       ctx.fill();
 
