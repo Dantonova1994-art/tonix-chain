@@ -145,6 +145,12 @@ function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
           </button>
         </div>
         
+        <div className="mb-4 text-center">
+          <p className="text-xs text-cyan-400 font-mono">
+            {CONTRACT_ADDRESS.slice(0, 6)}...{CONTRACT_ADDRESS.slice(-6)}
+          </p>
+        </div>
+        
         <div className="space-y-4">
           {roundInfo && (
             <div className="text-center p-3 rounded-lg border border-cyan-500/50 bg-cyan-500/10">
