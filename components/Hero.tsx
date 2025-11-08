@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import GalaxyParticles from "./GalaxyParticles";
 import PassPanel from "./PassPanel";
@@ -24,7 +24,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
     }
   }, [scrollToBuy]);
 
-  const scrollToBuy = () => {
+  const handleScrollToBuy = () => {
     console.log("🚀 НАЧАТЬ ИГРУ button clicked");
     const el = document.getElementById("buy-section");
     if (el) {
@@ -131,7 +131,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           className="flex flex-col sm:flex-row gap-4 items-center"
         >
           <motion.button
-            onClick={scrollToBuy}
+            onClick={handleScrollToBuy}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:shadow-[0_0_40px_rgba(0,255,255,0.9)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
