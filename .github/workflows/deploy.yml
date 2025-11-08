@@ -71,12 +71,16 @@ jobs:
       - name: Create new tag and push
         env:
           NEW_TAG: ${{ env.NEW_TAG }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "tonix-bot"
           git config user.email "bot@tonixchain.io"
-          git tag -a ${NEW_TAG} -m "Release ${NEW_TAG}" || true
-          git push origin ${NEW_TAG} || echo "Tag already exists or push failed"
+          if ! git rev-parse ${NEW_TAG} >/dev/null 2>&1; then
+            git tag -a ${NEW_TAG} -m "Release ${NEW_TAG}"
+            git push origin ${NEW_TAG}
+            echo "✅ Tag ${NEW_TAG} created and pushed"
+          else
+            echo "⚠️ Tag ${NEW_TAG} already exists, skipping"
+          fi
 
       - name: Notify Telegram
         if: always()
