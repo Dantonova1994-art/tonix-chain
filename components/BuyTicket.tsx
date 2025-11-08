@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import NFTTicketModal from "./NFTTicketModal";
 import { REFERRAL_XP } from "../constants/game";
 import { useGame } from "../context/GameContext";
+import { useSoundContext } from "./SoundProvider";
 import { captureEvent } from "../lib/analytics";
 import { generateSignature } from "../lib/verify";
 import { ENV, CONTRACT_ADDRESS } from "../lib/env";
@@ -19,6 +20,7 @@ function getSecretKey(): string {
 export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: () => void; currentRoundId?: number }) {
   const [tonConnectUI] = useTonConnectUI();
   const { addXP } = useGame();
+  const { play } = useSoundContext();
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [showNFTModal, setShowNFTModal] = useState(false);
@@ -113,11 +115,12 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
       if (typeof window !== "undefined" && "vibrate" in navigator) {
         navigator.vibrate(100);
       }
-    } catch (err) {
-      toast.dismiss(loadingToast);
-      toast.error("❌ Ошибка при транзакции");
-      console.error("❌ Ошибка при покупке билета:", err);
-      captureEvent("tx_buy_error", {
+           } catch (err) {
+             toast.dismiss(loadingToast);
+             toast.error("❌ Ошибка при транзакции");
+             play("alert");
+             console.error("❌ Ошибка при покупке билета:", err);
+             captureEvent("tx_buy_error", {
         wallet: tonConnectUI.account?.address,
         error: err instanceof Error ? err.message : "Unknown",
       });

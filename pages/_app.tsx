@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import { Toaster, toast } from "react-hot-toast";
 import { GameProvider } from "../context/GameContext";
+import { SoundProvider } from "../components/SoundProvider";
 import { initAnalytics } from "../lib/analytics";
 import { getLocale, setLocale } from "../i18n";
 
@@ -167,8 +168,9 @@ export default function App({ Component, pageProps }: any) {
       />
       <TonConnectUIProvider manifestUrl="https://tonix-chain.vercel.app/tonconnect-manifest.json">
         <GameProvider>
-          <Component {...pageProps} />
-          <Toaster
+          <SoundProvider>
+            <Component {...pageProps} />
+            <Toaster
             toastOptions={{
               style: {
                 background: 'rgba(17, 24, 39, 0.8)',
@@ -210,8 +212,9 @@ export default function App({ Component, pageProps }: any) {
               </div>
             </div>
           )}
-        </GameProvider>
-      </TonConnectUIProvider>
+            </SoundProvider>
+          </GameProvider>
+        </TonConnectUIProvider>
     </>
   );
 }

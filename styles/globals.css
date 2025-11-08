@@ -64,6 +64,38 @@ body {
   animation: neonGlow 2.5s ease-in-out infinite;
 }
 
+/* Cyber Galaxy Theme - Glow Pulse для всех кнопок и текста */
+@keyframes neonPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 20px rgba(123, 97, 255, 0.4));
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1)) drop-shadow(0 0 40px rgba(123, 97, 255, 0.8));
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+  }
+}
+
+.glow-pulse {
+  animation: neonPulse 3s ease-in-out infinite;
+}
+
+/* Glassmorphism карточки */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid transparent;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)),
+    linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 123, 255, 0.3));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* CSS Reflection для текста */
+.text-reflection {
+  -webkit-box-reflect: below 0 linear-gradient(transparent, rgba(0, 255, 255, 0.3));
+}
+
 /* Скрытие скроллбара */
 ::-webkit-scrollbar {
   width: 6px;

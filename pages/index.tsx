@@ -7,6 +7,7 @@ import Hero from "../components/Hero";
 import WalletConnect from "../components/WalletConnect";
 import ContractStatus from "../components/ContractStatus";
 import BackgroundSpace from "../components/BackgroundSpace";
+import CyberGalaxyBackground from "../components/CyberGalaxyBackground";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { useGame } from "../context/GameContext";
@@ -177,6 +178,7 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen bg-gradient-to-b from-[#0b0c10] to-[#121826] text-white flex flex-col items-center justify-center p-4 overflow-hidden">
+      <CyberGalaxyBackground />
       <BackgroundSpace />
 
       {envWarning && process.env.NODE_ENV === "development" && (

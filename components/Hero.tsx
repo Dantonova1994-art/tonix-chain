@@ -28,6 +28,11 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
     console.log("🚀 НАЧАТЬ ИГРУ button clicked");
     const el = document.getElementById("buy-section");
     if (el) {
+      // Мягкий zoom-out эффект
+      el.style.transform = "scale(0.95)";
+      setTimeout(() => {
+        el.style.transform = "scale(1)";
+      }, 200);
       console.log("📍 Scrolling to buy-section");
       el.scrollIntoView({ behavior: "smooth" });
     } else {

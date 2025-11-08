@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import GameFlip from "./GameFlip";
 import GameCatch from "./GameCatch";
 import GameSpin from "./GameSpin";
+import GalaxyRun from "./GalaxyRun";
 import XPPanel from "./XPPanel";
 import Leaderboard from "./Leaderboard";
 import PassPanel from "./PassPanel";
 import BattleHub from "./battle/BattleHub";
 import { ENV } from "../lib/env";
 
-type GameView = "hub" | "flip" | "catch" | "spin" | "pass" | "battle";
+type GameView = "hub" | "flip" | "catch" | "spin" | "galaxy" | "pass" | "battle";
 
 export default function GameHub({ onClose, autoStart }: { onClose: () => void; autoStart?: boolean }) {
   const [currentView, setCurrentView] = useState<GameView>("hub");
@@ -38,6 +39,7 @@ export default function GameHub({ onClose, autoStart }: { onClose: () => void; a
     { id: "flip" as GameView, name: "Flip & Win", icon: "🎲", component: GameFlip },
     { id: "catch" as GameView, name: "Catch TONs", icon: "💎", component: GameCatch },
     { id: "spin" as GameView, name: "Spin the Galaxy", icon: "🎰", component: GameSpin },
+    { id: "galaxy" as GameView, name: "Galaxy Run", icon: "🚀", component: GalaxyRun },
   ];
 
   return (
