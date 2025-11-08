@@ -9,7 +9,9 @@ import toast from "react-hot-toast";
 
 export default function Identity() {
   const wallet = useTonWallet();
-  const { xp, level } = useGame();
+  const gameContext = useGame();
+  const xp = gameContext.xp;
+  const level = gameContext.levelInfo.level;
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [hasToken, setHasToken] = useState(false);
 
