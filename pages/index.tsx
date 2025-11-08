@@ -14,6 +14,7 @@ import { useGame } from "../context/GameContext";
 import { ENV } from "../lib/env";
 import ReferralPanel from "../components/ReferralPanel";
 import MyNFTs from "../components/nft/MyNFTs";
+import { useOnchainEvents } from "../hooks/useOnchainEvents";
 
 // Динамический импорт компонентов с TonConnect для избежания SSR ошибок
 const BuyTicket = dynamic(() => import("../components/BuyTicket"), { ssr: false });
