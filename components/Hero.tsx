@@ -29,54 +29,61 @@ export default function Hero() {
         style={{ y }}
         className="relative text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6 z-10"
       >
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1, rotate: 360 }}
-          transition={{ duration: 8, ease: "linear", repeat: Infinity }}
-          whileHover={{ rotate: 720, scale: 1.05 }}
-          className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer drop-shadow-[0_0_20px_rgba(0,255,255,0.6)] hover:drop-shadow-[0_0_35px_rgba(0,255,255,1)] transition-all z-10"
-        >
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
-            <defs>
-              <linearGradient id="tonixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00ffff">
-                  <animate
-                    attributeName="stop-color"
-                    values="#00ffff;#0088ff;#9b5cff;#00ffff"
-                    dur="6s"
-                    repeatCount="indefinite"
-                  />
-                </stop>
-                <stop offset="100%" stopColor="#9b5cff">
-                  <animate
-                    attributeName="stop-color"
-                    values="#9b5cff;#00ffff;#0088ff;#9b5cff"
-                    dur="6s"
-                    repeatCount="indefinite"
-                  />
-                </stop>
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <polygon
-              points="100,10 190,55 190,145 100,190 10,145 10,55"
-              fill="none"
-              stroke="url(#tonixGradient)"
-              strokeWidth="8"
-              strokeLinejoin="round"
-              filter="url(#glow)"
-            />
-          </svg>
-          <span className="absolute text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl mt-56 drop-shadow-[0_0_25px_rgba(0,255,255,0.9)] animate-pulse">
+        <div className="flex flex-col items-center justify-center gap-4 z-10">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1, rotate: 360 }}
+            transition={{ duration: 8, ease: "linear", repeat: Infinity }}
+            whileHover={{ rotate: 720, scale: 1.05 }}
+            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer drop-shadow-[0_0_20px_rgba(0,255,255,0.6)] hover:drop-shadow-[0_0_35px_rgba(0,255,255,1)] transition-all"
+          >
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
+              <defs>
+                <linearGradient id="tonixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#00ffff">
+                    <animate
+                      attributeName="stop-color"
+                      values="#00ffff;#0088ff;#9b5cff;#00ffff"
+                      dur="6s"
+                      repeatCount="indefinite"
+                    />
+                  </stop>
+                  <stop offset="100%" stopColor="#9b5cff">
+                    <animate
+                      attributeName="stop-color"
+                      values="#9b5cff;#00ffff;#0088ff;#9b5cff"
+                      dur="6s"
+                      repeatCount="indefinite"
+                    />
+                  </stop>
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <polygon
+                points="100,10 190,55 190,145 100,190 10,145 10,55"
+                fill="none"
+                stroke="url(#tonixGradient)"
+                strokeWidth="8"
+                strokeLinejoin="round"
+                filter="url(#glow)"
+              />
+            </svg>
+          </motion.div>
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl md:text-4xl drop-shadow-[0_0_25px_rgba(0,255,255,0.9)] animate-pulse"
+          >
             TONIX CHAIN
-          </span>
-        </motion.div>
+          </motion.span>
+        </div>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
