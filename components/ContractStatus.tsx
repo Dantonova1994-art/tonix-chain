@@ -93,6 +93,34 @@ function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
 
   const throttledFetch = useThrottle(fetchContractData, 500);
 
+  // Live обновление баланса каждые 5 секунд
+  useEffect(() => {
+    let mounted = true;
+    
+    async function loadLiveBalance() {
+      try {
+        const b = await fetchContractBalance(CONTRACT_ADDRESS);
+        if (mounted) {
+          setLiveBalance(b);
+          console.log("💎 Live balance updated:", b.toFixed(3), "TON");
+        }
+      } catch (err) {
+        console.error("❌ Error fetching live balance:", err);
+      }
+    }
+    
+    // Первая загрузка
+    loadLiveBalance();
+    
+    // Обновление каждые 5 секунд
+    const interval = setInterval(loadLiveBalance, 5000);
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   useEffect(() => {
     fetchContractData();
   }, [refreshKey, fetchContractData]);
