@@ -185,11 +185,28 @@ export default function Home() {
         </div>
       )}
 
-      {showGameHub && GAMING_MODE ? (
-        <GameHub onClose={handleCloseGameHub} autoStart={startTarget === "game"} />
-      ) : (
-        <div className="z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-6 pb-20">
-          <Hero />
+      <AnimatePresence mode="wait">
+        {showGameHub && GAMING_MODE ? (
+          <motion.div
+            key="gamehub"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="w-full"
+          >
+            <GameHub onClose={handleCloseGameHub} autoStart={startTarget === "game"} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="main"
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-6 pb-20"
+          >
+            <Hero scrollToBuy={startTarget === "lottery"} />
           <WalletConnect />
           <ReferralPanel />
           {ENV.NFT_ENABLED === "true" && <MyNFTs />}
