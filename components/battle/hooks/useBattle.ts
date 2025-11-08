@@ -197,7 +197,7 @@ export function useBattle() {
 
         // Автоматический цикл боя
         battleIntervalRef.current = setInterval(() => {
-          if (isFightingRef.current || state === "finished") {
+          if (isFightingRef.current) {
             if (battleIntervalRef.current) {
               clearInterval(battleIntervalRef.current);
               battleIntervalRef.current = null;
@@ -210,7 +210,7 @@ export function useBattle() {
 
           // Противник атакует через 700мс
           setTimeout(() => {
-            if (!isFightingRef.current && state === "fighting") {
+            if (!isFightingRef.current) {
               enemyAttack();
               setRounds((prev) => prev + 1);
             }
