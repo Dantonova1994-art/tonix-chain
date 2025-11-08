@@ -29,40 +29,56 @@ export default function Hero() {
         className="relative text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6 z-10"
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 40 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="flex items-center gap-3"
+          className="flex flex-col items-center justify-center gap-3 z-10"
         >
-          <motion.div
-            className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 shadow-[0_0_25px_rgba(0,255,255,0.7)]"
-            animate={{
-              scale: [1, 1.1, 1],
-              boxShadow: [
-                "0 0 20px rgba(0,255,255,0.5)",
-                "0 0 40px rgba(0,255,255,0.9)",
-                "0 0 20px rgba(0,255,255,0.5)"
-              ],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-            TONIX CHAIN
-          </h1>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 400 120"
+            className="w-64 sm:w-72 md:w-[420px] h-auto animate-neon drop-shadow-[0_0_25px_rgba(0,255,255,0.6)]"
+          >
+            <defs>
+              <linearGradient id="tonixGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#00FFFF">
+                  <animate
+                    attributeName="stop-color"
+                    values="#00FFFF;#0099FF;#7B61FF;#00FFFF"
+                    dur="6s"
+                    repeatCount="indefinite"
+                  />
+                </stop>
+                <stop offset="100%" stopColor="#7B61FF">
+                  <animate
+                    attributeName="stop-color"
+                    values="#7B61FF;#00FFFF;#0099FF;#7B61FF"
+                    dur="6s"
+                    repeatCount="indefinite"
+                  />
+                </stop>
+              </linearGradient>
+            </defs>
+            <text
+              x="50%"
+              y="70%"
+              textAnchor="middle"
+              fill="url(#tonixGradient)"
+              fontSize="56"
+              fontWeight="800"
+              letterSpacing="4"
+              fontFamily="Inter, sans-serif"
+              style={{
+                textShadow: "0 0 12px rgba(0,255,255,0.8), 0 0 28px rgba(123,97,255,0.6)",
+              }}
+            >
+              TONIX CHAIN
+            </text>
+          </svg>
+          <p className="text-center text-gray-300 text-sm md:text-base max-w-md mt-1">
+            Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
+          </p>
         </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-gray-300 text-lg md:text-xl max-w-2xl px-4"
-        >
-          Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
-        </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
