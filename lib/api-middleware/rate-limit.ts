@@ -18,6 +18,15 @@ export function getClientIdentifier(req: any): string {
   return ip;
 }
 
+export function cleanupRateLimit() {
+  const now = Date.now();
+  rateLimitMap.forEach((value, key) => {
+    if (now > value.resetTime) {
+      rateLimitMap.delete(key);
+    }
+  });
+}
+
 export function rateLimit(identifier: string): { allowed: boolean; retryAfter?: number } {
   const now = Date.now();
   
@@ -44,14 +53,4 @@ export function rateLimit(identifier: string): { allowed: boolean; retryAfter?: 
   // Увеличиваем счётчик
   record.count++;
   return { allowed: true };
-}
-
-// Очистка старых записей (вызывается при каждом запросе)
-export function cleanupRateLimit() {
-  const now = Date.now();
-  rateLimitMap.forEach((value, key) => {
-    if (now > value.resetTime) {
-      rateLimitMap.delete(key);
-    }
-  });
 }
