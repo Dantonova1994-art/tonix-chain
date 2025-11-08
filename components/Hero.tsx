@@ -9,6 +9,7 @@ export default function Hero() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, 100]);
   const [showPassPanel, setShowPassPanel] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const scrollToBuy = () => {
     console.log("🚀 НАЧАТЬ ИГРУ button clicked");
@@ -34,10 +35,23 @@ export default function Hero() {
           transition={{ duration: 1, ease: "easeOut" }}
           className="flex flex-col items-center justify-center gap-3 z-10"
         >
-          <svg
+          <motion.svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 400 120"
-            className="w-64 sm:w-72 md:w-[420px] h-auto animate-neon drop-shadow-[0_0_25px_rgba(0,255,255,0.6)]"
+            className="w-64 sm:w-72 md:w-[420px] h-auto cursor-pointer select-none"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onTouchStart={() => {
+              setHovered(true);
+              setTimeout(() => setHovered(false), 400);
+            }}
+            animate={{
+              scale: hovered ? 1.05 : 1,
+              filter: hovered
+                ? "drop-shadow(0 0 25px rgba(0,255,255,1)) drop-shadow(0 0 45px rgba(123,97,255,0.8))"
+                : "drop-shadow(0 0 15px rgba(0,255,255,0.6)) drop-shadow(0 0 25px rgba(123,97,255,0.5))",
+            }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <defs>
               <linearGradient id="tonixGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -69,12 +83,14 @@ export default function Hero() {
               letterSpacing="4"
               fontFamily="Inter, sans-serif"
               style={{
-                textShadow: "0 0 12px rgba(0,255,255,0.8), 0 0 28px rgba(123,97,255,0.6)",
+                textShadow: hovered
+                  ? "0 0 18px rgba(0,255,255,0.9), 0 0 42px rgba(123,97,255,0.9)"
+                  : "0 0 12px rgba(0,255,255,0.8), 0 0 28px rgba(123,97,255,0.6)",
               }}
             >
               TONIX CHAIN
             </text>
-          </svg>
+          </motion.svg>
           <p className="text-center text-gray-300 text-sm md:text-base max-w-md mt-1">
             Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
           </p>
