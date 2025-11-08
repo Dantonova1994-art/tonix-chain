@@ -111,6 +111,16 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
         </motion.p>
 
+        {/* Подпись "THE FUTURE OF WEB3 GAMES" */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="mt-4 text-xl text-cyan-300/80 text-reflection glow-pulse"
+        >
+          THE FUTURE OF WEB3 GAMES
+        </motion.p>
+
         {ENV.GAMING_MODE === "true" && (
           <motion.button
             onClick={() => {
