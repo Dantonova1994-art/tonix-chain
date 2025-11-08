@@ -50,17 +50,27 @@ jobs:
           if [ -z "$EVENT" ]; then EVENT="—"; fi
           echo "EVENT=${EVENT}" >> $GITHUB_ENV
 
+      - name: Get commit info
+        id: commit_info
+        run: |
+          AUTHOR=$(git log -1 --pretty=format:'%an')
+          MESSAGE=$(git log -1 --pretty=format:'%s')
+          echo "AUTHOR=${AUTHOR}" >> $GITHUB_ENV
+          echo "MESSAGE=${MESSAGE}" >> $GITHUB_ENV
+
       - name: Notify Telegram
         if: always()
         env:
           DEPLOY_URL: https://tonix-chain.vercel.app
           BALANCE: ${{ env.BALANCE }}
           EVENT: ${{ env.EVENT }}
+          AUTHOR: ${{ env.AUTHOR }}
+          MESSAGE: ${{ env.MESSAGE }}
         run: |
           STATUS=${{ job.status }}
           VERSION=$(grep '"version"' package.json | head -1 | awk -F'"' '{print $4}')
-          MESSAGE="🚀 *TONIX CHAIN Deployment Report*\n\n*Status:* ${STATUS}\n*Version:* ${VERSION}\n*Branch:* main\n*Time:* $(date '+%H:%M:%S')\n\n💎 *Contract Balance:* ${BALANCE} TON\n📡 *Last Event:* ${EVENT}\n\n🌐 [Open Mini App](https://t.me/tonixchain_lottery_bot/app?startapp=lottery)\n🔗 [Vercel Deploy](${DEPLOY_URL})"
+          MESSAGE_TEXT="🚀 *TONIX CHAIN Deployment Report*\n\n*Status:* ${STATUS}\n*Version:* ${VERSION}\n*Branch:* main\n*Time:* $(date '+%H:%M:%S')\n\n👤 *Author:* ${AUTHOR}\n📝 *Commit:* ${MESSAGE}\n\n💎 *Contract Balance:* ${BALANCE} TON\n📡 *Last Event:* ${EVENT}\n\n🌐 [Open Mini App](https://t.me/tonixchain_lottery_bot/app?startapp=lottery)\n🔗 [Vercel Deploy](${DEPLOY_URL})"
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -d parse_mode="Markdown" \
-          -d text="$MESSAGE"
+          -d text="$MESSAGE_TEXT"
