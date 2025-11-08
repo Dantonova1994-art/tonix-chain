@@ -28,15 +28,15 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          npx vercel --prod --force --confirm --yes
-          echo "DEPLOY_URL=https://tonix-chain.vercel.app" >> $GITHUB_ENV
+        run: npx vercel --prod --force --confirm --yes
 
       - name: Notify Telegram
         if: always()
+        env:
+          DEPLOY_URL: https://tonix-chain.vercel.app
         run: |
           STATUS=${{ job.status }}
-          MESSAGE="🚀 *TONIX CHAIN Deployment Report*\n\n*Status:* ${STATUS}\n*Branch:* main\n*Time:* $(date '+%H:%M:%S')\n\n🌐 [Open Mini App](https://t.me/tonixchain_lottery_bot/app?startapp=lottery)\n💎 [Vercel Deploy](${{ env.DEPLOY_URL }})"
+          MESSAGE="🚀 *TONIX CHAIN Deployment Report*\n\n*Status:* ${STATUS}\n*Branch:* main\n*Time:* $(date '+%H:%M:%S')\n\n🌐 [Open Mini App](https://t.me/tonixchain_lottery_bot/app?startapp=lottery)\n💎 [Vercel Deploy](${DEPLOY_URL})"
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -d parse_mode="Markdown" \
