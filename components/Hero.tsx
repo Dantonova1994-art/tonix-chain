@@ -30,71 +30,61 @@ export default function Hero() {
         className="relative text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6 z-10"
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="flex flex-col items-center justify-center gap-3 z-10"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1, rotate: 360 }}
+          transition={{ duration: 8, ease: "linear", repeat: Infinity }}
+          whileHover={{ rotate: 720, scale: 1.05 }}
+          className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer drop-shadow-[0_0_20px_rgba(0,255,255,0.6)] hover:drop-shadow-[0_0_35px_rgba(0,255,255,1)] transition-all z-10"
         >
-          <motion.svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 400 120"
-            className="w-64 sm:w-72 md:w-[420px] h-auto cursor-pointer select-none"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onTouchStart={() => {
-              setHovered(true);
-              setTimeout(() => setHovered(false), 400);
-            }}
-            animate={{
-              scale: hovered ? 1.05 : 1,
-              filter: hovered
-                ? "drop-shadow(0 0 25px rgba(0,255,255,1)) drop-shadow(0 0 45px rgba(123,97,255,0.8))"
-                : "drop-shadow(0 0 15px rgba(0,255,255,0.6)) drop-shadow(0 0 25px rgba(123,97,255,0.5))",
-            }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          >
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
             <defs>
-              <linearGradient id="tonixGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#00FFFF">
+              <linearGradient id="tonixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#00ffff">
                   <animate
                     attributeName="stop-color"
-                    values="#00FFFF;#0099FF;#7B61FF;#00FFFF"
+                    values="#00ffff;#0088ff;#9b5cff;#00ffff"
                     dur="6s"
                     repeatCount="indefinite"
                   />
                 </stop>
-                <stop offset="100%" stopColor="#7B61FF">
+                <stop offset="100%" stopColor="#9b5cff">
                   <animate
                     attributeName="stop-color"
-                    values="#7B61FF;#00FFFF;#0099FF;#7B61FF"
+                    values="#9b5cff;#00ffff;#0088ff;#9b5cff"
                     dur="6s"
                     repeatCount="indefinite"
                   />
                 </stop>
               </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
-            <text
-              x="50%"
-              y="70%"
-              textAnchor="middle"
-              fill="url(#tonixGradient)"
-              fontSize="56"
-              fontWeight="800"
-              letterSpacing="4"
-              fontFamily="Inter, sans-serif"
-              style={{
-                textShadow: hovered
-                  ? "0 0 18px rgba(0,255,255,0.9), 0 0 42px rgba(123,97,255,0.9)"
-                  : "0 0 12px rgba(0,255,255,0.8), 0 0 28px rgba(123,97,255,0.6)",
-              }}
-            >
-              TONIX CHAIN
-            </text>
-          </motion.svg>
-          <p className="text-center text-gray-300 text-sm md:text-base max-w-md mt-1">
-            Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
-          </p>
+            <polygon
+              points="100,10 190,55 190,145 100,190 10,145 10,55"
+              fill="none"
+              stroke="url(#tonixGradient)"
+              strokeWidth="8"
+              strokeLinejoin="round"
+              filter="url(#glow)"
+            />
+          </svg>
+          <span className="absolute text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl mt-56 drop-shadow-[0_0_25px_rgba(0,255,255,0.9)] animate-pulse">
+            TONIX CHAIN
+          </span>
         </motion.div>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="text-center text-gray-300 text-sm md:text-base max-w-md mt-4"
+        >
+          Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
+        </motion.p>
 
         {ENV.GAMING_MODE === "true" && (
           <motion.button
