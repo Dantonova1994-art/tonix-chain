@@ -35,6 +35,7 @@ jobs:
       - name: Fetch TON contract balance
         id: ton_balance
         run: |
+          sudo apt-get update && sudo apt-get install -y jq
           CONTRACT="EQBtB8vIHgdO49Ih02Yt9kD5tDKxOTrFgZHkRkAjFTrvJziT"
           RESPONSE=$(curl -s "https://toncenter.com/api/v2/getAddressBalance?address=$CONTRACT")
           BALANCE=$(echo $RESPONSE | jq -r '.result' | awk '{printf "%.3f", $1/1000000000}')
@@ -45,13 +46,16 @@ jobs:
         run: |
           CONTRACT="EQBtB8vIHgdO49Ih02Yt9kD5tDKxOTrFgZHkRkAjFTrvJziT"
           RESPONSE=$(curl -s "https://toncenter.com/api/v2/getTransactions?address=$CONTRACT&limit=1")
-          EVENT=$(echo $RESPONSE | jq -r '.result[0].in_msg.source | if . == null then "—" else . end')
+          EVENT=$(echo $RESPONSE | jq -r '.result[0].in_msg.source // empty' | head -c 20)
+          if [ -z "$EVENT" ]; then EVENT="—"; fi
           echo "EVENT=${EVENT}" >> $GITHUB_ENV
 
       - name: Notify Telegram
         if: always()
         env:
           DEPLOY_URL: https://tonix-chain.vercel.app
+          BALANCE: ${{ env.BALANCE }}
+          EVENT: ${{ env.EVENT }}
         run: |
           STATUS=${{ job.status }}
           VERSION=$(grep '"version"' package.json | head -1 | awk -F'"' '{print $4}')
