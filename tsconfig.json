@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["DOM", "ES2017"],
+    "downlevelIteration": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

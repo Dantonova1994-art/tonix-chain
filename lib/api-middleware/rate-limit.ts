@@ -49,11 +49,9 @@ export function rateLimit(identifier: string): { allowed: boolean; retryAfter?: 
 // Очистка старых записей (вызывается при каждом запросе)
 export function cleanupRateLimit() {
   const now = Date.now();
-  const keysToDelete: string[] = [];
   rateLimitMap.forEach((value, key) => {
     if (now > value.resetTime) {
-      keysToDelete.push(key);
+      rateLimitMap.delete(key);
     }
   });
-  keysToDelete.forEach((key) => rateLimitMap.delete(key));
 }
