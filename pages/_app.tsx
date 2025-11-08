@@ -62,19 +62,19 @@ export default function App({ Component, pageProps }: any) {
     }
   }, []);
 
-         useEffect(() => {
-           if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
-             const tg = (window as any).Telegram.WebApp;
-             console.log("✅ Telegram WebApp initialized", {
-               initDataUnsafe: tg.initDataUnsafe,
-               initData: tg.initData,
-               version: tg.version,
-               platform: tg.platform,
-               colorScheme: tg.colorScheme,
-               themeParams: tg.themeParams,
-             });
-             tg.ready();
-             tg.expand();
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
+      const tg = (window as any).Telegram.WebApp;
+      console.log("✅ Telegram WebApp initialized", {
+        initDataUnsafe: tg.initDataUnsafe,
+        initData: tg.initData,
+        version: tg.version,
+        platform: tg.platform,
+        colorScheme: tg.colorScheme,
+        themeParams: tg.themeParams,
+      });
+      tg.ready();
+      tg.expand();
 
       // CSS переменные для темы
       const applyTheme = () => {
@@ -100,13 +100,13 @@ export default function App({ Component, pageProps }: any) {
       applyTheme();
       tg.onEvent("themeChanged", applyTheme);
 
-             console.log("✅ Telegram WebApp initialized");
-             console.log("📱 Platform:", tg.platform);
-             console.log("👤 User:", tg.initDataUnsafe?.user);
-           } else {
-             console.warn("⚠️ Telegram WebApp not detected - running in browser mode");
-           }
-         }, []);
+      console.log("✅ Telegram WebApp initialized");
+      console.log("📱 Platform:", tg.platform);
+      console.log("👤 User:", tg.initDataUnsafe?.user);
+    } else {
+      console.warn("⚠️ Telegram WebApp not detected - running in browser mode");
+    }
+  }, []);
 
   const handleAnalyticsConsent = (accepted: boolean) => {
     localStorage.setItem("analytics_consent", accepted.toString());
