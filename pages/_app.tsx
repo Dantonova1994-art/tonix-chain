@@ -129,7 +129,7 @@ export default function App({ Component, pageProps }: any) {
           `,
         }}
       />
-      <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">
+      <TonConnectUIProvider manifestUrl="https://tonix-chain.vercel.app/tonconnect-manifest.json">
         <GameProvider>
           <Component {...pageProps} />
           <Toaster

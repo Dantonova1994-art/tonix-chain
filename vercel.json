@@ -1,12 +1,17 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "package.json", "use": "@vercel/next" }
-  ],
+  "builds": [{ "src": "package.json", "use": "@vercel/next" }],
   "framework": "nextjs",
+  "headers": [
+    {
+      "source": "/tonconnect-manifest.json",
+      "headers": [{ "key": "Content-Type", "value": "application/json; charset=utf-8" }]
+    }
+  ],
   "env": {
     "NEXT_PUBLIC_NETWORK": "mainnet",
     "NEXT_PUBLIC_CONTRACT_ADDRESS": "EQBtB8vIHgdO49Ih02Yt9kD5tDKxOTrFgZHkRkAjFTrvJziT",
-    "NEXT_PUBLIC_TONCENTER_API": "https://toncenter.com/api/v2/jsonRPC"
+    "NEXT_PUBLIC_TONCENTER_API": "https://toncenter.com/api/v2/jsonRPC",
+    "NEXT_PUBLIC_MANIFEST_URL": "https://tonix-chain.vercel.app/tonconnect-manifest.json"
   }
 }

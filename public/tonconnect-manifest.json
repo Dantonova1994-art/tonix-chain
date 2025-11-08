@@ -1,5 +1,7 @@
 {
   "url": "https://tonix-chain.vercel.app",
   "name": "TONIX Chain",
-  "iconUrl": "https://tonix-chain.vercel.app/logo.png"
+  "iconUrl": "https://tonix-chain.vercel.app/logo.png",
+  "termsOfUseUrl": "https://tonix-chain.vercel.app/terms",
+  "privacyPolicyUrl": "https://tonix-chain.vercel.app/privacy"
 }
