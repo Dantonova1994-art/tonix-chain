@@ -42,14 +42,12 @@ export function rateLimit(identifier: string): { allowed: boolean; retryAfter?: 
   return { allowed: true };
 }
 
-// Очистка старых записей каждые 5 минут
-if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, value] of rateLimitMap.entries()) {
-      if (now > value.resetTime) {
-        rateLimitMap.delete(key);
-      }
+// Очистка старых записей (вызывается при каждом запросе)
+export function cleanupRateLimit() {
+  const now = Date.now();
+  for (const [key, value] of rateLimitMap.entries()) {
+    if (now > value.resetTime) {
+      rateLimitMap.delete(key);
     }
-  }, 5 * 60 * 1000);
+  }
 }
