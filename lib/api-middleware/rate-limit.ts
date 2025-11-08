@@ -20,6 +20,10 @@ export function getClientIdentifier(req: any): string {
 
 export function rateLimit(identifier: string): { allowed: boolean; retryAfter?: number } {
   const now = Date.now();
+  
+  // Очистка старых записей
+  cleanupRateLimit();
+  
   const record = rateLimitMap.get(identifier);
 
   if (!record || now > record.resetTime) {
@@ -45,9 +49,11 @@ export function rateLimit(identifier: string): { allowed: boolean; retryAfter?: 
 // Очистка старых записей (вызывается при каждом запросе)
 export function cleanupRateLimit() {
   const now = Date.now();
-  for (const [key, value] of rateLimitMap.entries()) {
+  const keysToDelete: string[] = [];
+  rateLimitMap.forEach((value, key) => {
     if (now > value.resetTime) {
-      rateLimitMap.delete(key);
+      keysToDelete.push(key);
     }
-  }
+  });
+  keysToDelete.forEach((key) => rateLimitMap.delete(key));
 }
