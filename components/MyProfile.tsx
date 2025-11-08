@@ -17,7 +17,9 @@ interface ProfileData {
 
 export default function MyProfile() {
   const wallet = useTonWallet();
-  const { xp, level } = useGame();
+  const gameContext = useGame();
+  const xp = gameContext.xp;
+  const level = gameContext.levelInfo.level;
   const { play } = useSoundContext();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(false);

@@ -6,7 +6,7 @@ import { useTonWallet } from "@tonconnect/ui-react";
 import { useGame } from "../context/GameContext";
 import { useSoundContext } from "./SoundProvider";
 import toast from "react-hot-toast";
-import { generateSignature } from "../lib/verify";
+import { generateSignature, verifySignature } from "../lib/verify";
 import { captureEvent } from "../lib/analytics";
 
 interface Proposal {
@@ -59,9 +59,9 @@ export default function DAODashboard() {
     play("click");
 
     try {
-      const signature = generateSignature(
-        JSON.stringify({ proposalId, option, walletAddress: wallet.account.address })
-      );
+      const payload = JSON.stringify({ proposalId, option, walletAddress: wallet.account.address });
+      const secretKey = process.env.NEXT_PUBLIC_TONIX_SECRET_KEY || "dev-secret-key-change-in-production";
+      const signature = generateSignature(payload, secretKey);
 
       const response = await fetch("/api/dao/vote", {
         method: "POST",
