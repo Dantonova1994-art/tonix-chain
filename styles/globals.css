@@ -5,21 +5,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === AI Galactic Supreme v6.0 === */
+/* === Neo Galactic Prime v6.5 === */
 :root {
-  --neon-cyan: #00ffff;
-  --neon-violet: #9d4edd;
-  --neon-magenta: #ff00ff;
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glow: 0 0 12px var(--neon-cyan);
+  --bg-primary: #070a12;
+  --bg-secondary: rgba(255, 255, 255, 0.03);
+  --accent-gradient: linear-gradient(120deg, #00f0ff, #7b2ff7);
+  --text-primary: #e5e5e5;
+  --text-secondary: #8a8f98;
+  --success: #00ffa3;
+  --error: #ff4d6d;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.1);
   --transition: all 0.4s ease-in-out;
-  --bg-dark: #050811;
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --error-glow: #ff4d6d;
-  --success-glow: #00ffb3;
-  --info-glow: #33aaff;
+  --glow-cyan: rgba(0, 240, 255, 0.5);
+  --glow-violet: rgba(123, 47, 247, 0.5);
 }
 
 /* Глобальный фон с анимированным градиентом */
@@ -34,9 +33,14 @@ html, body {
 }
 
 body {
-  background: var(--bg-dark);
+  background: var(--bg-primary);
   position: relative;
   overflow-x: hidden;
+  /* Слоистый фон с тонкими световыми кольцами */
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(123, 47, 247, 0.03) 0%, transparent 50%),
+    var(--bg-primary);
 }
 
 @keyframes gradientShift {
@@ -48,7 +52,7 @@ body {
   }
 }
 
-/* Neural Network Grid - 3D Depth */
+/* Neural Pattern SVG */
 body::before {
   content: '';
   position: fixed;
@@ -56,61 +60,44 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(157, 78, 221, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(157, 78, 221, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px, 50px 50px, 100px 100px, 100px 100px;
-  background-position: 0 0, 0 0, 25px 25px, 25px 25px;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='neural' x='0' y='0' width='100' height='100' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0,50 L100,50 M50,0 L50,100' stroke='rgba(0,240,255,0.04)' stroke-width='0.5'/%3E%3Ccircle cx='50' cy='50' r='2' fill='rgba(123,47,247,0.04)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23neural)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
-  animation: neuralGrid 8s ease-in-out infinite;
-  opacity: 0.4;
+  opacity: 1;
+  animation: neuralParallax 20s ease-in-out infinite;
 }
 
-@keyframes neuralGrid {
-  0%, 100% { 
-    opacity: 0.3;
-    transform: translateZ(0);
+@keyframes neuralParallax {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.04;
   }
-  50% { 
-    opacity: 0.6;
-    transform: translateZ(10px);
+  50% {
+    transform: translate(10px, 10px);
+    opacity: 0.06;
   }
 }
 
-/* Energy Waves */
+/* Слабая параллакс подсветка */
 body::after {
   content: '';
   position: fixed;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 255, 255, 0.1),
-    rgba(157, 78, 221, 0.1),
-    transparent
-  );
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.02) 0%, transparent 70%);
   pointer-events: none;
   z-index: 1;
-  animation: energyWave 10s linear infinite;
+  animation: parallaxGlow 15s ease-in-out infinite;
 }
 
-@keyframes energyWave {
-  0% {
-    left: -100%;
-    opacity: 0;
+@keyframes parallaxGlow {
+  0%, 100% {
+    transform: translate(0, 0);
   }
   50% {
-    opacity: 1;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
+    transform: translate(5%, 5%);
   }
 }
 
@@ -210,17 +197,48 @@ body::after {
   transform: scale(0.97);
 }
 
-/* === КАРТОЧКИ === */
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(14px);
-  border: 1px solid transparent;
+/* === GLASS PANEL === */
+.glass-panel {
+  background: var(--bg-secondary);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 24px;
   position: relative;
-  box-shadow: 
-    0 0 25px rgba(0, 255, 255, 0.1),
-    inset 0 0 20px rgba(0, 255, 255, 0.05);
+  box-shadow: 0 4px 20px var(--shadow);
+  transition: var(--transition);
+}
+
+.glass-panel:hover {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 20px var(--glow-cyan);
+}
+
+.glass-panel:focus-within {
+  box-shadow: 0 0 20px var(--glow-cyan);
+}
+
+/* Frost overlay при активности */
+.glass-panel.active::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Legacy support */
+.glass-card {
+  background: var(--bg-secondary);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 4px 20px var(--shadow);
+  transition: var(--transition);
 }
 
 .glass-card::before {
@@ -477,6 +495,27 @@ button, a {
   transition: var(--transition);
 }
 
+/* Плавные переходы страниц */
+.page-transition {
+  animation: pageFadeIn 0.4s ease-in-out;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Задержка при переключении табов */
+.tab-delay {
+  transition-delay: 150ms;
+}
+
 @keyframes fadeInOut {
   0% {
     opacity: 0;
@@ -528,6 +567,20 @@ button, a {
   animation: neonPulse 3s ease-in-out infinite;
 }
 
+/* === TONIX GLOW === */
+@keyframes tonixGlow {
+  0%, 100% {
+    text-shadow: 0 0 8px var(--glow-cyan), 0 0 16px var(--glow-cyan);
+  }
+  50% {
+    text-shadow: 0 0 12px var(--glow-cyan), 0 0 24px var(--glow-cyan), 0 0 32px var(--glow-violet);
+  }
+}
+
+.tonix-glow {
+  animation: tonixGlow 3s ease-in-out infinite;
+}
+
 /* === ГОЛОГРАФИЧЕСКИЙ ЭФФЕКТ === */
 .holographic-logo {
   position: relative;
@@ -575,18 +628,18 @@ button, a {
   pointer-events: none;
 }
 
-/* === 3D BOUNCE === */
-@keyframes bounce3D {
+/* === MICRO BOUNCE === */
+@keyframes microBounce {
   0%, 100% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px) scale(1.05);
+    transform: translateY(-2px);
   }
 }
 
-.bounce-3d {
-  animation: bounce3D 0.6s ease-in-out;
+.micro-bounce:active {
+  animation: microBounce 0.3s ease-in-out;
 }
 
 /* === LIGHT BURST === */
@@ -653,16 +706,59 @@ button, a {
   }
 }
 
+/* === TOKEN CHIPS === */
+.token-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  box-shadow: 0 0 15px var(--glow-cyan);
+  transition: var(--transition);
+}
+
+.token-chip:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px var(--glow-cyan);
+}
+
+.token-chip.ton {
+  box-shadow: 0 0 15px var(--glow-cyan);
+}
+
+.token-chip.xp {
+  box-shadow: 0 0 15px var(--glow-violet);
+}
+
+.token-chip.prize {
+  box-shadow: 0 0 15px var(--success);
+}
+
 /* === АДАПТИВНОСТЬ === */
 @media (max-width: 640px) {
-  .btn-glass,
-  .btn-gradient {
-    padding: 10px 20px;
-    font-size: 14px;
+  html {
+    font-size: 110%;
   }
   
+  .btn-glass,
+  .btn-gradient {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+  
+  .glass-panel,
   .glass-card {
-    padding: 16px;
+    padding: 20px;
+    margin: 12px 16px;
+  }
+  
+  body {
+    padding: 0 12px;
   }
 }
 

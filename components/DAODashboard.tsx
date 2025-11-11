@@ -107,7 +107,7 @@ export default function DAODashboard() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-card"
+      className="glass-panel"
     >
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-purple-400 text-glow" style={{

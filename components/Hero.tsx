@@ -132,25 +132,21 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
         </motion.p>
 
-        {/* Слоган "Play. Earn. Evolve." с typewriter эффектом */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-4"
+        {/* Слоган "Play. Win. Rise." с reflection */}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tonix-glow text-reflection"
+          style={{
+            fontFamily: "'Satoshi', 'Inter', sans-serif",
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}
         >
-          <TypewriterText
-            text="Play. Earn. Evolve."
-            speed={80}
-            delay={1000}
-            className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-500 to-magenta-500 text-glow"
-            style={{
-              fontFamily: "'Satoshi', 'Inter', sans-serif",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-            }}
-          />
-        </motion.div>
+          Play. Win. Rise.
+        </motion.h2>
 
         {ENV.GAMING_MODE === "true" && (
           <motion.button
@@ -178,24 +174,38 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
         >
           <motion.button
             onClick={handleScrollToBuy}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
             whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.95 }}
-            className="btn-gradient relative overflow-hidden"
-            aria-label="Начать игру"
+            whileTap={{ scale: 0.98 }}
+            className="relative px-12 py-4 rounded-xl font-bold text-lg text-white overflow-hidden micro-bounce"
+            aria-label="Launch App"
             style={{
               fontFamily: "'Satoshi', 'Inter', sans-serif",
-              background: "linear-gradient(90deg, var(--neon-cyan), var(--neon-violet))",
-              backgroundSize: "200% 200%",
+              background: "linear-gradient(120deg, #00f0ff, #7b2ff7)",
+              boxShadow: "0 0 30px rgba(0, 240, 255, 0.4)",
             }}
           >
-            <span className="relative z-10">🚀 НАЧАТЬ ИГРУ</span>
+            <span className="relative z-10">Launch App 🚀</span>
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
-            <div className="absolute inset-0 border border-white/30 rounded-xl backdrop-blur-sm" />
           </motion.button>
+          
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+            className="text-xs text-gray-500 mt-2"
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+            }}
+          >
+            Powered by TON Blockchain
+          </motion.p>
           
           <motion.button
             onClick={() => setShowPassPanel(true)}

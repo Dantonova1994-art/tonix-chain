@@ -63,7 +63,7 @@ export default function ReferralPanel() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card text-center"
+        className="glass-panel text-center"
       >
         <p className="text-gray-400">Подключите кошелёк, чтобы получить реферальную ссылку</p>
       </motion.div>
@@ -74,7 +74,7 @@ export default function ReferralPanel() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-card relative overflow-hidden"
+      className="glass-panel relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-teal-500/10 to-transparent blur-xl -z-10" />
 
@@ -111,7 +111,7 @@ export default function ReferralPanel() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="p-3 rounded-lg glass-card"
+              className="p-3 rounded-lg glass-panel"
             >
               <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">👥 Рефералов</p>
               <p className="text-xl font-bold text-green-300">{stats.totalReferrals}</p>
@@ -120,7 +120,7 @@ export default function ReferralPanel() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="p-3 rounded-lg glass-card"
+              className="p-3 rounded-lg glass-panel"
             >
               <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">🎟️ Билетов</p>
               <p className="text-xl font-bold text-cyan-300">{stats.totalTickets}</p>
@@ -129,7 +129,7 @@ export default function ReferralPanel() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
-              className="p-3 rounded-lg glass-card"
+              className="p-3 rounded-lg glass-panel"
             >
               <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">💰 Объём</p>
               <p className="text-xl font-bold text-yellow-300">{stats.totalVolume.toFixed(2)} TON</p>
@@ -138,7 +138,7 @@ export default function ReferralPanel() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
-              className="p-3 rounded-lg glass-card"
+              className="p-3 rounded-lg glass-panel"
             >
               <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">⭐ Уникальных</p>
               <p className="text-xl font-bold text-purple-300">{stats.uniqueBuyers}</p>

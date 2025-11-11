@@ -91,7 +91,7 @@ export default function MyTickets({ refreshKey }: { refreshKey?: number }) {
       transition={{ delay: 0.4, duration: 0.6 }}
       className="w-full max-w-md mx-auto mt-6"
     >
-      <div className="glass-card relative overflow-hidden">
+      <div className="glass-panel relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-transparent blur-xl -z-10" />
         
         <div className="flex items-center justify-between mb-4">
