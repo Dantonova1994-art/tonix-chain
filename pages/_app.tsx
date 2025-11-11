@@ -206,20 +206,23 @@ export default function App({ Component, pageProps }: any) {
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '12px',
                 fontFamily: "'Satoshi', 'Inter', sans-serif",
+                animation: 'fadeInOut 0.5s ease-in-out',
               },
               success: {
                 className: 'toast-success',
                 iconTheme: {
                   primary: '#00ffb3',
-                  secondary: '#080b1a',
+                  secondary: '#050811',
                 },
+                duration: 4000,
               },
               error: {
                 className: 'toast-error',
                 iconTheme: {
                   primary: '#ff4d6d',
-                  secondary: '#080b1a',
+                  secondary: '#050811',
                 },
+                duration: 5000,
               },
               duration: 4000,
             }}

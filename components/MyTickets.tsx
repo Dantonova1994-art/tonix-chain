@@ -91,7 +91,7 @@ export default function MyTickets({ refreshKey }: { refreshKey?: number }) {
       transition={{ delay: 0.4, duration: 0.6 }}
       className="w-full max-w-md mx-auto mt-6"
     >
-      <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 shadow-[0_0_20px_rgba(0,255,255,0.3)] relative overflow-hidden">
+      <div className="glass-card relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-transparent blur-xl -z-10" />
         
         <div className="flex items-center justify-between mb-4">
@@ -115,18 +115,27 @@ export default function MyTickets({ refreshKey }: { refreshKey?: number }) {
             ))}
           </div>
         ) : tickets.length === 0 ? (
-          <p className="text-center text-gray-400 py-8">У вас пока нет билетов</p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-12"
+          >
+            <p className="text-4xl mb-4">🌌</p>
+            <p className="text-lg text-gray-300 font-semibold mb-2">Космос ждёт твоей удачи</p>
+            <p className="text-sm text-gray-400">Купи билет и стань частью розыгрыша!</p>
+          </motion.div>
         ) : (
           <div className="space-y-2 max-h-64 overflow-y-auto">
             <AnimatePresence>
               {tickets.map((ticket, index) => (
                 <motion.div
                   key={`${ticket.hash}-${ticket.lt}`}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="p-3 rounded-lg border border-cyan-500/50 bg-cyan-500/10 backdrop-blur-sm"
+                  initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                  transition={{ delay: index * 0.05, duration: 0.4 }}
+                  whileHover={{ scale: 1.02, borderColor: "rgba(0, 255, 255, 0.8)" }}
+                  className="p-3 rounded-lg border border-cyan-500/50 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 backdrop-blur-sm glass-card-ticket"
                 >
                   <div className="flex items-center justify-between">
                     <div>

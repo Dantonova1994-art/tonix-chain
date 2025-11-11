@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import GalaxyParticles from "./GalaxyParticles";
 import PassPanel from "./PassPanel";
+import TypewriterText from "./TypewriterText";
 import { ENV } from "../lib/env";
 
 export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
@@ -49,29 +50,26 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
       >
         <div className="flex flex-col items-center justify-center gap-4 z-10">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0, opacity: 0 }}
             animate={{ 
               scale: 1, 
               opacity: 1, 
               rotate: 360,
               y: [0, -10, 0],
-              filter: [
-                "drop-shadow(0 0 20px rgba(0,255,255,0.6))",
-                "drop-shadow(0 0 30px rgba(0,255,255,0.8))",
-                "drop-shadow(0 0 20px rgba(0,255,255,0.6))"
-              ]
             }}
             transition={{ 
+              scale: { duration: 0.8, ease: "easeOut" },
               rotate: { duration: 12, ease: "linear", repeat: Infinity },
               y: { duration: 6, ease: "easeInOut", repeat: Infinity },
-              filter: { duration: 2, repeat: Infinity, ease: "easeInOut" }
             }}
             whileHover={{ 
               rotate: 720, 
               scale: 1.05,
-              filter: "drop-shadow(0 0 40px rgba(0,255,255,1)) drop-shadow(0 0 20px rgba(123,97,255,0.8))"
             }}
-            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer dynamic-glow"
+            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer holographic-logo"
+            style={{
+              filter: "drop-shadow(0 0 30px rgba(0,255,255,0.8)) drop-shadow(0 0 60px rgba(157,78,221,0.6))",
+            }}
           >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
               <defs>
@@ -134,19 +132,25 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
         </motion.p>
 
-        {/* Подпись "JOIN THE FUTURE. PLAY ON TON." */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+        {/* Слоган "Play. Earn. Evolve." с typewriter эффектом */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-4 text-xl text-cyan-300/80 text-reflection glow-pulse"
-          style={{
-            textShadow: "0 0 20px rgba(0,255,255,0.6), 0 2px 10px rgba(0,255,255,0.3)",
-            filter: "drop-shadow(0 0 10px rgba(0,255,255,0.5))",
-          }}
+          className="mt-4"
         >
-          JOIN THE FUTURE. PLAY ON TON.
-        </motion.p>
+          <TypewriterText
+            text="Play. Earn. Evolve."
+            speed={80}
+            delay={1000}
+            className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-500 to-magenta-500 text-glow"
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+            }}
+          />
+        </motion.div>
 
         {ENV.GAMING_MODE === "true" && (
           <motion.button
@@ -175,16 +179,18 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           <motion.button
             onClick={handleScrollToBuy}
             whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.95 }}
             className="btn-gradient relative overflow-hidden"
             aria-label="Начать игру"
             style={{
               fontFamily: "'Satoshi', 'Inter', sans-serif",
+              background: "linear-gradient(90deg, var(--neon-cyan), var(--neon-violet))",
+              backgroundSize: "200% 200%",
             }}
           >
-            <span className="relative z-10">🚀 LAUNCH DAPP</span>
+            <span className="relative z-10">🚀 НАЧАТЬ ИГРУ</span>
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             />

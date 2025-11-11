@@ -5,15 +5,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === AI Cyber Galaxy Pro v5.6 === */
+/* === AI Galactic Supreme v6.0 === */
 :root {
-  --glowColor: #00ffff;
   --neon-cyan: #00ffff;
-  --neon-blue: #0088ff;
-  --neon-purple: #7b61ff;
-  --neon-violet: #9b5cff;
-  --bg-dark: #080b1a;
+  --neon-violet: #9d4edd;
+  --neon-magenta: #ff00ff;
   --glass-bg: rgba(255, 255, 255, 0.05);
+  --glow: 0 0 12px var(--neon-cyan);
+  --transition: all 0.4s ease-in-out;
+  --bg-dark: #050811;
   --glass-border: rgba(255, 255, 255, 0.2);
   --text-primary: #ffffff;
   --text-secondary: #b0b0b0;
@@ -34,13 +34,9 @@ html, body {
 }
 
 body {
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(123, 97, 255, 0.1) 0%, transparent 50%),
-    linear-gradient(135deg, #080b1a 0%, #0a0d1f 50%, #080b1a 100%);
-  background-size: 100% 100%, 100% 100%, 100% 100%;
-  animation: gradientShift 15s ease-in-out infinite;
+  background: var(--bg-dark);
   position: relative;
+  overflow-x: hidden;
 }
 
 @keyframes gradientShift {
@@ -52,7 +48,7 @@ body {
   }
 }
 
-/* Мерцающая сетка на фоне */
+/* Neural Network Grid - 3D Depth */
 body::before {
   content: '';
   position: fixed;
@@ -61,17 +57,61 @@ body::before {
   width: 100%;
   height: 100%;
   background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
+    linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(157, 78, 221, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157, 78, 221, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px, 50px 50px, 100px 100px, 100px 100px;
+  background-position: 0 0, 0 0, 25px 25px, 25px 25px;
   pointer-events: none;
   z-index: 0;
-  animation: gridFlicker 4s ease-in-out infinite;
+  animation: neuralGrid 8s ease-in-out infinite;
+  opacity: 0.4;
 }
 
-@keyframes gridFlicker {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
+@keyframes neuralGrid {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: translateZ(0);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: translateZ(10px);
+  }
+}
+
+/* Energy Waves */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 255, 0.1),
+    rgba(157, 78, 221, 0.1),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: energyWave 10s linear infinite;
+}
+
+@keyframes energyWave {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
 }
 
 /* 3D Transform */
@@ -209,6 +249,29 @@ body::before {
 .glass-card p {
   color: var(--text-secondary);
   text-shadow: 0 0 4px rgba(0, 255, 255, 0.3);
+}
+
+.glass-card-ticket {
+  transition: all 0.4s ease-in-out;
+  position: relative;
+}
+
+.glass-card-ticket::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 136, 255, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.glass-card-ticket:hover::before {
+  opacity: 1;
 }
 
 /* === ТИПОГРАФИКА === */
@@ -407,11 +470,22 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === ГЛОБАЛЬНЫЕ ПЕРЕХОДЫ === */
 * {
-  transition: all 0.3s ease-in-out;
+  transition: var(--transition);
 }
 
 button, a {
-  transition: all 0.3s ease-in-out;
+  transition: var(--transition);
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === СКРЫТИЕ СКРОЛЛБАРА === */
@@ -452,6 +526,103 @@ button, a {
 
 .glow-pulse {
   animation: neonPulse 3s ease-in-out infinite;
+}
+
+/* === ГОЛОГРАФИЧЕСКИЙ ЭФФЕКТ === */
+.holographic-logo {
+  position: relative;
+  overflow: hidden;
+}
+
+.holographic-logo::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(0, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  animation: hologramRefract 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes hologramRefract {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+.holographic-logo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.1) 0%,
+    transparent 25%,
+    transparent 75%,
+    rgba(157, 78, 221, 0.1) 100%
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* === 3D BOUNCE === */
+@keyframes bounce3D {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+}
+
+.bounce-3d {
+  animation: bounce3D 0.6s ease-in-out;
+}
+
+/* === LIGHT BURST === */
+@keyframes lightBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.light-burst {
+  animation: lightBurst 0.8s ease-out;
+}
+
+.light-pulse {
+  animation: lightPulse 0.5s ease-out;
+}
+
+@keyframes lightPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0);
+  }
 }
 
 /* === ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ === */
