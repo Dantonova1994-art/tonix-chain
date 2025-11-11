@@ -87,10 +87,10 @@ export default function MusicPlayer() {
         onClick={() => setShowControls(!showControls)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-cyan-500/30 flex items-center justify-center text-2xl hover:bg-white/20 transition-all"
+        className={`music-button ${isPlaying ? 'playing' : ''}`}
         aria-label="Music player"
       >
-        🎵
+        {isPlaying ? "🎵" : "🔇"}
       </motion.button>
 
       {showControls && (

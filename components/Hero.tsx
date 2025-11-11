@@ -54,6 +54,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
               scale: 1, 
               opacity: 1, 
               rotate: 360,
+              y: [0, -10, 0],
               filter: [
                 "drop-shadow(0 0 20px rgba(0,255,255,0.6))",
                 "drop-shadow(0 0 30px rgba(0,255,255,0.8))",
@@ -62,6 +63,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
             }}
             transition={{ 
               rotate: { duration: 12, ease: "linear", repeat: Infinity },
+              y: { duration: 6, ease: "easeInOut", repeat: Infinity },
               filter: { duration: 2, repeat: Infinity, ease: "easeInOut" }
             }}
             whileHover={{ 
@@ -69,7 +71,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
               scale: 1.05,
               filter: "drop-shadow(0 0 40px rgba(0,255,255,1)) drop-shadow(0 0 20px rgba(123,97,255,0.8))"
             }}
-            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer transition-all"
+            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer dynamic-glow"
           >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
               <defs>
@@ -113,7 +115,12 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl md:text-4xl drop-shadow-[0_0_25px_rgba(0,255,255,0.9)] glow-flicker"
+            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl md:text-4xl text-glow text-reflection"
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
           >
             TONIX CHAIN
           </motion.span>
@@ -122,7 +129,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-center text-gray-300 text-sm md:text-base max-w-md mt-4"
+          className="text-center text-secondary text-sm md:text-base max-w-md mt-4"
         >
           Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
         </motion.p>
@@ -167,10 +174,13 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
         >
           <motion.button
             onClick={handleScrollToBuy}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:shadow-[0_0_40px_rgba(0,255,255,0.9)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 overflow-hidden"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            className="btn-gradient relative overflow-hidden"
             aria-label="Начать игру"
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+            }}
           >
             <span className="relative z-10">🚀 LAUNCH DAPP</span>
             <motion.div
@@ -183,12 +193,17 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           
           <motion.button
             onClick={() => setShowPassPanel(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-[0_0_25px_rgba(168,85,247,0.6)] hover:shadow-[0_0_40px_rgba(168,85,247,0.9)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            className="pass-card px-6 py-4 text-lg font-semibold text-white relative z-10"
             aria-label="TONIX PASS"
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
           >
-            TONIX PASS 🪪
+            <span className="relative z-10">TONIX PASS 🪪</span>
           </motion.button>
         </motion.div>
       </motion.section>

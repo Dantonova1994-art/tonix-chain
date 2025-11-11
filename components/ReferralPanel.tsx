@@ -63,7 +63,7 @@ export default function ReferralPanel() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 text-center"
+        className="glass-card text-center"
       >
         <p className="text-gray-400">Подключите кошелёк, чтобы получить реферальную ссылку</p>
       </motion.div>
@@ -74,7 +74,7 @@ export default function ReferralPanel() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/5 backdrop-blur-md rounded-2xl border border-green-500/30 p-6 shadow-[0_0_20px_rgba(34,197,94,0.3)] relative overflow-hidden"
+      className="glass-card relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-teal-500/10 to-transparent blur-xl -z-10" />
 

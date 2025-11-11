@@ -107,34 +107,41 @@ export default function DAODashboard() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/5 backdrop-blur-md rounded-2xl border border-purple-500/30 p-6 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+      className="glass-card"
     >
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-purple-400">🏛️ TONIX DAO</h2>
-        <div className="flex gap-2">
+        <h2 className="text-2xl font-bold text-purple-400 text-glow" style={{
+          fontFamily: "'Satoshi', 'Inter', sans-serif",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+        }}>🏛️ TONIX DAO</h2>
+        <div className="tab-container">
           <button
             onClick={() => setActiveTab("proposals")}
-            className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-              activeTab === "proposals" ? "bg-purple-500/30 text-purple-300" : "bg-white/5 text-gray-400"
-            }`}
+            className={`tab ${activeTab === "proposals" ? "active" : ""}`}
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+            }}
           >
             Proposals
           </button>
           {level >= 5 && (
             <button
               onClick={() => setActiveTab("create")}
-              className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                activeTab === "create" ? "bg-purple-500/30 text-purple-300" : "bg-white/5 text-gray-400"
-              }`}
+              className={`tab ${activeTab === "create" ? "active" : ""}`}
+              style={{
+                fontFamily: "'Satoshi', 'Inter', sans-serif",
+              }}
             >
               Create
             </button>
           )}
           <button
             onClick={() => setActiveTab("results")}
-            className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-              activeTab === "results" ? "bg-purple-500/30 text-purple-300" : "bg-white/5 text-gray-400"
-            }`}
+            className={`tab ${activeTab === "results" ? "active" : ""}`}
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+            }}
           >
             Results
           </button>
@@ -145,10 +152,11 @@ export default function DAODashboard() {
         {activeTab === "proposals" && (
           <motion.div
             key="proposals"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="tab-content space-y-4"
           >
             {loading ? (
               <div className="text-center text-gray-400">Загрузка...</div>
@@ -213,10 +221,11 @@ export default function DAODashboard() {
         {activeTab === "create" && level >= 5 && (
           <motion.div
             key="create"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="tab-content space-y-4"
           >
             <div className="space-y-2">
               <label className="text-sm text-gray-400">Title</label>
@@ -252,10 +261,11 @@ export default function DAODashboard() {
         {activeTab === "results" && (
           <motion.div
             key="results"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="tab-content space-y-4"
           >
             {mostVoted.totalVotes > 0 && (
               <div className="p-4 rounded-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/50">

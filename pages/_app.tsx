@@ -200,23 +200,28 @@ export default function App({ Component, pageProps }: any) {
             <Toaster
             toastOptions={{
               style: {
-                background: 'rgba(17, 24, 39, 0.8)',
+                background: 'rgba(255, 255, 255, 0.05)',
                 color: '#fff',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(0, 255, 255, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+                fontFamily: "'Satoshi', 'Inter', sans-serif",
               },
               success: {
+                className: 'toast-success',
                 iconTheme: {
-                  primary: '#00FFFF',
-                  secondary: '#0b0c10',
+                  primary: '#00ffb3',
+                  secondary: '#080b1a',
                 },
               },
               error: {
+                className: 'toast-error',
                 iconTheme: {
-                  primary: '#FF0000',
-                  secondary: '#0b0c10',
+                  primary: '#ff4d6d',
+                  secondary: '#080b1a',
                 },
               },
+              duration: 4000,
             }}
           />
           {/* Analytics consent banner */}

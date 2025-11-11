@@ -1,15 +1,80 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-[#0b0c10] text-white min-h-screen;
-  font-family: 'Inter', sans-serif;
+/* === AI Cyber Galaxy Pro v5.6 === */
+:root {
+  --glowColor: #00ffff;
+  --neon-cyan: #00ffff;
+  --neon-blue: #0088ff;
+  --neon-purple: #7b61ff;
+  --neon-violet: #9b5cff;
+  --bg-dark: #080b1a;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --error-glow: #ff4d6d;
+  --success-glow: #00ffb3;
+  --info-glow: #33aaff;
 }
 
-/* 3D Transform для Flip игры */
+/* Глобальный фон с анимированным градиентом */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'Satoshi', 'Inter', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+body {
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(123, 97, 255, 0.1) 0%, transparent 50%),
+    linear-gradient(135deg, #080b1a 0%, #0a0d1f 50%, #080b1a 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  animation: gradientShift 15s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%, 100% 50%, 0% 0%;
+  }
+  50% {
+    background-position: 100% 50%, 0% 50%, 100% 0%;
+  }
+}
+
+/* Мерцающая сетка на фоне */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+  animation: gridFlicker 4s ease-in-out infinite;
+}
+
+@keyframes gridFlicker {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* 3D Transform */
 .perspective-1000 {
   perspective: 1000px;
 }
@@ -22,179 +87,334 @@ body {
   backface-visibility: hidden;
 }
 
-/* Неоновое свечение для кнопок */
-@keyframes neon-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
-  }
+/* === КНОПКИ === */
+/* Стеклянный стиль с градиентной границей */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px 24px;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-family: 'Satoshi', 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
 }
 
-.neon-glow {
-  animation: neon-pulse 2s ease-in-out infinite;
+.btn-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue), var(--neon-purple), var(--neon-cyan));
+  background-size: 200% 200%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  animation: borderFlow 3s linear infinite;
 }
 
-/* Неоновое свечение для логотипа */
-@keyframes neon-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 16px rgba(0, 128, 255, 0.4));
-  }
-  50% {
-    filter: drop-shadow(0 0 16px rgba(0, 255, 255, 0.9)) drop-shadow(0 0 28px rgba(0, 128, 255, 0.7));
-  }
+@keyframes borderFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
-.animate-neon {
-  animation: neon-glow 2.5s ease-in-out infinite;
+.btn-glass:hover::before {
+  opacity: 1;
 }
 
-/* Неоновое свечение для 3D логотипа */
-@keyframes neonGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(123, 97, 255, 0.8));
-  }
-  50% {
-    filter: drop-shadow(0 0 30px rgba(0, 255, 255, 1)) drop-shadow(0 0 50px rgba(123, 97, 255, 1));
-  }
+.btn-glass:hover {
+  transform: scale(0.97);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
 }
 
-.neon-glow {
-  animation: neonGlow 2.5s ease-in-out infinite;
+.btn-glass:active {
+  transform: scale(0.95);
 }
 
-/* Cyber Galaxy Theme - Glow Pulse для всех кнопок и текста */
-@keyframes neonPulse {
-  0%, 100% {
-    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 20px rgba(123, 97, 255, 0.4));
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1)) drop-shadow(0 0 40px rgba(123, 97, 255, 0.8));
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
-  }
+/* Градиентные кнопки */
+.btn-gradient {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue), var(--neon-purple));
+  background-size: 200% 200%;
+  animation: gradientFlow 3s ease infinite;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 28px;
+  color: white;
+  font-weight: 700;
+  font-family: 'Satoshi', 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
 }
 
-.glow-pulse {
-  animation: neonPulse 3s ease-in-out infinite;
+@keyframes gradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-/* Glassmorphism карточки */
+.btn-gradient:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+}
+
+.btn-gradient:active {
+  transform: scale(0.97);
+}
+
+/* === КАРТОЧКИ === */
 .glass-card {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border: 1px solid transparent;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)),
-    linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 123, 255, 0.3));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 
+    0 0 25px rgba(0, 255, 255, 0.1),
+    inset 0 0 20px rgba(0, 255, 255, 0.05);
 }
 
-/* CSS Reflection для текста */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(123, 97, 255, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass-card h2,
+.glass-card h3 {
+  color: var(--text-primary);
+  text-shadow: 0 0 8px var(--glowColor);
+  font-family: 'Satoshi', 'Inter', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.glass-card p {
+  color: var(--text-secondary);
+  text-shadow: 0 0 4px rgba(0, 255, 255, 0.3);
+}
+
+/* === ТИПОГРАФИКА === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Satoshi', 'Inter', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .text-reflection {
-  -webkit-box-reflect: below 0 linear-gradient(transparent, rgba(0, 255, 255, 0.3));
+  -webkit-box-reflect: below 0 linear-gradient(transparent, rgba(0, 255, 255, 0.2));
 }
 
-/* Neon border flow - градиентное течение рамки */
-@keyframes neonBorderFlow {
-  0% {
-    background-position: 0% 50%;
+.text-glow {
+  text-shadow: 0 0 8px var(--glowColor), 0 0 16px rgba(0, 255, 255, 0.5);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+  text-shadow: 0 0 4px rgba(0, 255, 255, 0.2);
+}
+
+/* === HERO === */
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    background-position: 100% 50%;
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+.floating-logo {
+  animation: floating 6s ease-in-out infinite;
+}
+
+@keyframes dynamicGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6))
+            drop-shadow(0 0 40px rgba(0, 255, 255, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(0, 255, 255, 1))
+            drop-shadow(0 0 60px rgba(123, 97, 255, 0.8));
+  }
+}
+
+.dynamic-glow {
+  animation: dynamicGlow 3s ease-in-out infinite;
+}
+
+/* === ТАБЫ === */
+.tab-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #555;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--glowColor);
+  border-color: var(--glowColor);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+  text-shadow: 0 0 8px var(--glowColor);
+}
+
+.tab-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === TOASTS === */
+.toast-error {
+  background: rgba(255, 77, 109, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 77, 109, 0.3) !important;
+  box-shadow: 0 0 20px rgba(255, 77, 109, 0.4) !important;
+  color: white !important;
+}
+
+.toast-success {
+  background: rgba(0, 255, 179, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(0, 255, 179, 0.3) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 179, 0.4) !important;
+  color: white !important;
+}
+
+.toast-info {
+  background: rgba(51, 170, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(51, 170, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(51, 170, 255, 0.4) !important;
+  color: white !important;
+}
+
+/* === TONIX PASS === */
+.pass-card {
+  background: linear-gradient(135deg, rgba(255, 0, 150, 0.2), rgba(0, 255, 255, 0.2));
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pass-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
   }
   100% {
-    background-position: 0% 50%;
+    transform: translateX(100%) translateY(100%) rotate(45deg);
   }
 }
 
-.neon-border-flow {
-  background: linear-gradient(90deg, #00ffff, #0088ff, #9b5cff, #00ffff);
-  background-size: 200% 200%;
-  animation: neonBorderFlow 3s linear infinite;
-  -webkit-background-clip: border-box;
-  background-clip: border-box;
+.pass-card:hover {
+  box-shadow: 
+    0 0 30px rgba(255, 0, 150, 0.4),
+    0 0 60px rgba(0, 255, 255, 0.3),
+    inset 0 0 30px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
-/* Glow flicker для текста */
-@keyframes glowFlicker {
+/* === МУЗЫКАЛЬНАЯ КНОПКА === */
+.music-button {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.music-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+}
+
+.music-button.playing {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
   0%, 100% {
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8), 0 0 20px rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
   }
   50% {
-    text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(123, 97, 255, 0.6);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
   }
 }
 
-.glow-flicker {
-  animation: glowFlicker 2s ease-in-out infinite;
+/* === ГЛОБАЛЬНЫЕ ПЕРЕХОДЫ === */
+* {
+  transition: all 0.3s ease-in-out;
 }
 
-/* Cyber grid фон */
-.cyber-grid {
-  background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
+button, a {
+  transition: all 0.3s ease-in-out;
 }
 
-/* Flicker подсветка для кнопок */
-@keyframes buttonFlicker {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(123, 97, 255, 0.6);
-  }
-}
-
-.button-flicker:hover {
-  animation: buttonFlicker 1.5s ease-in-out infinite;
-}
-
-/* Pulsate border для кнопок голосований */
-@keyframes pulsateBorder {
-  0%, 100% {
-    border-color: rgba(168, 85, 247, 0.5);
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
-  }
-  50% {
-    border-color: rgba(168, 85, 247, 1);
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
-  }
-}
-
-.pulsate-border {
-  animation: pulsateBorder 2s ease-in-out infinite;
-}
-
-/* Glow grid для DAO экрана */
-.glow-grid {
-  background-image: 
-    linear-gradient(rgba(168, 85, 247, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168, 85, 247, 0.15) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* Hologram cards эффект */
-@keyframes hologramFloat {
-  0%, 100% {
-    transform: translateY(0) rotateX(0deg);
-    opacity: 0.8;
-  }
-  50% {
-    transform: translateY(-10px) rotateX(5deg);
-    opacity: 1;
-  }
-}
-
-.hologram-card {
-  animation: hologramFloat 4s ease-in-out infinite;
-  transform-style: preserve-3d;
-}
-
-/* Скрытие скроллбара */
+/* === СКРЫТИЕ СКРОЛЛБАРА === */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -212,85 +432,47 @@ body {
   background: rgba(0, 255, 255, 0.5);
 }
 
-/* Glassmorphism эффект */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* === НЕОНОВЫЕ ЭФФЕКТЫ === */
+.neon-glow {
+  animation: neonPulse 2s ease-in-out infinite;
 }
 
-/* Анимация появления */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in-up {
-  animation: fadeInUp 0.5s ease-out;
-}
-
-/* Cyber-Neon v5.6 Styles */
-:root {
-  --neon-cyan: #00ffff;
-  --neon-violet: #7b61ff;
-  --bg-dark: #141414;
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.12);
-}
-
-/* Multiple drop-shadows для глубины */
-.cyber-depth {
-  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3))
-          drop-shadow(0 0 20px rgba(123, 97, 255, 0.2))
-          drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-}
-
-/* Glassmorphism карточки v5.6 */
-.glass-card-v2 {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.07);
-}
-
-/* Neon gradient текст с отражением */
-.neon-gradient-text {
-  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-  filter: drop-shadow(0 2px 4px rgba(0, 255, 255, 0.3));
-}
-
-/* Pulse glow эффект */
-@keyframes pulseGlow {
+@keyframes neonPulse {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.6))
+            drop-shadow(0 0 20px rgba(123, 97, 255, 0.4));
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 0 50px rgba(123, 97, 255, 0.6);
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1))
+            drop-shadow(0 0 40px rgba(123, 97, 255, 0.8));
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
   }
 }
 
-.pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite;
+.glow-pulse {
+  animation: neonPulse 3s ease-in-out infinite;
 }
 
-/* Glass border эффект */
-.glass-border {
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(123, 97, 255, 0.1));
-  backdrop-filter: blur(14px);
+/* === ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ === */
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
-/* Hologram shine эффект */
+.hologram-shine {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 255, 0.2),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: hologramShine 3s linear infinite;
+}
+
 @keyframes hologramShine {
   0% {
     background-position: -200% center;
@@ -300,13 +482,16 @@ body {
   }
 }
 
-.hologram-shine {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 255, 255, 0.3),
-    transparent
-  );
-  background-size: 200% 100%;
-  animation: hologramShine 3s linear infinite;
+/* === АДАПТИВНОСТЬ === */
+@media (max-width: 640px) {
+  .btn-glass,
+  .btn-gradient {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .glass-card {
+    padding: 16px;
+  }
 }
+
