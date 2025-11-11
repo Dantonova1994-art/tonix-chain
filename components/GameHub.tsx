@@ -9,6 +9,7 @@ import GalaxyRun from "./GalaxyRun";
 import GalaxyFlip from "./GalaxyFlip";
 import XPPanel from "./XPPanel";
 import Leaderboard from "./Leaderboard";
+import LeaderboardV2 from "./LeaderboardV2";
 import PassPanel from "./PassPanel";
 import BattleHub from "./battle/BattleHub";
 import DAODashboard from "./DAODashboard";
@@ -98,8 +99,8 @@ export default function GameHub({ onClose, autoStart }: { onClose: () => void; a
         {/* XP Panel */}
         {currentView === "hub" && <XPPanel />}
 
-        {/* Leaderboard */}
-        {currentView === "hub" && <Leaderboard />}
+        {/* Leaderboard V2 */}
+        {currentView === "hub" && <LeaderboardV2 />}
 
         {/* Games */}
         {currentView === "hub" ? (

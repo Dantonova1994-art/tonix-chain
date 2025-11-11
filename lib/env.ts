@@ -31,6 +31,11 @@ export const ENV = {
   // Server-side secrets
   PRIVATE_NFT_MINTER_KEY: process.env.PRIVATE_NFT_MINTER_KEY,
   TONIX_SECRET_KEY: process.env.TONIX_SECRET_KEY || "dev-secret-key-change-in-production",
+  // v5.6 HyperDrive
+  TONIX_API: process.env.NEXT_PUBLIC_TONIX_API || "https://tonix-chain.vercel.app/api",
+  NOVA_AI_KEY: process.env.NEXT_PUBLIC_NOVA_AI_KEY,
+  ENABLE_MUSIC: process.env.NEXT_PUBLIC_ENABLE_MUSIC || "true",
+  ENABLE_GALAXY_EFFECTS: process.env.NEXT_PUBLIC_ENABLE_GALAXY_EFFECTS || "true",
 } as const;
 
 // Telegram Mini App (TWA) конфигурация

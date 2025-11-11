@@ -29,6 +29,7 @@ const Rounds = dynamic(() => import("../components/Rounds"), { ssr: false });
 const RoundHistory = dynamic(() => import("../components/RoundHistory"), { ssr: false });
 const MyWins = dynamic(() => import("../components/MyWins"), { ssr: false });
 const GameHub = dynamic(() => import("../components/GameHub"), { ssr: false });
+const NovaAI = dynamic(() => import("../components/NovaAI"), { ssr: false });
 
 const GAMING_MODE = ENV.GAMING_MODE === "true";
 
@@ -305,6 +306,9 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* NOVA AI Assistant */}
+      <NovaAI />
     </main>
   );
 }

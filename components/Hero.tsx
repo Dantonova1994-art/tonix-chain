@@ -50,10 +50,26 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
         <div className="flex flex-col items-center justify-center gap-4 z-10">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1, rotate: 360 }}
-            transition={{ duration: 8, ease: "linear", repeat: Infinity }}
-            whileHover={{ rotate: 720, scale: 1.05 }}
-            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer drop-shadow-[0_0_20px_rgba(0,255,255,0.6)] hover:drop-shadow-[0_0_35px_rgba(0,255,255,1)] transition-all"
+            animate={{ 
+              scale: 1, 
+              opacity: 1, 
+              rotate: 360,
+              filter: [
+                "drop-shadow(0 0 20px rgba(0,255,255,0.6))",
+                "drop-shadow(0 0 30px rgba(0,255,255,0.8))",
+                "drop-shadow(0 0 20px rgba(0,255,255,0.6))"
+              ]
+            }}
+            transition={{ 
+              rotate: { duration: 12, ease: "linear", repeat: Infinity },
+              filter: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+            }}
+            whileHover={{ 
+              rotate: 720, 
+              scale: 1.05,
+              filter: "drop-shadow(0 0 40px rgba(0,255,255,1)) drop-shadow(0 0 20px rgba(123,97,255,0.8))"
+            }}
+            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer transition-all"
           >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
               <defs>
@@ -111,14 +127,18 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
         </motion.p>
 
-        {/* Подпись "THE FUTURE OF WEB3 GAMES" */}
+        {/* Подпись "JOIN THE FUTURE. PLAY ON TON." */}
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
           className="mt-4 text-xl text-cyan-300/80 text-reflection glow-pulse"
+          style={{
+            textShadow: "0 0 20px rgba(0,255,255,0.6), 0 2px 10px rgba(0,255,255,0.3)",
+            filter: "drop-shadow(0 0 10px rgba(0,255,255,0.5))",
+          }}
         >
-          THE FUTURE OF WEB3 GAMES
+          JOIN THE FUTURE. PLAY ON TON.
         </motion.p>
 
         {ENV.GAMING_MODE === "true" && (
@@ -149,10 +169,16 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
             onClick={handleScrollToBuy}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:shadow-[0_0_40px_rgba(0,255,255,0.9)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="relative px-8 py-4 rounded-xl text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_25px_rgba(0,255,255,0.6)] hover:shadow-[0_0_40px_rgba(0,255,255,0.9)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 overflow-hidden"
             aria-label="Начать игру"
           >
-            🚀 НАЧАТЬ ИГРУ
+            <span className="relative z-10">🚀 LAUNCH DAPP</span>
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              animate={{ x: ["-100%", "100%"] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            />
+            <div className="absolute inset-0 border border-white/30 rounded-xl backdrop-blur-sm" />
           </motion.button>
           
           <motion.button

@@ -9,6 +9,7 @@ import { SoundProvider } from "../components/SoundProvider";
 import IntroSequence from "../components/IntroSequence";
 import MusicPlayer from "../components/MusicPlayer";
 import Navigator from "../components/Navigator";
+import SystemNotifier from "../components/SystemNotifier";
 import { initAnalytics } from "../lib/analytics";
 import { getLocale, setLocale } from "../i18n";
 
@@ -193,6 +194,7 @@ export default function App({ Component, pageProps }: any) {
                 <Component {...pageProps} />
                 <MusicPlayer />
                 <Navigator />
+                <SystemNotifier />
               </>
             )}
             <Toaster

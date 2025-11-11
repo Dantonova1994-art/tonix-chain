@@ -8,6 +8,72 @@ import { formatAddressShort } from "../lib/address";
 import { fetchContractBalance } from "../lib/ton-read";
 import toast from "react-hot-toast";
 
+function LiveMetricsSection() {
+  const [metrics, setMetrics] = useState<{
+    contractBalance: number;
+    daoMembers: number;
+    totalRounds: number;
+    nftProfiles: number;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadMetrics = async () => {
+      try {
+        const res = await fetch("/api/metrics/live");
+        if (res.ok) {
+          const data = await res.json();
+          setMetrics(data);
+        }
+      } catch (err) {
+        console.error("Failed to load metrics:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMetrics();
+    const interval = setInterval(loadMetrics, 10000); // Обновление каждые 10 секунд
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+      className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6"
+    >
+      <h2 className="text-xl font-bold text-cyan-400 mb-4">📊 Live Metrics</h2>
+      {loading ? (
+        <div className="text-center text-gray-400">Загрузка...</div>
+      ) : metrics ? (
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
+            <p className="text-sm text-gray-400 mb-1">Баланс контракта</p>
+            <p className="text-2xl font-bold text-cyan-400">{metrics.contractBalance.toFixed(3)} TON</p>
+          </div>
+          <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+            <p className="text-sm text-gray-400 mb-1">Участники DAO</p>
+            <p className="text-2xl font-bold text-purple-400">{metrics.daoMembers}</p>
+          </div>
+          <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+            <p className="text-sm text-gray-400 mb-1">Раунды</p>
+            <p className="text-2xl font-bold text-green-400">{metrics.totalRounds}</p>
+          </div>
+          <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+            <p className="text-sm text-gray-400 mb-1">NFT Профили</p>
+            <p className="text-2xl font-bold text-yellow-400">{metrics.nftProfiles}</p>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center text-gray-400">Ошибка загрузки метрик</div>
+      )}
+    </motion.div>
+  );
+}
+
 export default function StatusPage() {
   const [battleEntryValue, setBattleEntryValue] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
@@ -406,6 +472,9 @@ export default function StatusPage() {
             )}
           </div>
         </motion.div>
+
+        {/* Live Metrics Dashboard */}
+        <LiveMetricsSection />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
