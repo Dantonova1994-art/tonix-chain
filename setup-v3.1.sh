@@ -1,3 +1,13 @@
+#!/bin/bash
+
+# === TONIX CHAIN — COSMIC GLASS UI v3.1 (SHINE EDITION) ===
+# Оформление: тёмный космос, пульсирующий логотип, стеклянные карточки, анимированная сетка
+# Разворачивается в основной папке tonix-chain
+
+# === 1. frontend/pages/index.tsx ===
+mkdir -p frontend/pages
+
+cat > frontend/pages/index.tsx << 'EOF'
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useTonConnectUI } from "@tonconnect/ui-react";
@@ -176,3 +186,203 @@ export default function Home() {
     </main>
   );
 }
+EOF
+
+# === 2. frontend/styles/globals.css ===
+mkdir -p frontend/styles
+
+cat > frontend/styles/globals.css << 'EOF'
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at 50% -20%, #0f1424, #06080d 70%);
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px 80px;
+  overflow: hidden;
+}
+
+.network-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 3;
+}
+
+.logo-glow {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 14px;
+  background: radial-gradient(circle, rgba(0,255,255,0.8) 0%, rgba(123,63,251,0.4) 60%, transparent 100%);
+  border-radius: 50%;
+  filter: blur(6px);
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00fff6, #7b3ffb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+  text-shadow: 0 0 25px rgba(0,255,255,0.4);
+}
+
+.subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #7be0ff;
+  margin: 6px 0;
+  text-shadow: 0 0 15px rgba(0,255,255,0.2);
+}
+
+.desc {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.glass-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.07);
+  animation: cardFade 1.2s ease both;
+}
+
+@keyframes cardFade {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.glass-card h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, #00eaff, #7b3ffb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome {
+  opacity: 0.9;
+  margin-bottom: 14px;
+}
+
+.ref-link {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 13px;
+  text-align: center;
+  word-break: break-all;
+}
+
+.note {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 10px;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #00bcd4, #3f51b5);
+  border: none;
+  border-radius: 10px;
+  padding: 14px 28px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+  transition: all 0.25s ease;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 35px rgba(0, 255, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+  opacity: 0.7;
+  font-size: 13px;
+  position: relative;
+  z-index: 2;
+}
+
+.status {
+  margin-bottom: 6px;
+  color: #7be0ff;
+}
+
+.copyright {
+  margin: 0;
+}
+EOF
+
+# === 3. Установка зависимостей и билд ===
+echo "📦 Устанавливаем зависимости и билдим проект..."
+
+cd frontend
+
+npm install framer-motion @tonconnect/ui-react
+
+npm run build
+
+echo ""
+echo "✅ TONIX CHAIN v3.1 SHINE EDITION готов."
+echo "Для деплоя используй:"
+echo "vercel --prod --force"
+echo ""
+echo "После деплоя открой Mini App:"
+echo "https://t.me/tonixchain_lottery_bot/app?startapp=lottery&v=9"
+

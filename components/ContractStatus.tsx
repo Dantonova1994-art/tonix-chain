@@ -112,12 +112,20 @@ function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
     // Первая загрузка
     loadLiveBalance();
     
-    // Обновление каждые 5 секунд
-    const interval = setInterval(loadLiveBalance, 5000);
+    // Обновление каждые 3-5 секунд (случайный интервал для распределения нагрузки)
+    let timeoutId: NodeJS.Timeout;
+    const scheduleNext = () => {
+      const delay = 3000 + Math.random() * 2000; // 3-5 секунд
+      timeoutId = setTimeout(() => {
+        loadLiveBalance();
+        scheduleNext();
+      }, delay);
+    };
+    scheduleNext();
     
     return () => {
       mounted = false;
-      clearInterval(interval);
+      clearTimeout(timeoutId);
     };
   }, []);
 
@@ -227,18 +235,52 @@ function ContractStatusComponent({ refreshKey }: { refreshKey?: number }) {
             </div>
           )}
           
-          {/* Live баланс контракта */}
+          {/* Live баланс контракта с glow-анимацией */}
           <div className="text-center mt-4 pt-4 border-t border-cyan-500/20">
-            <motion.p
+            <motion.div
               key={liveBalance}
               initial={{ opacity: 0.4, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
-              className="text-xl font-semibold text-cyan-400"
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                boxShadow: [
+                  "0 0 10px rgba(0,255,255,0.3)",
+                  "0 0 20px rgba(0,255,255,0.5)",
+                  "0 0 10px rgba(0,255,255,0.3)"
+                ]
+              }}
+              transition={{ 
+                duration: 0.6,
+                boxShadow: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+              }}
+              className="relative inline-block px-4 py-2 rounded-lg"
             >
-              💎 Баланс контракта: {liveBalance !== null ? `${liveBalance.toFixed(3)} TON` : "—"}
-            </motion.p>
-            <p className="text-xs text-gray-500 mt-1">Обновляется каждые 5 секунд</p>
+              <div className="absolute inset-0 bg-cyan-500/20 blur-xl -z-10 animate-pulse" />
+              <p className="text-xl font-semibold text-cyan-400 relative z-10">
+                💎 Баланс контракта: {liveBalance !== null ? `${liveBalance.toFixed(3)} TON` : "—"}
+              </p>
+            </motion.div>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <p className="text-xs text-gray-500">Обновляется каждые 3-5 секунд</p>
+              <a
+                href={`https://tonviewer.com/${CONTRACT_ADDRESS}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                🔗 TonViewer
+              </a>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(CONTRACT_ADDRESS);
+                  toast.success("Адрес скопирован!");
+                }}
+                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                title="Копировать адрес"
+              >
+                📋
+              </button>
+            </div>
           </div>
 
           <div className="text-center">

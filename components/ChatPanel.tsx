@@ -21,6 +21,11 @@ const RESPONSES: Record<string, string[]> = {
     "⚔️ TON Battle — это мультиплеерная битва на TON. Войди в GameHub и выбери 'TON Battle'.",
     "🎮 TON Battle доступен в игровом хабе. Требуется подключенный кошелек и ставка 0.1 TON.",
   ],
+  game: [
+    "🎮 GameHub открыт! Используй кнопку 'Игровая Арена' или команду /game для доступа ко всем играм.",
+    "💫 Доступные игры: Flip & Win, Catch TONs, Spin the Galaxy, Galaxy Run, TON Battle и Galaxy Flip!",
+    "🚀 Открой GameHub через навигатор или используй команду /game для быстрого доступа.",
+  ],
   dao: [
     "🏛️ TONIX DAO — это система управления сообществом. Активные голосования доступны в разделе DAO Dashboard.",
     "🗳️ В DAO можно создавать предложения (Level 5+), голосовать и влиять на развитие платформы.",
@@ -32,8 +37,8 @@ const RESPONSES: Record<string, string[]> = {
     "📈 Текущий курс и supply можно увидеть в разделе DAO.",
   ],
   help: [
-    "💡 Доступные команды: /balance, /rounds, /battle, /dao, /token, /help",
-    "🚀 Я TONIX Navigator — твой AI-гид по платформе. Спроси меня о балансе, раундах, битвах или DAO!",
+    "💡 Доступные команды: /balance, /rounds, /battle, /game, /dao, /token, /help",
+    "🚀 Я TONIX Navigator — твой AI-гид по платформе. Спроси меня о балансе, раундах, битвах, играх или DAO!",
   ],
   default: [
     "💎 Привет, игрок. Хочешь узнать, кто выиграл последний раунд?",
@@ -71,6 +76,8 @@ export default function ChatPanel({ onClose }: { onClose: () => void }) {
       return RESPONSES.rounds[Math.floor(Math.random() * RESPONSES.rounds.length)];
     } else if (lowerPrompt.startsWith("/battle")) {
       return RESPONSES.battle[Math.floor(Math.random() * RESPONSES.battle.length)];
+    } else if (lowerPrompt.startsWith("/game")) {
+      return RESPONSES.game[Math.floor(Math.random() * RESPONSES.game.length)];
     } else if (lowerPrompt.startsWith("/dao")) {
       return RESPONSES.dao[Math.floor(Math.random() * RESPONSES.dao.length)];
     } else if (lowerPrompt.startsWith("/token")) {
@@ -88,6 +95,16 @@ export default function ChatPanel({ onClose }: { onClose: () => void }) {
       return RESPONSES.default[Math.floor(Math.random() * RESPONSES.default.length)];
     }
   };
+
+  // Обработка команды /game для открытия GameHub
+  useEffect(() => {
+    const lastCommand = localStorage.getItem("tonix_last_command");
+    if (lastCommand === "/game") {
+      // Триггер события для открытия GameHub (если нужно)
+      const event = new CustomEvent("tonix:open-gamehub");
+      window.dispatchEvent(event);
+    }
+  }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim()) return;

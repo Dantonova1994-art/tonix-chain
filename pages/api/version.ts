@@ -5,7 +5,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const version = process.env.NEXT_PUBLIC_APP_VERSION || "4.5.0";
+  const version = process.env.NEXT_PUBLIC_APP_VERSION || "5.5.0";
   
   res.status(200).json({
     version,

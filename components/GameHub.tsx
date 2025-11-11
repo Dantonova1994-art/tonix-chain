@@ -6,6 +6,7 @@ import GameFlip from "./GameFlip";
 import GameCatch from "./GameCatch";
 import GameSpin from "./GameSpin";
 import GalaxyRun from "./GalaxyRun";
+import GalaxyFlip from "./GalaxyFlip";
 import XPPanel from "./XPPanel";
 import Leaderboard from "./Leaderboard";
 import PassPanel from "./PassPanel";
@@ -13,7 +14,7 @@ import BattleHub from "./battle/BattleHub";
 import DAODashboard from "./DAODashboard";
 import { ENV } from "../lib/env";
 
-type GameView = "hub" | "flip" | "catch" | "spin" | "galaxy" | "pass" | "battle" | "dao";
+type GameView = "hub" | "flip" | "catch" | "spin" | "galaxy" | "galaxyflip" | "pass" | "battle" | "dao";
 
 export default function GameHub({ onClose, autoStart }: { onClose: () => void; autoStart?: boolean }) {
   const [currentView, setCurrentView] = useState<GameView>("hub");
@@ -38,6 +39,7 @@ export default function GameHub({ onClose, autoStart }: { onClose: () => void; a
 
   const games = [
     { id: "flip" as GameView, name: "Flip & Win", icon: "🎲", component: GameFlip },
+    { id: "galaxyflip" as GameView, name: "💫 Galaxy Flip", icon: "💫", component: GalaxyFlip },
     { id: "catch" as GameView, name: "Catch TONs", icon: "💎", component: GameCatch },
     { id: "spin" as GameView, name: "Spin the Galaxy", icon: "🎰", component: GameSpin },
     { id: "galaxy" as GameView, name: "Galaxy Run", icon: "🚀", component: GalaxyRun },
@@ -189,6 +191,9 @@ export default function GameHub({ onClose, autoStart }: { onClose: () => void; a
               ← Назад
             </button>
             {(() => {
+              if (currentView === "galaxyflip") {
+                return <GalaxyFlip />;
+              }
               const GameComponent = games.find((g) => g.id === currentView)?.component;
               return GameComponent ? <GameComponent /> : null;
             })()}
