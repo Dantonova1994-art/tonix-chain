@@ -31,4 +31,3 @@ export const en = {
     success: "Operation completed successfully!",
   },
 };
-
