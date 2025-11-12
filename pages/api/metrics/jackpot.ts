@@ -1,19 +1,26 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { fetchJackpot } from '../../../lib/jackpot';
-import { CONTRACT_ADDRESS, ENV } from '../../../lib/env';
+import { tonFetch, respond } from '../fix/_shared';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    const address = CONTRACT_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
-    const rpc = ENV.TONCENTER || process.env.NEXT_PUBLIC_TONCENTER_RPC || 'https://toncenter.com/api/v2/jsonRPC';
-    const apiKey = ENV.TONCENTER_KEY || process.env.NEXT_PUBLIC_TONCENTER_API_KEY;
-    
-    const value = await fetchJackpot({ address, rpc, apiKey });
-    
-    res.setHeader('Cache-Control', 's-maxage=5, stale-while-revalidate=20');
-    res.status(200).json({ ok: true, address, value });
-  } catch (e: any) {
-    res.status(200).json({ ok: false, error: e?.message || 'jackpot_error' });
-  }
-}
+  const address = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
+  if (!address) {
+    return respond(res, { ok: false, error: "Missing contract address" }, 500);
+  }
+
+  const rpc = await tonFetch("getAddressBalance", [address]);
+
+  if (!rpc || !rpc.result) {
+    return respond(res, {
+      ok: false,
+      value: 0,
+      error: "Network unreachable or TON RPC failed",
+    }, 503);
+  }
+
+  // Toncenter возвращает баланс в нанотонах как строку
+  const balanceNanotons = BigInt(rpc.result || '0');
+  const balanceTon = Number(balanceNanotons) / 1e9;
+
+  respond(res, { ok: true, value: balanceTon });
+}

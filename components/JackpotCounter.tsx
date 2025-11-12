@@ -6,18 +6,26 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function JackpotCounter() {
   const [val, setVal] = useState<number | null>(null);
   const [blink, setBlink] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function load() {
     try {
       const r = await fetch("/api/metrics/jackpot", { cache: "no-store" });
       const j = await r.json();
-      if (j.ok) {
+      if (j.ok && j.value !== undefined) {
         setBlink(true);
         setTimeout(() => setBlink(false), 350);
         setVal(j.value);
+        setError(null);
+      } else {
+        setError(j.error || "Network error");
+        if (j.value === 0) {
+          setVal(0);
+        }
       }
     } catch (err) {
       console.error("Failed to load jackpot:", err);
+      setError("Network unreachable");
     }
   }
 
@@ -48,7 +56,14 @@ export default function JackpotCounter() {
           {val === null ? "—.— TON" : `${val.toFixed(3)} TON`}
         </motion.div>
       </AnimatePresence>
-      <div className="mt-2 text-[12px] text-white/60">Обновляется каждые 5 секунд</div>
+      {error && (
+        <div className="mt-2 text-red-400 text-sm">
+          🛰 On-chain data temporarily unavailable
+        </div>
+      )}
+      {!error && (
+        <div className="mt-2 text-[12px] text-white/60">Обновляется каждые 5 секунд</div>
+      )}
     </div>
   );
 }
