@@ -4,10 +4,13 @@ import { motion } from "framer-motion";
 import DiamondCore from "./DiamondCore";
 import StatusBar from "./StatusBar";
 import useJackpot from "../hooks/useJackpot";
+import useFadeIn from "../hooks/useFadeIn";
+import LoadingButton from "./LoadingButton";
 import { useEffect } from "react";
 
 export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
-  const { jackpot, ok } = useJackpot();
+  const { jackpot, ok, loading } = useJackpot();
+  const fade = useFadeIn(300);
 
   useEffect(() => {
     if (scrollToBuy) {
@@ -20,46 +23,68 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
     }
   }, [scrollToBuy]);
 
+  const handlePlay = async () => {
+    console.log("Play pressed");
+    const buySection = document.getElementById("buy-section");
+    if (buySection) {
+      buySection.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    await new Promise(r => setTimeout(r, 1000));
+  };
+
   return (
-    <section className="hero">
+    <section className={`hero ${fade}`}>
       <StatusBar />
-      <div className="diamond-container">
-        <DiamondCore />
-      </div>
-      <motion.h1 
-        className="hero-title"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        TONIX CHAIN
-      </motion.h1>
-      <motion.p 
-        className="hero-subtitle"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-      >
-        Лотерея будущего на TON — прозрачная, мгновенная и децентрализованная.
-      </motion.p>
-      <motion.p 
-        className="jackpot-info"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
-        Призовой пул: {ok ? `${jackpot} TON` : "загрузка..."}
-      </motion.p>
       <motion.div 
-        className="hero-buttons"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.9 }}
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 1 }}
       >
-        <button className="btn-neon">🎮 Играть</button>
-        <button className="btn-glass">💎 TONIX PASS</button>
+        <div className="diamond-container">
+          <DiamondCore />
+        </div>
+        <motion.h1 
+          className="hero-title"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
+          TONIX CHAIN
+        </motion.h1>
+        <motion.p 
+          className="hero-subtitle"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        >
+          Лотерея будущего на TON — прозрачная, мгновенная и децентрализованная.
+        </motion.p>
+        <motion.p 
+          className="jackpot-info"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          {loading ? "Загрузка пула..." : `Призовой пул: ${ok ? `${jackpot} TON` : "—"}`}
+        </motion.p>
+        <motion.div 
+          className="hero-buttons"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+        >
+          <LoadingButton text="Играть" icon="🎮" onClick={handlePlay} />
+          <button className="btn-glass">💎 TONIX PASS</button>
+        </motion.div>
+        <motion.p 
+          className="powered"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+        >
+          Powered by TON Blockchain
+        </motion.p>
       </motion.div>
-      <p className="powered">Powered by TON Blockchain</p>
     </section>
   );
 }

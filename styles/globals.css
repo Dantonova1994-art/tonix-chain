@@ -164,6 +164,23 @@ body {
   font-weight: 500;
 }
 
+.fade-hidden { 
+  opacity: 0; 
+  transform: translateY(10px); 
+  transition: all 0.8s ease; 
+}
+
+.fade-in { 
+  opacity: 1; 
+  transform: translateY(0); 
+}
+
+.btn-neon.loading {
+  pointer-events: none;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 /* Legacy button classes for compatibility */
 .btn-primary {
   background: linear-gradient(90deg, var(--diamond-cyan), var(--diamond-lilac));
