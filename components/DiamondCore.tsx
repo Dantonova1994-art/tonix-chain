@@ -7,8 +7,9 @@ export default function DiamondCore() {
   return (
     <div className={styles.diamondWrapper}>
       <div className={styles.diamond}>
+        <div className={styles.diamondFacet}></div>
+        <div className={styles.diamondFacet}></div>
         <div className={styles.diamondGlow}></div>
-        <div className={styles.diamondLight}></div>
       </div>
     </div>
   );
