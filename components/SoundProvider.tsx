@@ -7,6 +7,9 @@ interface SoundContextType {
   play: (name: "click" | "success" | "alert" | "battle") => void;
   enabled: boolean;
   toggle: () => void;
+  click: () => void;
+  win: () => void;
+  error: () => void;
 }
 
 const SoundContext = createContext<SoundContextType | null>(null);
@@ -14,8 +17,15 @@ const SoundContext = createContext<SoundContextType | null>(null);
 export function SoundProvider({ children }: { children: ReactNode }) {
   const sound = useSound();
 
+  const api = {
+    ...sound,
+    click: () => sound.play("click"),
+    win: () => sound.play("success"),
+    error: () => sound.play("alert"),
+  };
+
   return (
-    <SoundContext.Provider value={sound}>
+    <SoundContext.Provider value={api}>
       {children}
       {/* Toggle звука в верхнем правом углу */}
       <button

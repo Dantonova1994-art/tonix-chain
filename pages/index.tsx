@@ -30,6 +30,9 @@ const RoundHistory = dynamic(() => import("../components/RoundHistory"), { ssr: 
 const MyWins = dynamic(() => import("../components/MyWins"), { ssr: false });
 const GameHub = dynamic(() => import("../components/GameHub"), { ssr: false });
 const NovaAI = dynamic(() => import("../components/NovaAI"), { ssr: false });
+const Starfield = dynamic(() => import("../components/Starfield"), { ssr: false });
+const JackpotCounter = dynamic(() => import("../components/JackpotCounter"), { ssr: false });
+const AIWidget = dynamic(() => import("../components/AIWidget"), { ssr: false });
 
 const GAMING_MODE = ENV.GAMING_MODE === "true";
 
@@ -189,6 +192,7 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen bg-gradient-to-b from-[#0b0c10] to-[#121826] text-white flex flex-col items-center justify-center p-4 overflow-hidden">
+      {process.env.NEXT_PUBLIC_ENABLE_STARFIELD !== 'false' && <Starfield />}
       <CyberGalaxyBackground />
       <BackgroundSpace />
       <div className="absolute inset-0 cyber-grid opacity-20" />
@@ -221,6 +225,12 @@ export default function Home() {
             className="z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-6 pb-20"
           >
             <Hero scrollToBuy={startTarget === "lottery"} />
+          
+          {/* Live Jackpot Counter */}
+          <div className="w-full max-w-md mx-auto mt-6">
+            <JackpotCounter />
+          </div>
+          
           <WalletConnect />
           <ReferralPanel />
           {ENV.NFT_ENABLED === "true" && <MyNFTs />}
@@ -265,6 +275,17 @@ export default function Home() {
             <div className="text-center text-gray-400 mt-6 mb-10 text-sm">
               🎮 Игровой режим скоро будет
             </div>
+          )}
+
+          {/* AI Widget (новый) */}
+          {process.env.NEXT_PUBLIC_AI_ASSISTANT !== 'false' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+            >
+              <AIWidget />
+            </motion.div>
           )}
 
           <motion.div

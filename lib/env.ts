@@ -36,6 +36,10 @@ export const ENV = {
   NOVA_AI_KEY: process.env.NEXT_PUBLIC_NOVA_AI_KEY,
   ENABLE_MUSIC: process.env.NEXT_PUBLIC_ENABLE_MUSIC || "true",
   ENABLE_GALAXY_EFFECTS: process.env.NEXT_PUBLIC_ENABLE_GALAXY_EFFECTS || "true",
+  // v7.5 MegaMoon+
+  ENABLE_SOUND: process.env.NEXT_PUBLIC_ENABLE_SOUND || "true",
+  ENABLE_STARFIELD: process.env.NEXT_PUBLIC_ENABLE_STARFIELD || "true",
+  AI_ASSISTANT: process.env.NEXT_PUBLIC_AI_ASSISTANT || "true",
 } as const;
 
 // Telegram Mini App (TWA) конфигурация
