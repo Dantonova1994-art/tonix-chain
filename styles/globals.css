@@ -845,6 +845,16 @@ button, a {
   text-shadow: 0 0 6px rgba(0, 255, 255, 0.4), 0 0 12px rgba(123, 47, 247, 0.3);
 }
 
+/* === TONIX-AI Floating Button Pulse === */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.3), 0 0 20px rgba(123,47,247,0.3); }
+  50% { box-shadow: 0 0 20px rgba(0,255,255,0.7), 0 0 40px rgba(123,47,247,0.5); }
+}
+
+.ai-glow {
+  animation: pulseGlow 2s infinite;
+}
+
 /* === АДАПТИВНОСТЬ === */
 @media (max-width: 640px) {
   html {

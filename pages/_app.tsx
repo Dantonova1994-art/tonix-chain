@@ -10,6 +10,7 @@ import IntroSequence from "../components/IntroSequence";
 import MusicPlayer from "../components/MusicPlayer";
 import Navigator from "../components/Navigator";
 import SystemNotifier from "../components/SystemNotifier";
+import AIWidget from "../components/AIWidget";
 import { initAnalytics } from "../lib/analytics";
 import { getLocale, setLocale } from "../i18n";
 
@@ -195,6 +196,7 @@ export default function App({ Component, pageProps }: any) {
                 <MusicPlayer />
                 <Navigator />
                 <SystemNotifier />
+                <AIWidget />
               </>
             )}
             <Toaster
