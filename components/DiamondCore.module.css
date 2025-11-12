@@ -1,0 +1,102 @@
+.diamondWrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+@media (min-width: 768px) {
+  .diamondWrapper {
+    width: 256px;
+    height: 256px;
+  }
+}
+
+.diamond {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: spin 8s linear infinite;
+}
+
+@media (max-width: 767px) {
+  .diamond {
+    animation: breathe 6s ease-in-out infinite;
+  }
+}
+
+.diamondGlow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, rgba(0, 255, 247, 0.15), transparent 70%);
+  filter: blur(30px);
+  transform: translateY(20px);
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.diamondLight {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #00fff7 0%, #7b2ff7 50%, #ff6ad5 100%);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  filter: drop-shadow(0 0 20px rgba(0, 255, 247, 0.2));
+  opacity: 0.85;
+}
+
+.diamondLight::before {
+  content: '';
+  position: absolute;
+  inset: 20%;
+  background: radial-gradient(circle, rgba(0, 255, 247, 0.6), transparent 70%);
+  border-radius: 50%;
+}
+
+.diamondLight::after {
+  content: '';
+  position: absolute;
+  inset: 30%;
+  background: linear-gradient(135deg, rgba(0, 255, 247, 0.2), transparent);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.diamondWrapper:hover .diamond {
+  transform: scale(1.03);
+}
+
+.diamondWrapper:hover .diamondGlow {
+  opacity: 0.6;
+}
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateY(20px) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(20px) scale(1.05);
+  }
+}
+
