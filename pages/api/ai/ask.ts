@@ -1,30 +1,50 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const ANSWERS: Record<string, string> = {
-  jackpot: "💎 Джекпот обновляется каждые 5 секунд. Все данные берутся напрямую с блокчейна TON.",
-  rules: "🎲 В лотерее TONIX каждый билет — это шанс выиграть часть пула. Всё прозрачно и проверяемо ончейн.",
-  tonixpass: "🪪 TONIX PASS — ваш пропуск в премиум функции, XP-очки и эксклюзивные ивенты.",
-  xp: "⚡ XP начисляется за активность, приглашения друзей и победы в розыгрышах.",
-  referral: "👥 Реферальная система даёт вам +25 XP за каждого приглашённого друга.",
-  help: "🤖 Я могу рассказать про джекпот, XP, правила, TONIX PASS или реферальную систему.",
-  джекпот: "💎 Джекпот обновляется каждые 5 секунд. Все данные берутся напрямую с блокчейна TON.",
-  правила: "🎲 В лотерее TONIX каждый билет — это шанс выиграть часть пула. Всё прозрачно и проверяемо ончейн.",
-  билет: "🎟 Нажми «Купить билет» — откроется Tonkeeper для отправки 0.5 TON на контракт. Удачи! 💎",
-  раунд: "🪩 Следующий розыгрыш — смотри таймер в Hero. История победителей — в секции Last Winners.",
-  помощь: "🤖 Я могу рассказать про джекпот, XP, правила, TONIX PASS или реферальную систему.",
-};
+async function fetchJSON(url: string) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Bad response");
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).json({ ok: false, error: "Method not allowed" });
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST")
+    return res.status(405).json({ ok: false, error: "Method not allowed" });
 
-  const { question, q } = req.body;
-  const query = (question || q || "").toLowerCase();
+  const { question } = req.body;
+  if (!question) return res.status(400).json({ ok: false, error: "Missing question" });
 
-  if (!query) return res.status(400).json({ ok: false, error: "Missing question" });
+  const q = question.toLowerCase();
+  let answer = "✨ Я пока не знаю ответ на это, но скоро научусь!";
 
-  // Ищем ключевое слово в запросе
-  let key: string | undefined = Object.keys(ANSWERS).find((k) => query.includes(k));
-  const answer = key ? ANSWERS[key] : "✨ Я пока не знаю ответ на это, но скоро научусь!";
+  // Получаем базовый URL для внутренних запросов
+  const protocol = req.headers['x-forwarded-proto'] || 'http';
+  const host = req.headers.host || 'localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${protocol}://${host}`;
 
-  res.status(200).json({ ok: true, answer });
+  // Fetch live metrics
+  const jackpotData = await fetchJSON(`${baseUrl}/api/metrics/jackpot`);
+  const jackpotValue = jackpotData?.value ? Number(jackpotData.value).toFixed(3) : "—";
+
+  const historyData = await fetchJSON(`${baseUrl}/api/lottery/history`);
+  const lastWinner = historyData?.result?.[0]?.winner || historyData?.history?.[0]?.winner || null;
+
+  if (q.includes("джекпот") || q.includes("jackpot")) {
+    answer = `💎 Текущий джекпот составляет *${jackpotValue} TON*. Обновляется каждые 5 секунд напрямую с блокчейна TON.`;
+  } else if (q.includes("баланс") || q.includes("contract") || q.includes("контракт")) {
+    answer = `🔗 Контракт TONIX сейчас содержит *${jackpotValue} TON* на балансе. Всё прозрачно и проверяемо ончейн.`;
+  } else if (q.includes("побед") || q.includes("winner") || q.includes("победитель")) {
+    answer = lastWinner
+      ? `🏆 Последний победитель — \`${lastWinner}\`. Его выигрыш уже зафиксирован в блокчейне.`
+      : "🏆 Победителей пока нет, следующий розыгрыш скоро начнётся!";
+  } else if (q.includes("правил") || q.includes("rules")) {
+    answer = "🎲 Каждая покупка билета участвует в общем пуле. В конце раунда контракт случайно выбирает победителя и отправляет выигрыш напрямую в его кошелёк TON.";
+  } else if (q.includes("pass") || q.includes("тон") || q.includes("xp")) {
+    answer = "🪪 TONIX PASS открывает доступ к XP-системе, бонусам и будущему DAO-управлению. XP начисляется за активность, розыгрыши и приглашения друзей.";
+  }
+
+  return res.status(200).json({ ok: true, answer });
 }

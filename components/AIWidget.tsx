@@ -9,13 +9,13 @@ export default function AIWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "ai", text: "👾 Привет! Я TONIX-AI. Спрашивай всё про лотерею 💎" },
+    { role: "ai", text: "👾 Привет! Я TONIX-AI v3. Могу анализировать реальные данные из блокчейна TON 💎" },
   ]);
 
   const askAI = async () => {
     if (!input.trim()) return;
-    const question = input.trim();
-    setMessages([...messages, { role: "user", text: question }]);
+    const q = input.trim();
+    setMessages([...messages, { role: "user", text: q }]);
     setInput("");
     setLoading(true);
 
@@ -23,13 +23,13 @@ export default function AIWidget() {
       const res = await fetch("/api/ai/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question: q }),
       });
       const data = await res.json();
-      if (!data.ok && !data.answer) throw new Error(data.error || "Ошибка AI");
-      setMessages((m) => [...m, { role: "ai", text: data.answer || data.text || "Не удалось получить ответ" }]);
+      if (!data.ok) throw new Error(data.error);
+      setMessages((m) => [...m, { role: "ai", text: data.answer }]);
+      toast.success("🧠 AI ответ обновлён!");
     } catch (err) {
-      console.error(err);
       toast.error("AI временно недоступен 🛰");
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ export default function AIWidget() {
             className="fixed bottom-24 right-6 w-80 max-h-[60vh] bg-[#0a0f1e]/90 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-xl shadow-cyan-700/20 flex flex-col z-50"
           >
             <div className="p-3 border-b border-cyan-500/20 text-cyan-300 font-semibold text-sm">
-              TONIX-AI 🤖
+              TONIX-AI v3 Neural Mode 🧠
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-2 text-sm">
               {messages.map((m, i) => (
@@ -77,7 +77,7 @@ export default function AIWidget() {
               ))}
               {loading && (
                 <div className="text-cyan-400/70 animate-pulse text-center text-xs">
-                  TONIX-AI думает...
+                  TONIX-AI обрабатывает ончейн данные...
                 </div>
               )}
             </div>
@@ -87,7 +87,7 @@ export default function AIWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && askAI()}
                 className="flex-1 bg-transparent border border-cyan-500/30 rounded-lg px-2 py-1 text-xs text-cyan-100 placeholder-cyan-500/40 focus:outline-none focus:border-cyan-400/60"
-                placeholder="Спроси что угодно..."
+                placeholder="Спроси про джекпот, победу или баланс..."
               />
               <button
                 onClick={askAI}
