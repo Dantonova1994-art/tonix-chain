@@ -37,6 +37,7 @@ export default function JackpotCounter() {
     fetchJackpot();
     const interval = setInterval(() => fetchJackpot(true), 5000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
