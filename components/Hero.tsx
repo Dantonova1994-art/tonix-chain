@@ -4,13 +4,47 @@ import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import GalaxyParticles from "./GalaxyParticles";
 import PassPanel from "./PassPanel";
-import TypewriterText from "./TypewriterText";
-import { ENV } from "../lib/env";
+import { ENV, CONTRACT_ADDRESS } from "../lib/env";
+import { fetchContractBalance } from "../lib/ton-read";
 
 export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, 100]);
   const [showPassPanel, setShowPassPanel] = useState(false);
+  const [poolBalance, setPoolBalance] = useState<number | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string>("--:--:--");
+
+  // Загрузка баланса пула
+  useEffect(() => {
+    const loadBalance = async () => {
+      try {
+        const balance = await fetchContractBalance(CONTRACT_ADDRESS);
+        setPoolBalance(balance);
+      } catch (err) {
+        console.error("Failed to load pool balance:", err);
+      }
+    };
+    loadBalance();
+    const interval = setInterval(loadBalance, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Таймер (пример: до следующего розыгрыша)
+  useEffect(() => {
+    const updateTimer = () => {
+      // Пример: таймер до следующего розыгрыша (можно заменить на реальный)
+      const now = Date.now();
+      const nextDraw = now + 3600000; // +1 час для примера
+      const diff = nextDraw - now;
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+    };
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Автоматический скролл к секции покупки билетов
   useEffect(() => {
@@ -172,14 +206,43 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           transition={{ delay: 0.5, duration: 0.8 }}
           className="flex flex-col sm:flex-row gap-4 items-center"
         >
+          {/* Баланс пула и таймер */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 items-center mb-4"
+          >
+            {poolBalance !== null && (
+              <motion.div
+                className="px-6 py-3 rounded-xl glass-panel"
+                whileHover={{ scale: 1.02 }}
+              >
+                <p className="text-xs text-gray-400 mb-1">Prize Pool</p>
+                <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
+                  {poolBalance.toFixed(2)} TON
+                </p>
+              </motion.div>
+            )}
+            <motion.div
+              className="px-6 py-3 rounded-xl glass-panel"
+              whileHover={{ scale: 1.02 }}
+            >
+              <p className="text-xs text-gray-400 mb-1">Next Draw</p>
+              <p className="text-2xl font-bold text-cyan-400 font-mono">
+                {timeLeft}
+              </p>
+            </motion.div>
+          </motion.div>
+
           <motion.button
             onClick={handleScrollToBuy}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(0, 240, 255, 0.6)" }}
             whileTap={{ scale: 0.98 }}
-            className="relative px-12 py-4 rounded-xl font-bold text-lg text-white overflow-hidden micro-bounce"
+            className="relative px-12 py-4 rounded-xl font-bold text-lg text-white overflow-hidden megamoon-btn"
             aria-label="Launch App"
             style={{
               fontFamily: "'Satoshi', 'Inter', sans-serif",
@@ -189,9 +252,9 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
           >
             <span className="relative z-10">Launch App 🚀</span>
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
               animate={{ x: ["-100%", "100%"] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             />
           </motion.button>
           

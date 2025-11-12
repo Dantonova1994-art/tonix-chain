@@ -142,11 +142,16 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
                  onClick={handleBuyTicket}
                  disabled={loading || !isConnected}
                  aria-busy={loading}
-                 whileHover={{ scale: isConnected && !loading ? 1.02 : 1 }}
+                 whileHover={{ 
+                   scale: isConnected && !loading ? 1.02 : 1,
+                   boxShadow: isConnected && !loading ? "0 0 40px rgba(0, 240, 255, 0.6)" : undefined
+                 }}
                  whileTap={{ scale: isConnected && !loading ? 0.97 : 1 }}
-                 className="btn-gradient w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                 className="megamoon-btn w-full px-8 py-4 rounded-xl font-bold text-lg text-white disabled:opacity-50 disabled:cursor-not-allowed"
                  style={{
                    fontFamily: "'Satoshi', 'Inter', sans-serif",
+                   background: "linear-gradient(120deg, #00f0ff, #7b2ff7)",
+                   boxShadow: "0 0 30px rgba(0, 240, 255, 0.4)",
                  }}
                >
           {loading ? (

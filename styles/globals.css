@@ -5,10 +5,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Neo Galactic Prime v6.5 === */
+/* === MEGAMOON MODE v7.0 === */
 :root {
   --bg-primary: #070a12;
   --bg-secondary: rgba(255, 255, 255, 0.03);
+  --accent-cyan: #00f0ff;
+  --accent-violet: #7b2ff7;
   --accent-gradient: linear-gradient(120deg, #00f0ff, #7b2ff7);
   --text-primary: #e5e5e5;
   --text-secondary: #8a8f98;
@@ -36,11 +38,23 @@ body {
   background: var(--bg-primary);
   position: relative;
   overflow-x: hidden;
-  /* Слоистый фон с тонкими световыми кольцами */
+  /* Космический фон MegaMoon */
   background-image: 
-    radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(123, 47, 247, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(123, 47, 247, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.02) 0%, transparent 70%),
     var(--bg-primary);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  animation: cosmicShift 20s ease-in-out infinite;
+}
+
+@keyframes cosmicShift {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%, 0% 0%, 50% 50%, 0% 0%;
+  }
 }
 
 @keyframes gradientShift {
@@ -640,6 +654,34 @@ button, a {
 
 .micro-bounce:active {
   animation: microBounce 0.3s ease-in-out;
+}
+
+/* === MEGAMOON BUTTON === */
+.megamoon-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.megamoon-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.megamoon-btn:hover {
+  box-shadow: 0 0 40px var(--glow-cyan), 0 0 60px var(--glow-violet);
 }
 
 /* === LIGHT BURST === */

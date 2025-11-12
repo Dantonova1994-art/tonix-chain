@@ -117,11 +117,11 @@ export default function LastDraws() {
       transition={{ delay: 0.6, duration: 0.6 }}
       className="w-full max-w-md mx-auto mt-6"
     >
-      <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 shadow-[0_0_20px_rgba(0,255,255,0.3)] relative overflow-hidden">
+      <div className="glass-panel relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-transparent blur-xl -z-10" />
         
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-cyan-400">История событий</h2>
+          <h2 className="text-xl font-bold text-cyan-400 tonix-glow">🏆 Last Winners</h2>
           <button
             onClick={fetchHistory}
             disabled={loading}
@@ -140,54 +140,46 @@ export default function LastDraws() {
         ) : events.length === 0 ? (
           <p className="text-center text-gray-400 py-8">История пуста</p>
         ) : (
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto">
             <AnimatePresence>
-              {events.slice(0, 10).map((event, index) => (
+              {events.filter(e => e.type === "CLAIM").slice(0, 5).map((event, index) => (
                 <motion.div
-                  key={`${event.hash}-${event.lt}`}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ delay: index * 0.05 }}
-                  className={`p-3 rounded-lg border ${getEventColor(event.type)} backdrop-blur-sm`}
+                  key={`${event.hash}-${event.unixtime}`}
+                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                  transition={{ delay: index * 0.1, duration: 0.4 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  className="p-4 rounded-xl glass-panel"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 flex-1">
-                      <span className="text-xl">{getEventIcon(event.type)}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-white truncate">
-                          {event.type === "BUY" && (
-                            <span
-                              onClick={() => copyAddress(event.from)}
-                              className="cursor-pointer hover:text-cyan-300"
-                              title={event.from}
-                            >
-                              {formatAddressShort(event.from)} купил билет
-                            </span>
-                          )}
-                          {event.type === "DRAW" && "Розыгрыш проведён"}
-                          {event.type === "CLAIM" && (
-                            <span
-                              onClick={() => copyAddress(event.from)}
-                              className="cursor-pointer hover:text-cyan-300"
-                              title={event.from}
-                            >
-                              {formatAddressShort(event.from)} забрал приз
-                            </span>
-                          )}
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-violet-400 flex items-center justify-center text-xl shadow-lg">
+                        🏆
+                      </div>
+                      <div>
+                        <p 
+                          className="text-sm font-semibold text-white cursor-pointer hover:text-cyan-300 transition-colors"
+                          onClick={() => copyAddress(event.from)}
+                          title={event.from}
+                        >
+                          {formatAddressShort(event.from)}
                         </p>
                         <p className="text-xs text-gray-400">{formatTime(event.unixtime)}</p>
                       </div>
                     </div>
-                    {event.valueTon > 0 && (
-                      <span className="text-sm font-bold text-cyan-300 ml-2">
+                    <div className="text-right">
+                      <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
                         {event.valueTon.toFixed(2)} TON
                       </span>
-                    )}
+                    </div>
                   </div>
                 </motion.div>
               ))}
             </AnimatePresence>
+            {events.filter(e => e.type === "CLAIM").length === 0 && (
+              <p className="text-center text-gray-400 py-8">Пока нет победителей</p>
+            )}
           </div>
         )}
       </div>
