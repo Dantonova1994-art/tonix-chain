@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useLocale from "../hooks/useLocale";
 
 export default function StatusBar() {
+  const { t } = useLocale();
   const [status, setStatus] = useState<"connected"|"syncing"|"error">("syncing");
-  const [message, setMessage] = useState("Подключение к сети TON...");
+  const [message, setMessage] = useState(t.hero.loading);
 
   useEffect(() => {
     const check = async () => {
@@ -13,20 +15,20 @@ export default function StatusBar() {
         const data = await res.json();
         if (data.ok) {
           setStatus("connected");
-          setMessage("🟢 Сеть TON активна");
+          setMessage("🟢 " + t.ui.connected);
         } else {
           setStatus("error");
-          setMessage("🔴 Ошибка соединения, повтор...");
+          setMessage("🔴 " + t.toasts.error);
         }
       } catch {
         setStatus("error");
-        setMessage("🔴 Сеть TON недоступна");
+        setMessage("🔴 " + t.toasts.error);
       }
     };
     check();
     const interval = setInterval(check, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [t]);
 
   return (
     <>

@@ -6,11 +6,14 @@ import StatusBar from "./StatusBar";
 import useJackpot from "../hooks/useJackpot";
 import useFadeIn from "../hooks/useFadeIn";
 import LoadingButton from "./LoadingButton";
+import useLocale from "../hooks/useLocale";
+import LangSwitch from "./LangSwitch";
 import { useEffect } from "react";
 
 export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
   const { jackpot, ok, loading } = useJackpot();
   const fade = useFadeIn(300);
+  const { t } = useLocale();
 
   useEffect(() => {
     if (scrollToBuy) {
@@ -35,6 +38,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
   return (
     <section className={`hero ${fade}`}>
       <StatusBar />
+      <LangSwitch />
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
@@ -49,7 +53,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
-          TONIX CHAIN
+          {t.hero.title}
         </motion.h1>
         <motion.p 
           className="hero-subtitle"
@@ -57,7 +61,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          Лотерея будущего на TON — прозрачная, мгновенная и децентрализованная.
+          {t.hero.subtitle}
         </motion.p>
         <motion.p 
           className="jackpot-info"
@@ -65,7 +69,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.6 }}
         >
-          {loading ? "Загрузка пула..." : `Призовой пул: ${ok ? `${jackpot} TON` : "—"}`}
+          {loading ? t.hero.loading : `${t.hero.pool}: ${ok ? `${jackpot} TON` : "—"}`}
         </motion.p>
         <motion.div 
           className="hero-buttons"
@@ -73,8 +77,8 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean } = {}) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9, duration: 0.6 }}
         >
-          <LoadingButton text="Играть" icon="🎮" onClick={handlePlay} />
-          <button className="btn-glass">💎 TONIX PASS</button>
+          <LoadingButton text={t.hero.play.replace("🚀 ", "")} icon="🚀" onClick={handlePlay} />
+          <button className="btn-glass">{t.hero.pass}</button>
         </motion.div>
         <motion.p 
           className="powered"
