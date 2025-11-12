@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSoundContext } from "./SoundProvider";
 
 async function askNova(q: string) {
   try {
-    const r = await fetch("/api/ai/ask", { 
+    const r = await fetch("/api/ai/nova", { 
       method: "POST", 
       headers: {"Content-Type":"application/json"}, 
       body: JSON.stringify({ q }) 
@@ -18,13 +19,26 @@ async function askNova(q: string) {
   }
 }
 
+function getEmoji(text: string): string {
+  const lower = text.toLowerCase();
+  if (lower.includes("джекпот") || lower.includes("jackpot")) return "💎";
+  if (lower.includes("победа") || lower.includes("win")) return "🔥";
+  if (lower.includes("билет") || lower.includes("ticket")) return "🎟";
+  if (lower.includes("раунд") || lower.includes("round")) return "🪩";
+  return "😎";
+}
+
 export default function AIWidget() {
   const enabled = process.env.NEXT_PUBLIC_AI_ASSISTANT !== 'false';
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
-  const [log, setLog] = useState<{ role: "you"|"nova"; text: string }[]>([
-    { role: "nova", text: "Привет! Я NOVA. Спроси меня про джекпот, раунды или как купить билет 🚀" }
+  const [log, setLog] = useState<{ role: "you"|"nova"; text: string; emoji?: string }[]>([
+    { role: "nova", text: "Привет! Я NOVA. Спроси меня про джекпот, раунды или как купить билет 🚀", emoji: "😎" }
   ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { click } = useSoundContext();
   
   if (!enabled) return null;
 
@@ -33,12 +47,36 @@ export default function AIWidget() {
     if (!q.trim()) return;
     
     const your = { role: "you" as const, text: q.trim() };
-    setLog((l) => [...l, your]);
+    setLog((l) => {
+      const newLog = [...l, your];
+      return newLog.slice(-10); // Последние 10 сообщений
+    });
     setQ("");
+    setIsTyping(true);
+    click();
     
     const a = await askNova(your.text);
-    setLog((l) => [...l, { role: "nova", text: a }]);
+    const emoji = getEmoji(a);
+    setIsTyping(false);
+    
+    setLog((l) => {
+      const newLog: typeof l = [...l, { role: "nova" as const, text: a, emoji }];
+      return newLog.slice(-10);
+    });
+    
+    if (!open) {
+      setUnreadCount((c) => c + 1);
+    }
   };
+
+  useEffect(() => {
+    if (open && scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+    if (open) {
+      setUnreadCount(0);
+    }
+  }, [log, open]);
 
   return (
     <>
@@ -47,9 +85,18 @@ export default function AIWidget() {
         aria-label="Open AI assistant"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-5 right-5 z-40 rounded-full p-3 backdrop-blur-md border border-white/15 bg-white/5 hover:bg-white/10 shadow-lg transition transform"
+        className="fixed bottom-5 right-5 z-40 rounded-full p-3 backdrop-blur-md border border-white/15 bg-white/5 hover:bg-white/10 shadow-lg transition transform relative"
       >
         👾
+        {unreadCount > 0 && (
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold"
+          >
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </motion.span>
+        )}
       </motion.button>
 
       <AnimatePresence>
@@ -82,16 +129,33 @@ export default function AIWidget() {
                 ✕
               </button>
             </div>
-            <div className="h-56 overflow-y-auto pr-1 space-y-2">
+            <div ref={scrollRef} className="h-56 overflow-y-auto pr-1 space-y-2">
               {log.map((m, i) => (
-                <div 
-                  key={i} 
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className={`text-[13px] leading-relaxed ${m.role === "nova" ? "text-white/90" : "text-white/80"}`}
                 >
-                  <span className="opacity-60 mr-1">{m.role === "nova" ? "NOVA:" : "You:"}</span>
-                  {m.text}
-                </div>
+                  <span className="opacity-60 mr-1">
+                    {m.role === "nova" ? (
+                      <>
+                        {m.emoji || "😎"} NOVA:
+                      </>
+                    ) : (
+                      "You:"
+                    )}
+                  </span>
+                  <span className={isTyping && i === log.length - 1 ? "shimmer-text" : ""}>
+                    {m.text}
+                  </span>
+                </motion.div>
               ))}
+              {isTyping && (
+                <div className="text-[13px] text-white/60 shimmer-text">
+                  😎 NOVA печатает...
+                </div>
+              )}
             </div>
             <form onSubmit={submit} className="mt-2 flex gap-2">
               <input 

@@ -10,6 +10,7 @@ interface SoundContextType {
   click: () => void;
   win: () => void;
   error: () => void;
+  playTheme?: (theme: "primeStart") => void;
 }
 
 const SoundContext = createContext<SoundContextType | null>(null);
@@ -17,11 +18,20 @@ const SoundContext = createContext<SoundContextType | null>(null);
 export function SoundProvider({ children }: { children: ReactNode }) {
   const sound = useSound();
 
+  const playTheme = (theme: "primeStart") => {
+    if (!sound.enabled) return;
+    // В будущем можно добавить отдельные темы
+    if (theme === "primeStart") {
+      sound.play("success"); // Временно используем success
+    }
+  };
+
   const api = {
     ...sound,
     click: () => sound.play("click"),
     win: () => sound.play("success"),
     error: () => sound.play("alert"),
+    playTheme,
   };
 
   return (

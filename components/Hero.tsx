@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import GalaxyParticles from "./GalaxyParticles";
 import PassPanel from "./PassPanel";
 import { ENV, CONTRACT_ADDRESS } from "../lib/env";
 import { fetchContractBalance } from "../lib/ton-read";
+import { useSoundContext } from "./SoundProvider";
 
 export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
   const { scrollY } = useScroll();
@@ -13,6 +14,15 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
   const [showPassPanel, setShowPassPanel] = useState(false);
   const [poolBalance, setPoolBalance] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string>("--:--:--");
+  const { playTheme } = useSoundContext();
+  
+  // Параллакс для логотипа
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const logoX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const logoY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+  
+  const heroRef = useRef<HTMLElement>(null);
 
   // Загрузка баланса пула
   useEffect(() => {
@@ -59,6 +69,36 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
     }
   }, [scrollToBuy]);
 
+  // Параллакс при движении мыши
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!heroRef.current) return;
+      const rect = heroRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const deltaX = (e.clientX - centerX) * 0.02;
+      const deltaY = (e.clientY - centerY) * 0.02;
+      mouseX.set(deltaX);
+      mouseY.set(deltaY);
+    };
+    
+    if (heroRef.current) {
+      heroRef.current.addEventListener("mousemove", handleMouseMove);
+      return () => {
+        if (heroRef.current) {
+          heroRef.current.removeEventListener("mousemove", handleMouseMove);
+        }
+      };
+    }
+  }, [mouseX, mouseY]);
+
+  // Проигрывание темы при загрузке
+  useEffect(() => {
+    if (playTheme) {
+      playTheme("primeStart");
+    }
+  }, [playTheme]);
+
   const handleScrollToBuy = () => {
     console.log("🚀 НАЧАТЬ ИГРУ button clicked");
     const el = document.getElementById("buy-section");
@@ -79,10 +119,19 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
     <>
       <GalaxyParticles />
       <motion.section
+        ref={heroRef}
         style={{ y }}
         className="relative text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6 z-10"
       >
         <div className="flex flex-col items-center justify-center gap-4 z-10">
+          {/* Moon Halo */}
+          <div 
+            className="absolute w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] rounded-full blur-[20px] opacity-40"
+            style={{
+              background: "radial-gradient(circle, #00f0ff 0%, #7b2ff7 50%, transparent 70%)",
+            }}
+          />
+          
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ 
@@ -103,6 +152,8 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
             className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer holographic-logo"
             style={{
               filter: "drop-shadow(0 0 30px rgba(0,255,255,0.8)) drop-shadow(0 0 60px rgba(157,78,221,0.6))",
+              x: logoX,
+              y: logoY,
             }}
           >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
@@ -240,17 +291,17 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(0, 240, 255, 0.6)" }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="relative px-12 py-4 rounded-xl font-bold text-lg text-white overflow-hidden megamoon-btn"
-            aria-label="Launch App"
+            className="relative px-12 py-4 rounded-xl font-bold text-lg text-white overflow-hidden megamoon-btn outer-glow-btn"
+            aria-label="JOIN THE GAME"
             style={{
               fontFamily: "'Satoshi', 'Inter', sans-serif",
               background: "linear-gradient(120deg, #00f0ff, #7b2ff7)",
-              boxShadow: "0 0 30px rgba(0, 240, 255, 0.4)",
+              boxShadow: "0 0 30px rgba(0, 240, 255, 0.4), 0 0 60px rgba(123, 47, 247, 0.3)",
             }}
           >
-            <span className="relative z-10">Launch App 🚀</span>
+            <span className="relative z-10">JOIN THE GAME 🚀</span>
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
               animate={{ x: ["-100%", "100%"] }}

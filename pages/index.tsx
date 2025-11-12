@@ -33,6 +33,8 @@ const NovaAI = dynamic(() => import("../components/NovaAI"), { ssr: false });
 const Starfield = dynamic(() => import("../components/Starfield"), { ssr: false });
 const JackpotCounter = dynamic(() => import("../components/JackpotCounter"), { ssr: false });
 const AIWidget = dynamic(() => import("../components/AIWidget"), { ssr: false });
+const WinBlast = dynamic(() => import("../components/WinBlast"), { ssr: false });
+const StatsPanel = dynamic(() => import("../components/StatsPanel"), { ssr: false });
 
 const GAMING_MODE = ENV.GAMING_MODE === "true";
 
@@ -44,6 +46,7 @@ export default function Home() {
   const [envWarning, setEnvWarning] = useState(false);
   const [showGameHub, setShowGameHub] = useState(false);
   const [startTarget, setStartTarget] = useState<string | null>(null);
+  const [testWinBlast, setTestWinBlast] = useState(false);
 
   // Проверка ENV переменных (только в development)
   useEffect(() => {
@@ -230,6 +233,23 @@ export default function Home() {
           <div className="w-full max-w-md mx-auto mt-6">
             <JackpotCounter />
           </div>
+          
+          {/* Stats Panel */}
+          <div className="w-full max-w-md mx-auto mt-6">
+            <StatsPanel />
+          </div>
+          
+          {/* Test Win Blast Button (dev mode) */}
+          {process.env.NODE_ENV === "development" && (
+            <motion.button
+              onClick={() => setTestWinBlast(true)}
+              className="mt-4 px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/50 text-red-300 text-sm"
+            >
+              🎆 Test Win Blast
+            </motion.button>
+          )}
+          
+          <WinBlast trigger={testWinBlast} onComplete={() => setTestWinBlast(false)} />
           
           <WalletConnect />
           <ReferralPanel />

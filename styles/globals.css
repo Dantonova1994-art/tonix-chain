@@ -38,22 +38,31 @@ body {
   background: var(--bg-primary);
   position: relative;
   overflow-x: hidden;
-  /* Космический фон MegaMoon */
-  background-image: 
-    radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(123, 47, 247, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.02) 0%, transparent 70%),
+  /* Galaxy gradient фон v8.0 */
+  background: 
+    radial-gradient(circle at 30% 30%, #1a1a3a 0%, transparent 50%),
+    linear-gradient(120deg, rgba(0,240,255,0.1) 0%, rgba(123,47,247,0.1) 100%),
     var(--bg-primary);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
-  animation: cosmicShift 20s ease-in-out infinite;
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  animation: cosmicShift 20s ease-in-out infinite, waveShimmer 10s ease-in-out infinite;
+  backdrop-filter: blur(20px);
 }
 
 @keyframes cosmicShift {
   0%, 100% {
-    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%;
+    background-position: 0% 0%, 100% 100%, 0% 0%;
   }
   50% {
-    background-position: 100% 100%, 0% 0%, 50% 50%, 0% 0%;
+    background-position: 100% 100%, 0% 0%, 100% 0%;
+  }
+}
+
+@keyframes waveShimmer {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1.05;
   }
 }
 
@@ -682,6 +691,45 @@ button, a {
 
 .megamoon-btn:hover {
   box-shadow: 0 0 40px var(--glow-cyan), 0 0 60px var(--glow-violet);
+}
+
+.outer-glow-btn {
+  position: relative;
+}
+
+.outer-glow-btn::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 16px;
+  background: linear-gradient(120deg, rgba(0, 240, 255, 0.3), rgba(123, 47, 247, 0.3));
+  filter: blur(12px);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.outer-glow-btn:hover::after {
+  opacity: 1;
+}
+
+/* Shimmer text effect */
+.shimmer-text {
+  background: linear-gradient(90deg, #e5e5e5 0%, #00f0ff 50%, #e5e5e5 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmerWave 2s linear infinite;
+}
+
+@keyframes shimmerWave {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 
 /* === LIGHT BURST === */

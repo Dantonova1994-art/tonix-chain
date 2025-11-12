@@ -138,42 +138,62 @@ export default function BuyTicket({ onSuccess, currentRoundId }: { onSuccess?: (
         transition={{ delay: 0.5, duration: 0.6 }}
         className="flex flex-col items-center mt-8 w-full max-w-md mx-auto px-4"
       >
-               <motion.button
-                 onClick={handleBuyTicket}
-                 disabled={loading || !isConnected}
-                 aria-busy={loading}
-                 whileHover={{ 
-                   scale: isConnected && !loading ? 1.02 : 1,
-                   boxShadow: isConnected && !loading ? "0 0 40px rgba(0, 240, 255, 0.6)" : undefined
-                 }}
-                 whileTap={{ scale: isConnected && !loading ? 0.97 : 1 }}
-                 className="megamoon-btn w-full px-8 py-4 rounded-xl font-bold text-lg text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                 style={{
-                   fontFamily: "'Satoshi', 'Inter', sans-serif",
-                   background: "linear-gradient(120deg, #00f0ff, #7b2ff7)",
-                   boxShadow: "0 0 30px rgba(0, 240, 255, 0.4)",
-                 }}
-               >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <motion.span
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              >
-                ⏳
-              </motion.span>
-              Отправка транзакции...
-            </span>
-          ) : (
-            <span>🎟 Купить билет — 0.5 TON</span>
-          )}
+               <div className="flex flex-col gap-3 w-full">
+          <motion.button
+            onClick={handleBuyTicket}
+            disabled={loading || !isConnected}
+            aria-busy={loading}
+            whileHover={{ 
+              scale: isConnected && !loading ? 1.02 : 1,
+              boxShadow: isConnected && !loading ? "0 0 40px rgba(0, 240, 255, 0.6)" : undefined
+            }}
+            whileTap={{ scale: isConnected && !loading ? 0.97 : 1 }}
+            className="megamoon-btn w-full px-8 py-4 rounded-xl font-bold text-lg text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+              background: "linear-gradient(120deg, #00f0ff, #7b2ff7)",
+              boxShadow: "0 0 30px rgba(0, 240, 255, 0.4)",
+            }}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <motion.span
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  ⏳
+                </motion.span>
+                Отправка транзакции...
+              </span>
+            ) : (
+              <span>🎟 Купить билет — 0.5 TON</span>
+            )}
 
-          {!isConnected && !loading && (
-            <span className="block text-xs mt-1 text-cyan-200/80">
-              Сначала подключите кошелёк
-            </span>
-          )}
-        </motion.button>
+            {!isConnected && !loading && (
+              <span className="block text-xs mt-1 text-cyan-200/80">
+                Сначала подключите кошелёк
+              </span>
+            )}
+          </motion.button>
+          
+          <motion.a
+            href="https://t.me/tonixchain_lottery_bot/app?startapp=buy"
+            onClick={(e) => {
+              if (typeof window !== "undefined" && !(window as any).Telegram?.WebApp) {
+                e.preventDefault();
+                alert("Открой Mini App в Telegram для покупки");
+              }
+            }}
+            whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(0, 240, 255, 0.4)" }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full px-8 py-4 rounded-xl font-bold text-lg text-white text-center bg-white/10 backdrop-blur-md border border-cyan-500/30 hover:bg-white/20 transition-all"
+            style={{
+              fontFamily: "'Satoshi', 'Inter', sans-serif",
+            }}
+          >
+            💎 Buy in Tonkeeper
+          </motion.a>
+        </div>
       </motion.div>
 
       <NFTTicketModal
