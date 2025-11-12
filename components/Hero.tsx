@@ -1,28 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import GalaxyParticles from "./GalaxyParticles";
-import PassPanel from "./PassPanel";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import DiamondCore from "./DiamondCore";
 import { ENV, CONTRACT_ADDRESS } from "../lib/env";
 import { fetchContractBalance } from "../lib/ton-read";
-import { useSoundContext } from "./SoundProvider";
 
 export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 300], [0, 100]);
-  const [showPassPanel, setShowPassPanel] = useState(false);
   const [poolBalance, setPoolBalance] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string>("--:--:--");
-  const { playTheme } = useSoundContext();
-  
-  // Параллакс для логотипа
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const logoX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-  const logoY = useSpring(mouseY, { stiffness: 50, damping: 20 });
-  
-  const heroRef = useRef<HTMLElement>(null);
 
   // Загрузка баланса пула
   useEffect(() => {
@@ -31,7 +17,7 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
         const balance = await fetchContractBalance(CONTRACT_ADDRESS);
         setPoolBalance(balance);
       } catch (err) {
-        console.error("Failed to load pool balance:", err);
+        console.error("Ошибка загрузки баланса:", err);
       }
     };
     loadBalance();
@@ -39,12 +25,11 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Таймер (пример: до следующего розыгрыша)
+  // Таймер до следующего розыгрыша
   useEffect(() => {
     const updateTimer = () => {
-      // Пример: таймер до следующего розыгрыша (можно заменить на реальный)
       const now = Date.now();
-      const nextDraw = now + 3600000; // +1 час для примера
+      const nextDraw = now + 3600000; // +1 час
       const diff = nextDraw - now;
       const hours = Math.floor(diff / 3600000);
       const minutes = Math.floor((diff % 3600000) / 60000);
@@ -56,295 +41,143 @@ export default function Hero({ scrollToBuy }: { scrollToBuy?: boolean }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Автоматический скролл к секции покупки билетов
+  // Автоматический скролл к секции покупки
   useEffect(() => {
     if (scrollToBuy) {
       setTimeout(() => {
         const buySection = document.getElementById("buy-section");
         if (buySection) {
           buySection.scrollIntoView({ behavior: "smooth", block: "center" });
-          console.log("📍 Scrolled to buy section");
         }
       }, 500);
     }
   }, [scrollToBuy]);
 
-  // Параллакс при движении мыши
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!heroRef.current) return;
-      const rect = heroRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const deltaX = (e.clientX - centerX) * 0.02;
-      const deltaY = (e.clientY - centerY) * 0.02;
-      mouseX.set(deltaX);
-      mouseY.set(deltaY);
-    };
-    
-    if (heroRef.current) {
-      heroRef.current.addEventListener("mousemove", handleMouseMove);
-      return () => {
-        if (heroRef.current) {
-          heroRef.current.removeEventListener("mousemove", handleMouseMove);
-        }
-      };
-    }
-  }, [mouseX, mouseY]);
-
-  // Проигрывание темы при загрузке
-  useEffect(() => {
-    if (playTheme) {
-      playTheme("primeStart");
-    }
-  }, [playTheme]);
-
   const handleScrollToBuy = () => {
-    console.log("🚀 НАЧАТЬ ИГРУ button clicked");
     const el = document.getElementById("buy-section");
     if (el) {
-      // Мягкий zoom-out эффект
-      el.style.transform = "scale(0.95)";
-      setTimeout(() => {
-        el.style.transform = "scale(1)";
-      }, 200);
-      console.log("📍 Scrolling to buy-section");
       el.scrollIntoView({ behavior: "smooth" });
-    } else {
-      console.warn("⚠️ buy-section element not found");
     }
   };
 
   return (
-    <>
-      <GalaxyParticles />
-      <motion.section
-        ref={heroRef}
-        style={{ y }}
-        className="relative text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6 z-10"
+    <motion.section
+      className="relative text-center flex flex-col items-center justify-center min-h-[70vh] space-y-8 z-10 px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Алмаз */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <div className="flex flex-col items-center justify-center gap-4 z-10">
-          {/* Moon Halo */}
-          <div 
-            className="absolute w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] rounded-full blur-[20px] opacity-40"
-            style={{
-              background: "radial-gradient(circle, #00f0ff 0%, #7b2ff7 50%, transparent 70%)",
-            }}
-          />
-          
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ 
-              scale: 1, 
-              opacity: 1, 
-              rotate: 360,
-              y: [0, -10, 0],
-            }}
-            transition={{ 
-              scale: { duration: 0.8, ease: "easeOut" },
-              rotate: { duration: 12, ease: "linear", repeat: Infinity },
-              y: { duration: 6, ease: "easeInOut", repeat: Infinity },
-            }}
-            whileHover={{ 
-              rotate: 720, 
-              scale: 1.05,
-            }}
-            className="relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center select-none cursor-pointer holographic-logo"
-            style={{
-              filter: "drop-shadow(0 0 30px rgba(0,255,255,0.8)) drop-shadow(0 0 60px rgba(157,78,221,0.6))",
-              x: logoX,
-              y: logoY,
-            }}
-          >
-            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full neon-glow">
-              <defs>
-                <linearGradient id="tonixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#00ffff">
-                    <animate
-                      attributeName="stop-color"
-                      values="#00ffff;#0088ff;#9b5cff;#00ffff"
-                      dur="6s"
-                      repeatCount="indefinite"
-                    />
-                  </stop>
-                  <stop offset="100%" stopColor="#9b5cff">
-                    <animate
-                      attributeName="stop-color"
-                      values="#9b5cff;#00ffff;#0088ff;#9b5cff"
-                      dur="6s"
-                      repeatCount="indefinite"
-                    />
-                  </stop>
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <polygon
-                points="100,10 190,55 190,145 100,190 10,145 10,55"
-                fill="none"
-                stroke="url(#tonixGradient)"
-                strokeWidth="8"
-                strokeLinejoin="round"
-                filter="url(#glow)"
-              />
-            </svg>
-          </motion.div>
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 font-bold text-2xl sm:text-3xl md:text-4xl text-glow text-reflection"
-            style={{
-              fontFamily: "'Satoshi', 'Inter', sans-serif",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
-            TONIX CHAIN
-          </motion.span>
-        </div>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-center text-secondary text-sm md:text-base max-w-md mt-4"
-        >
-          Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
-        </motion.p>
+        <DiamondCore />
+      </motion.div>
 
-        {/* Слоган "Play. Win. Rise." с reflection */}
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tonix-glow text-reflection"
+      {/* Заголовок */}
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+        className="text-4xl sm:text-5xl md:text-6xl font-bold"
+        style={{
+          background: "linear-gradient(135deg, #00fff7, #7b2ff7)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          fontFamily: "'Satoshi', 'Inter', sans-serif",
+          letterSpacing: "0.05em",
+        }}
+      >
+        TONIX CHAIN
+      </motion.h1>
+
+      {/* Подзаголовок */}
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.6 }}
+        className="text-center text-[#97a9c6] text-sm md:text-base max-w-md"
+      >
+        Лотерея будущего на TON — децентрализованная, прозрачная и мгновенная.
+      </motion.p>
+
+      {/* CTA блок */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.6 }}
+        className="flex flex-col sm:flex-row gap-4 items-center"
+      >
+        <motion.button
+          onClick={handleScrollToBuy}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="btn-neon text-lg px-8 py-4"
+        >
+          🎮 Играть
+        </motion.button>
+
+        <motion.button
+          onClick={() => {
+            const passSection = document.getElementById("pass-section");
+            if (passSection) {
+              passSection.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="relative px-8 py-4 rounded-xl font-semibold text-lg text-white overflow-hidden"
           style={{
-            fontFamily: "'Satoshi', 'Inter', sans-serif",
-            fontWeight: 700,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
+            background: "linear-gradient(135deg, #00fff7, #7b2ff7)",
+            boxShadow: "0 0 30px rgba(0,255,247,0.4)",
           }}
         >
-          Play. Win. Rise.
-        </motion.h2>
+          <span className="relative z-10">💎 TONIX PASS</span>
+        </motion.button>
+      </motion.div>
 
-        {ENV.GAMING_MODE === "true" && (
-          <motion.button
-            onClick={() => {
-              const gameHub = document.getElementById("game-hub");
-              if (gameHub) {
-                gameHub.scrollIntoView({ behavior: "smooth" });
-              }
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="mt-6 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:shadow-[0_0_25px_rgba(0,255,255,0.8)] transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            aria-label="Играть"
-          >
-            🎮 Играть
-          </motion.button>
-        )}
+      {/* Powered by */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 0.6 }}
+        className="text-xs text-[#97a9c6] mt-4"
+      >
+        Powered by TON Blockchain
+      </motion.p>
 
+      {/* Статистика */}
+      {(poolBalance !== null || timeLeft !== "--:--:--") && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="flex flex-col sm:flex-row gap-4 items-center"
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="flex flex-col sm:flex-row gap-4 items-center mt-6"
         >
-          {/* Баланс пула и таймер */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 items-center mb-4"
-          >
-            {poolBalance !== null && (
-              <motion.div
-                className="px-6 py-3 rounded-xl glass-panel"
-                whileHover={{ scale: 1.02 }}
+          {poolBalance !== null && (
+            <div className="glass-panel px-6 py-3">
+              <p className="text-xs text-[#97a9c6] mb-1">Призовой пул</p>
+              <p
+                className="text-2xl font-bold"
+                style={{
+                  background: "linear-gradient(135deg, #00fff7, #7b2ff7)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
               >
-                <p className="text-xs text-gray-400 mb-1">Prize Pool</p>
-                <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
-                  {poolBalance.toFixed(2)} TON
-                </p>
-              </motion.div>
-            )}
-            <motion.div
-              className="px-6 py-3 rounded-xl glass-panel"
-              whileHover={{ scale: 1.02 }}
-            >
-              <p className="text-xs text-gray-400 mb-1">Next Draw</p>
-              <p className="text-2xl font-bold text-cyan-400 font-mono">
-                {timeLeft}
+                {poolBalance.toFixed(2)} TON
               </p>
-            </motion.div>
-          </motion.div>
-
-          <motion.button
-            onClick={handleScrollToBuy}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="relative px-12 py-4 rounded-xl font-bold text-lg text-white overflow-hidden megamoon-btn outer-glow-btn"
-            aria-label="JOIN THE GAME"
-            style={{
-              fontFamily: "'Satoshi', 'Inter', sans-serif",
-              background: "linear-gradient(120deg, #00f0ff, #7b2ff7)",
-              boxShadow: "0 0 30px rgba(0, 240, 255, 0.4), 0 0 60px rgba(123, 47, 247, 0.3)",
-            }}
-          >
-            <span className="relative z-10">JOIN THE GAME 🚀</span>
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-              animate={{ x: ["-100%", "100%"] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            />
-          </motion.button>
-          
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1, duration: 0.6 }}
-            className="text-xs text-gray-500 mt-2"
-            style={{
-              fontFamily: "'Satoshi', 'Inter', sans-serif",
-            }}
-          >
-            Powered by TON Blockchain
-          </motion.p>
-          
-          <motion.button
-            onClick={() => setShowPassPanel(true)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            className="pass-card px-6 py-4 text-lg font-semibold text-white relative z-10"
-            aria-label="TONIX PASS"
-            style={{
-              fontFamily: "'Satoshi', 'Inter', sans-serif",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
-            <span className="relative z-10">TONIX PASS 🪪</span>
-          </motion.button>
-        </motion.div>
-      </motion.section>
-
-      {showPassPanel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative max-w-md w-full">
-            <PassPanel onClose={() => setShowPassPanel(false)} />
+            </div>
+          )}
+          <div className="glass-panel px-6 py-3">
+            <p className="text-xs text-[#97a9c6] mb-1">Следующий розыгрыш</p>
+            <p className="text-2xl font-bold text-[#00fff7] font-mono">{timeLeft}</p>
           </div>
-        </div>
+        </motion.div>
       )}
-    </>
+    </motion.section>
   );
 }
