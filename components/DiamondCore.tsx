@@ -15,14 +15,33 @@ export default function DiamondCore() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const handleClick = () => {
+    // Звук будет добавлен через внешний обработчик при необходимости
+    if (typeof window !== 'undefined' && (window as any).tonixSound) {
+      (window as any).tonixSound.click?.();
+    }
+  };
+
   return (
     <motion.div
       className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      whileHover={!isMobile ? { scale: 1.05 } : {}}
+      whileHover={!isMobile ? { scale: 1.03 } : {}}
+      onClick={handleClick}
+      style={{ cursor: "pointer" }}
     >
+      {/* Мягкое отражение под алмазом */}
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: "radial-gradient(circle, rgba(0,255,247,0.15), transparent 70%)",
+          filter: "blur(30px)",
+          transform: "translateY(20px)",
+        }}
+      />
+
       {/* Внешний алмаз с градиентом */}
       <div
         className="absolute inset-0 diamond-3d"
@@ -35,7 +54,7 @@ export default function DiamondCore() {
           viewBox="0 0 200 200"
           className="w-full h-full"
           style={{
-            filter: "drop-shadow(0 0 20px rgba(123,47,247,0.6)) drop-shadow(0 0 40px rgba(0,255,247,0.4))",
+            filter: "drop-shadow(0 0 20px rgba(0,255,247,0.2))",
           }}
         >
           <defs>
@@ -45,8 +64,8 @@ export default function DiamondCore() {
               <stop offset="100%" stopColor="#ff6ad5" />
             </linearGradient>
             <radialGradient id="diamondCenter" cx="50%" cy="50%">
-              <stop offset="0%" stopColor="rgba(0,255,247,0.8)" />
-              <stop offset="70%" stopColor="rgba(0,255,247,0.2)" />
+              <stop offset="0%" stopColor="rgba(0,255,247,0.6)" />
+              <stop offset="70%" stopColor="rgba(0,255,247,0.1)" />
               <stop offset="100%" stopColor="transparent" />
             </radialGradient>
           </defs>
@@ -55,7 +74,7 @@ export default function DiamondCore() {
           <polygon
             points="100,20 180,100 100,180 20,100"
             fill="url(#diamondGradient)"
-            opacity="0.9"
+            opacity="0.85"
           />
           
           {/* Центральное свечение */}
@@ -65,25 +84,25 @@ export default function DiamondCore() {
           <polygon
             points="100,40 160,100 100,160 40,100"
             fill="none"
-            stroke="rgba(0,255,247,0.3)"
+            stroke="rgba(0,255,247,0.2)"
             strokeWidth="1"
           />
         </svg>
       </div>
 
-      {/* Дополнительное свечение при hover */}
+      {/* Мягкое внутреннее свечение при hover */}
       <motion.div
         className="absolute inset-0 rounded-full"
         style={{
-          background: "radial-gradient(circle, rgba(0,255,247,0.2), transparent 70%)",
-          filter: "blur(20px)",
+          background: "radial-gradient(circle, rgba(0,255,247,0.1), transparent 70%)",
+          filter: "blur(25px)",
         }}
         animate={{
-          opacity: [0.3, 0.6, 0.3],
-          scale: [1, 1.1, 1],
+          opacity: [0.2, 0.4, 0.2],
+          scale: [1, 1.05, 1],
         }}
         transition={{
-          duration: 3,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -91,4 +110,3 @@ export default function DiamondCore() {
     </motion.div>
   );
 }
-

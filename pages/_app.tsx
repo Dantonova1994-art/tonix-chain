@@ -11,6 +11,7 @@ import MusicPlayer from "../components/MusicPlayer";
 import Navigator from "../components/Navigator";
 import SystemNotifier from "../components/SystemNotifier";
 import AIWidget from "../components/AIWidget";
+import Preloader from "../components/Preloader";
 import { initAnalytics } from "../lib/analytics";
 import { getLocale, setLocale } from "../i18n";
 
@@ -159,6 +160,7 @@ export default function App({ Component, pageProps }: any) {
 
   return (
     <>
+      <Preloader />
       <Script
         src="https://telegram.org/js/telegram-web-app.js"
         strategy="beforeInteractive"

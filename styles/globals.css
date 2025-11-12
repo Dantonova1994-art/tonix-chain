@@ -1,45 +1,64 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* === DIAMOND CORE v9.5 === */
+/* === DIAMOND CORE+ v9.6 === */
 :root {
-  --bg-primary: #060913;
-  --bg-secondary: rgba(255, 255, 255, 0.05);
   --neon-cyan: #00fff7;
   --neon-violet: #7b2ff7;
   --neon-pink: #ff6ad5;
-  --accent-gradient: linear-gradient(135deg, #00fff7, #7b2ff7);
   --text-main: #e6faff;
-  --text-secondary: #97a9c6;
+  --text-secondary: #9fb3c8;
+  --bg-dark: radial-gradient(circle at center, #080b15 0%, #0f1425 100%);
   --success: #00ffa3;
   --error: #ff6ad5;
   --shadow: rgba(0, 0, 0, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --transition: all 0.4s ease-in-out;
-  --glow-cyan: 0 0 20px rgba(0,255,247,0.4);
-  --glow-violet: 0 0 20px rgba(123,47,247,0.4);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --transition: all 0.3s ease;
+  --glow-cyan: 0 0 15px rgba(0,255,247,0.25);
+  --glow-violet: 0 0 20px rgba(123,47,247,0.2);
 }
 
-/* Глобальный фон с анимированным градиентом */
+/* Глобальный фон */
 html, body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  font-family: 'Satoshi', 'Inter', sans-serif;
+  font-family: 'Manrope', sans-serif;
   color: var(--text-main);
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
 body {
-  background: radial-gradient(circle at center, #070a14 0%, #0d1020 100%);
+  background: var(--bg-dark);
   position: relative;
   overflow-x: hidden;
   animation: breathe 20s ease-in-out infinite;
+}
+
+/* Типографика */
+h1, h2, h3, .hero-title, .btn {
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hero-title {
+  font-weight: 700;
+  background: linear-gradient(90deg, #00fff7, #7b2ff7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 6px rgba(0,255,247,0.25);
+  animation: subtleGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes subtleGlow {
+  from { text-shadow: 0 0 6px rgba(0,255,247,0.25); }
+  to { text-shadow: 0 0 10px rgba(123,47,247,0.35); }
 }
 
 @keyframes cosmicShift {
@@ -867,9 +886,11 @@ button, a {
 /* === КНОПКИ === */
 .btn-neon {
   position: relative;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(0,255,247,0.15);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 14px 28px;
   font-weight: 600;
@@ -886,6 +907,11 @@ button, a {
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;
+}
+
+.btn-neon:hover {
+  box-shadow: 0 0 15px rgba(0,255,247,0.25);
+  transform: scale(1.02);
 }
 
 .btn-neon:hover::before {
@@ -913,19 +939,20 @@ button, a {
 }
 
 /* === КАРТОЧКИ === */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 25px rgba(0,255,247,0.08);
+.glass-panel,
+.glass-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(14px);
   border-radius: 16px;
   padding: 24px;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
-.glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 0 30px rgba(0,255,247,0.12), var(--glow-cyan);
+.glass-panel:hover,
+.glass-card:hover {
+  box-shadow: 0 0 20px rgba(123,47,247,0.2);
+  border-color: rgba(255,255,255,0.1);
 }
 
 /* === ТОСТЫ === */

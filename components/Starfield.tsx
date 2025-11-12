@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 
-export default function Starfield({ density = 160, speed = 0.15 }: { density?: number; speed?: number }) {
+export default function Starfield({ density = 120, speed = 0.08 }: { density?: number; speed?: number }) {
   if (typeof window === 'undefined') return null;
   
   const enabled = process.env.NEXT_PUBLIC_ENABLE_STARFIELD !== 'false';
@@ -20,7 +20,7 @@ export default function Starfield({ density = 160, speed = 0.15 }: { density?: n
     const stars = Array.from({ length: density }, () => ({
       x: Math.random() * w,
       y: Math.random() * h,
-      z: Math.random() * 1 + 0.2
+      z: Math.random() * 0.5 + 0.1
     }));
 
     const onResize = () => {
@@ -33,9 +33,9 @@ export default function Starfield({ density = 160, speed = 0.15 }: { density?: n
       for (const s of stars) {
         s.y += s.z * speed;
         if (s.y > h) { s.y = 0; s.x = Math.random() * w; }
-        const alpha = 0.4 + s.z * 0.6;
-        ctx.fillStyle = `rgba(0, 240, 255, ${alpha})`;
-        ctx.fillRect(s.x, s.y, 1.5, 1.5);
+        const alpha = 0.05 + s.z * 0.1;
+        ctx.fillStyle = `rgba(0, 255, 247, ${alpha})`;
+        ctx.fillRect(s.x, s.y, 1, 1);
       }
       raf = requestAnimationFrame(draw);
     };
@@ -51,6 +51,5 @@ export default function Starfield({ density = 160, speed = 0.15 }: { density?: n
 
   if (!enabled) return null;
   
-  return <canvas ref={ref} className="pointer-events-none fixed inset-0 -z-10 w-full h-full opacity-[0.35]" aria-hidden />;
+  return <canvas ref={ref} className="pointer-events-none fixed inset-0 -z-10 w-full h-full opacity-[0.05]" aria-hidden />;
 }
-
